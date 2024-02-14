@@ -1,0 +1,1 @@
+export 'package:fe_middleware_payment/infrastructure/navigation/bindings/controllers/home.controller.binding.dart'; 
