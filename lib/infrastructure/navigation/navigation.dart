@@ -28,8 +28,18 @@ class Nav {
   static List<GetPage> routes = [
     GetPage(
       name: Routes.HOME,
-      page: () => const HomeScreen(),
+      page: () => HomeScreen(),
       binding: HomeControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.PAYMENT,
+      page: () => PaymentScreen(),
+      binding: PaymentControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.DETAILPAYMENT,
+      page: () => DetailPaymentScreen(),
+      binding: DetailPaymentControllerBinding(),
     ),
   ];
 }
