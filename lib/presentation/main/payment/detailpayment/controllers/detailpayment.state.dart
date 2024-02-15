@@ -4,4 +4,5 @@ class DetailPaymentState {
   String paymentCode = '';
   PaymentCategory? paymentCategory;
   PaymentMethod? paymentMethod;
+  bool isPayment = false;
 }

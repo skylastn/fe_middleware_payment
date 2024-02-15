@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../../controllers/payment.state.dart';
 import 'detailpayment.state.dart';
 
-class DetailpaymentController extends GetxController {
+class DetailPaymentController extends GetxController {
   DetailPaymentState state = DetailPaymentState();
 
   final count = 0.obs;

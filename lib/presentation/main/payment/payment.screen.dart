@@ -78,7 +78,6 @@ class PaymentScreen extends GetView<PaymentController> {
               Expanded(
                 child: descriptionWidget(),
               ),
-              // Row
             ],
           ),
         ),

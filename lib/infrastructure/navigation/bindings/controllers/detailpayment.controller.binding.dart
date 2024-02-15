@@ -5,8 +5,8 @@ import '../../../../presentation/main/payment/detailpayment/controllers/detailpa
 class DetailPaymentControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<DetailpaymentController>(
-      () => DetailpaymentController(),
+    Get.lazyPut<DetailPaymentController>(
+      () => DetailPaymentController(),
     );
   }
 }
