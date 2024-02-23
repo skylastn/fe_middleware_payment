@@ -2,6 +2,8 @@ import 'package:fe_middleware_payment/presentation/main/payment/controllers/paym
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../infrastructure/widget/picture_handler_widget.dart';
+
 Widget itemWidget({
   required String title,
   required String subTitle,
@@ -68,20 +70,9 @@ Widget paymentMethodWidget({
           leading: SizedBox(
             height: 40,
             width: 50,
-            child: ['svg'].contains(paymentCategory
-                    .paymentMethod[index].imageUrl
-                    .split('.')
-                    .last)
-                ? SvgPicture.network(
-                    paymentCategory.paymentMethod[index].imageUrl,
-                    // height: 30,
-                    // width: 30,
-                    fit: BoxFit.fill,
-                  )
-                : Image.network(
-                    paymentCategory.paymentMethod[index].imageUrl,
-                    height: 60,
-                  ),
+            child: PictureHandlerWidget().pictureHandler(
+              paymentCategory.paymentMethod[index].imageUrl,
+            ),
           ),
           title: Text(
             paymentCategory.paymentMethod[index].name,

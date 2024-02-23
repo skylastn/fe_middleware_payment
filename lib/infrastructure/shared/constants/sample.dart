@@ -8,7 +8,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'CREDIT CARD',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/VC.svg',
+        imageUrl: 'assets/images/payment/cc.png',
         paymentCode: 'CC',
         paymentInstruction: PaymentInstruction(
           detail:
@@ -33,7 +33,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'BCA VA',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/BC.svg',
+        imageUrl: 'assets/images/payment/bca.png',
         paymentCode: 'BCA_VA',
         paymentInstruction: PaymentInstruction(
           detail:
@@ -85,7 +85,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'MANDIRI VA',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/M1.svg',
+        imageUrl: 'assets/images/payment/mandiri.png',
         paymentCode: 'MANDIRI_VA',
         paymentInstruction: PaymentInstruction(
           detail:
@@ -111,7 +111,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'BNI VA',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/I1.svg',
+        imageUrl: 'assets/images/payment/bni.png',
         paymentCode: 'BNI_VA',
         paymentInstruction: PaymentInstruction(
           detail:
@@ -143,7 +143,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'OVO',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/OV.svg',
+        imageUrl: 'assets/images/payment/ovo.png',
         paymentCode: 'EW_OVO',
         paymentInstruction: PaymentInstruction(
           detail:
@@ -169,7 +169,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'DANA',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/DA.svg',
+        imageUrl: 'assets/images/payment/dana.png',
         paymentCode: 'EW_DANA',
         paymentInstruction: PaymentInstruction(
           detail: 'Pembayaran DANA harus dilakukan melalui DANA website.\n\n'
@@ -187,7 +187,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'SHOPEEPAY QRIS',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/SP.svg',
+        imageUrl: 'assets/images/payment/shopeepay.png',
         paymentCode: 'QRIS_SHOPEE',
         paymentInstruction: PaymentInstruction(
           detail:
@@ -208,25 +208,25 @@ List<PaymentCategory> listPayment = [
           ],
         ),
       ),
-      PaymentMethod(
-        name: 'LINKAJA QRIS',
-        description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/LQ.svg',
-        paymentCode: 'QRIS_DANA',
-        paymentInstruction: PaymentInstruction(
-          detail:
-              'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-              'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-          stepPaymentInstruction: [
-            StepPaymentInstruction(
-              title: 'm-BCA',
-              step: [
-                'Lakukan log in pada aplikasi BCA mobile',
-              ],
-            ),
-          ],
-        ),
-      ),
+      // PaymentMethod(
+      //   name: 'LINKAJA QRIS',
+      //   description: 'Tanpa Biaya Layanan',
+      //   imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/LQ.svg',
+      //   paymentCode: 'QRIS_DANA',
+      //   paymentInstruction: PaymentInstruction(
+      //     detail:
+      //         'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
+      //         'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
+      //     stepPaymentInstruction: [
+      //       StepPaymentInstruction(
+      //         title: 'm-BCA',
+      //         step: [
+      //           'Lakukan log in pada aplikasi BCA mobile',
+      //         ],
+      //       ),
+      //     ],
+      //   ),
+      // ),
     ],
   ),
   PaymentCategory(
@@ -236,7 +236,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'RETAIL',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/FT.svg',
+        imageUrl: 'assets/images/payment/retail.png',
         paymentCode: 'RT_R',
         paymentInstruction: PaymentInstruction(
           detail:
@@ -255,7 +255,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'INDOMARET',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/IR.svg',
+        imageUrl: 'assets/images/payment/indomaret.png',
         paymentCode: 'RT_IND',
         paymentInstruction: PaymentInstruction(
           detail:
@@ -280,7 +280,7 @@ List<PaymentCategory> listPayment = [
       PaymentMethod(
         name: 'JENIUS PAY',
         description: 'Tanpa Biaya Layanan',
-        imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/JP.svg',
+        imageUrl: 'assets/images/payment/jenius.png',
         paymentCode: 'EB_JENIUS',
         paymentInstruction: PaymentInstruction(
           detail:

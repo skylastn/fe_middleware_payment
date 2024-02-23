@@ -11,15 +11,15 @@ class PaymentController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    state.orderId = Get.parameters['orderId'] ?? '';
-    if (state.orderId.isEmpty) {
-      Snackbar.showInfo(message: 'Sorry Order ID is Empty');
-    }
   }
 
   @override
   void onReady() {
     super.onReady();
+    state.orderId = Get.parameters['reference'] ?? '';
+    if (state.orderId.isEmpty) {
+      Snackbar.showInfo(message: 'Sorry Order ID is Empty');
+    }
   }
 
   @override
@@ -38,7 +38,7 @@ class PaymentController extends GetxController {
       Routes.DETAILPAYMENT,
       parameters: {
         'paymentCode': content.paymentCode,
-        'orderId': state.orderId,
+        'reference': state.orderId,
         'paymentType': category.paymentType.name,
       },
     );

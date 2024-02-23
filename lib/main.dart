@@ -18,6 +18,7 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      enableLog: kDebugMode,
       debugShowCheckedModeBanner: kDebugMode,
       initialRoute: initialRoute,
       getPages: Nav.routes,

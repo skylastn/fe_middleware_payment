@@ -6,23 +6,23 @@ class Environments {
 }
 
 class ConfigEnvironments {
-  static const String _currentEnvironments = Environments.LOCAL;
+  static const String _currentEnvironments = Environments.DEV;
   static final List<Map<String, String>> _availableEnvironments = [
     {
       'env': Environments.LOCAL,
-      'url': 'http://localhost:8080/api/',
+      'url': 'https://payment.andalansoftware.com',
     },
     {
       'env': Environments.DEV,
-      'url': '',
+      'url': 'https://payment.andalansoftware.com',
     },
     {
       'env': Environments.QAS,
-      'url': '',
+      'url': 'https://payment.andalansoftware.com',
     },
     {
       'env': Environments.PRODUCTION,
-      'url': '',
+      'url': 'https://payment.andalansoftware.com',
     },
   ];
 

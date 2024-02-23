@@ -3,7 +3,10 @@ import 'package:fe_middleware_payment/infrastructure/shared/widget/mobile_size_w
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../domain/model/response/project.dart';
 import '../../../infrastructure/navigation/routes.dart';
+import '../../../infrastructure/shared/utils/format.dart';
+import '../../../infrastructure/widget/state_widget.dart';
 import '../widget/main_widget.dart';
 import 'controllers/home.controller.dart';
 
@@ -66,7 +69,10 @@ class HomeScreen extends GetView<HomeController> {
               ),
               const SizedBox(height: 8),
               Expanded(
-                child: descriptionWidget(),
+                child: StateWidget().initial(
+                  stateStatus: state.status,
+                  body: descriptionWidget(),
+                ),
               ),
               // Row
             ],
@@ -126,22 +132,26 @@ class HomeScreen extends GetView<HomeController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  Column(
                     children: [
-                      Text(
+                      const Text(
                         'Total Pembayaran',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
                         ),
                       ),
-                      Text(
-                        'Rp. 61.940',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                      if (state.order?.project?.projectType ==
+                          ProjectType.spnpay)
+                        Text(
+                          Format.rupiahConvert(
+                            (state.spnPayOrder.request?.amount ?? 0).toDouble(),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   ElevatedButton(
@@ -170,7 +180,7 @@ class HomeScreen extends GetView<HomeController> {
                     onPressed: () => Get.toNamed(
                       Routes.PAYMENT,
                       parameters: {
-                        'orderId': state.orderId,
+                        'reference': state.orderId,
                       },
                     ),
                     child: Text(
@@ -196,7 +206,7 @@ class HomeScreen extends GetView<HomeController> {
           subTitle: state.orderId,
           endWidget: InkWell(
             onTap: () async {
-              await Clipboard.setData(const ClipboardData(text: 'OTDN-ORD-29'));
+              await Clipboard.setData(ClipboardData(text: state.orderId));
               Snackbar.showInfo(message: 'Copied to your clipboard !');
             },
             child: const Icon(Icons.copy),
@@ -204,23 +214,26 @@ class HomeScreen extends GetView<HomeController> {
         ),
         itemWidget(
           title: 'Catatan',
-          subTitle: 'Pembayaran ....',
+          subTitle: state.order?.notes ?? '',
         ),
         itemWidget(
           title: 'Daftar Barang',
-          subTitle: 'Pembayaran .... x 1',
-          endWidget: const Text(
-            'Rp. 61.940',
-            style: TextStyle(
+          subTitle: '${state.order?.notes ?? ''} x 1',
+          endWidget: Text(
+            Format.rupiahConvert(
+                state.order?.project?.projectType == ProjectType.spnpay
+                    ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
+                    : 0),
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.normal,
             ),
           ),
         ),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'Total',
               style: TextStyle(
                 fontSize: 15,
@@ -228,8 +241,11 @@ class HomeScreen extends GetView<HomeController> {
               ),
             ),
             Text(
-              'Rp. 61.940',
-              style: TextStyle(
+              Format.rupiahConvert(
+                  state.order?.project?.projectType == ProjectType.spnpay
+                      ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
+                      : 0),
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
               ),
@@ -246,18 +262,23 @@ class HomeScreen extends GetView<HomeController> {
         const SizedBox(height: 16),
         itemWidget(
           title: 'Nama Lengkap',
-          subTitle: 'AndalanSoftware',
+          subTitle: state.order?.project?.projectType == ProjectType.spnpay
+              ? state.spnPayOrder.request?.viewName ?? ''
+              : '',
         ),
         itemWidget(
           title: 'Nomor Telepon',
-          subTitle: '(+62) 88124213134',
+          subTitle: (state.order?.phone ?? '').isNotEmpty
+              ? state.order!.phone!.substring(1, state.order?.phone?.length)
+              : '',
         ),
         itemWidget(
           title: 'Email',
-          subTitle: 'andalansoftware@gmail.com',
+          subTitle: state.order?.email ?? '',
         ),
+
         const Text(
-          'Alamat Pengiriman',
+          'Alamat',
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -265,21 +286,35 @@ class HomeScreen extends GetView<HomeController> {
         ),
         const Divider(thickness: 1),
         itemWidget(
-          title: 'Sahid Rahutomo',
-          subTitle: 'Jl. Jakarta Bandung',
+          title: state.order?.project?.projectType == ProjectType.spnpay
+              ? state.spnPayOrder.request?.viewName ?? ''
+              : '',
+          subTitle: state.order?.address ?? '',
         ),
-        const Text(
-          'Alamat Penagihan',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const Divider(thickness: 1),
-        itemWidget(
-          title: 'Sahid Rahutomo',
-          subTitle: 'Jl. Jakarta Bandung',
-        ),
+        // const Text(
+        //   'Alamat Pengiriman',
+        //   style: TextStyle(
+        //     fontSize: 15,
+        //     fontWeight: FontWeight.w600,
+        //   ),
+        // ),
+        // const Divider(thickness: 1),
+        // itemWidget(
+        //   title: 'Sahid Rahutomo',
+        //   subTitle: 'Jl. Jakarta Bandung',
+        // ),
+        // const Text(
+        //   'Alamat Penagihan',
+        //   style: TextStyle(
+        //     fontSize: 15,
+        //     fontWeight: FontWeight.w600,
+        //   ),
+        // ),
+        // const Divider(thickness: 1),
+        // itemWidget(
+        //   title: 'Sahid Rahutomo',
+        //   subTitle: 'Jl. Jakarta Bandung',
+        // ),
       ],
     );
   }

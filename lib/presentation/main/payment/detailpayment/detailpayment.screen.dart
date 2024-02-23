@@ -3,9 +3,12 @@ import 'package:flutter/services.dart';
 
 import 'package:get/get.dart';
 
+import '../../../../domain/model/response/project.dart';
 import '../../../../infrastructure/navigation/routes.dart';
+import '../../../../infrastructure/shared/utils/format.dart';
 import '../../../../infrastructure/shared/utils/snackbar.dart';
 import '../../../../infrastructure/shared/widget/mobile_size_widget.dart';
+import '../../../../infrastructure/widget/state_widget.dart';
 import '../../widget/main_widget.dart';
 import '../controllers/payment.state.dart';
 import 'controllers/detailpayment.controller.dart';
@@ -80,16 +83,19 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
               ),
               const SizedBox(height: 8),
               Expanded(
-                child: descriptionWidget(),
+                child: StateWidget().initial(
+                  stateStatus: state.status,
+                  body: descriptionWidget(),
+                ),
               ),
               const SizedBox(height: 12),
               const Divider(thickness: 1),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  Column(
                     children: [
-                      Text(
+                      const Text(
                         'Total Pembayaran',
                         style: TextStyle(
                           fontSize: 14,
@@ -97,8 +103,14 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
                         ),
                       ),
                       Text(
-                        'Rp. 61.940',
-                        style: TextStyle(
+                        Format.rupiahConvert(
+                          state.order?.project?.projectType ==
+                                  ProjectType.spnpay
+                              ? (state.spnPayOrder.request?.amount ?? 0)
+                                  .toDouble()
+                              : 0.0,
+                        ),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -129,8 +141,15 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
                       ),
                     ),
                     onPressed: () {
-                      state.isPayment = true;
-                      logic.update();
+                      try {
+                        state.isPayment = true;
+                        logic.createOrderPayment();
+                      } catch (e) {
+                        Snackbar.showInfo(
+                          title: 'Error',
+                          message: e.toString(),
+                        );
+                      }
                     },
                     child: Text(
                       !state.isPayment
@@ -162,25 +181,7 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
                 title: 'Deskripsi',
                 subTitle: state.paymentMethod?.paymentInstruction.detail ?? '',
               ),
-            if (state.isPayment)
-              itemWidget(
-                title: 'Nomor Akun Virtual',
-                subTitle: '7007 0140 0216 3781',
-                endWidget: InkWell(
-                  onTap: () async {
-                    await Clipboard.setData(
-                      const ClipboardData(text: '7007014002163781'),
-                    );
-                    Snackbar.showInfo(message: 'Copied to your clipboard !');
-                  },
-                  child: const Icon(Icons.copy),
-                ),
-              ),
-            if (state.isPayment)
-              itemWidget(
-                title: 'Status Transaksi',
-                subTitle: 'Transaction Pending.',
-              ),
+            if (state.isPayment) statusWidget(),
             const SizedBox(height: 8),
             if ((state.paymentMethod?.paymentInstruction
                         .stepPaymentInstruction ??
@@ -190,6 +191,35 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget statusWidget() {
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        if (state.order?.project?.projectType == ProjectType.spnpay)
+          itemWidget(
+            title: 'Nomor Akun Virtual',
+            subTitle: state.spnPayOrder.response?.virtualAccount.vaNumber ?? '',
+            endWidget: InkWell(
+              onTap: () async {
+                await Clipboard.setData(
+                  ClipboardData(
+                    text: state.spnPayOrder.response?.virtualAccount.vaNumber ??
+                        '',
+                  ),
+                );
+                Snackbar.showInfo(message: 'Copied to your clipboard !');
+              },
+              child: const Icon(Icons.copy),
+            ),
+          ),
+        itemWidget(
+          title: 'Status Transaksi',
+          subTitle: 'Transaction ${state.order?.status}.',
+        ),
+      ],
     );
   }
 
