@@ -73,7 +73,7 @@ class SpnPayOrderResponse {
         merchantRef: json["merchantRef"],
         status: json["status"],
         feePayer: json["feePayer"],
-        amount: json["amount"],
+        amount: json["amount"].toString(),
         fee: json["fee"],
         totalAmount: json["totalAmount"],
         expiredDate: DateTime.parse(json["expiredDate"]),
@@ -133,7 +133,9 @@ class SpnPayOrderRequest {
         singleUse: json["singleUse"],
         type: json["type"],
         reference: json["reference"],
-        amount: json["amount"],
+        amount: json["amount"].runtimeType == String
+            ? int.tryParse(json["amount"]) ?? 0
+            : json["amount"],
         expiryMinutes: json["expiryMinutes"],
         viewName: json["viewName"],
         additionalInfo: AdditionalInfo.fromJson(json["additionalInfo"]),

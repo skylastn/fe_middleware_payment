@@ -140,10 +140,20 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
                         ),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       try {
-                        state.isPayment = true;
-                        logic.createOrderPayment();
+                        if (!state.isPayment) {
+                          state.isPayment = true;
+                          logic.createOrderPayment();
+                          return;
+                        }
+                        await logic.getDetailOrder(isLoading: false);
+                        if (state.order?.status == 'PAID') {
+                          Snackbar.showInfo(
+                            title: 'Sukses',
+                            message: 'Pembayaran anda berhasil',
+                          );
+                        }
                       } catch (e) {
                         Snackbar.showInfo(
                           title: 'Error',
