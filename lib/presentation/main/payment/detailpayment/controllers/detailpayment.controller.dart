@@ -75,6 +75,10 @@ class DetailPaymentController extends GetxController {
   }
 
   Future<void> createOrderPayment() async {
+    if (state.order?.response != null) {
+      update();
+      return;
+    }
     state.status = StateStatus.loading;
     update();
     var response = await repo.createOrderPayment(
