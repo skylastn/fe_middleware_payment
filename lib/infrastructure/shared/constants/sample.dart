@@ -89,20 +89,20 @@ List<PaymentCategory> listPayment = [
         paymentCode: 'MANDIRI_VA',
         paymentInstruction: PaymentInstruction(
           detail:
-              'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
+              'Dapatkan nomor akun virtual Mandiri Anda setelah menekan tombol pembayaran dibawah.\n\n'
               'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
           stepPaymentInstruction: [
             StepPaymentInstruction(
-              title: 'm-BCA',
+              title: 'Livin By Mandiri',
               step: [
-                'Lakukan log in pada aplikasi BCA mobile',
-                "Pilih 'm-BCA' Masukkan kode akses m-BCA",
-                "Pilih 'm-Transfer'",
-                "Pilih 'Virtual Account BCA'",
-                'Masukkan nomor Virtual Account BCA 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai ) atau pilih dari Daftar Transfer',
-                'Masukkan jumlah pembayaran sesuai dengan tagihan',
-                'Masukkan pin m-BCA',
-                'Pembayaran selesai',
+                'Pilih Menu Bayar',
+                "Pilih menu e-Commerce",
+                "Cari penyedia jasa Plink Pay (8903)",
+                "Masukan nomor Virtual Account (MVA)",
+                'Masukan nominal pembayaran',
+                'Klik Lanjutkan',
+                'Pilih Konfirmasi untuk membayarkan tagihan',
+                'Cek status transaksi',
               ],
             ),
           ],
@@ -115,20 +115,21 @@ List<PaymentCategory> listPayment = [
         paymentCode: 'BNI_VA',
         paymentInstruction: PaymentInstruction(
           detail:
-              'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
+              'Dapatkan nomor akun virtual BNI Anda setelah menekan tombol pembayaran dibawah.\n\n'
               'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
           stepPaymentInstruction: [
             StepPaymentInstruction(
               title: 'm-BCA',
               step: [
-                'Lakukan log in pada aplikasi BCA mobile',
-                "Pilih 'm-BCA' Masukkan kode akses m-BCA",
-                "Pilih 'm-Transfer'",
-                "Pilih 'Virtual Account BCA'",
-                'Masukkan nomor Virtual Account BCA 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai ) atau pilih dari Daftar Transfer',
-                'Masukkan jumlah pembayaran sesuai dengan tagihan',
-                'Masukkan pin m-BCA',
-                'Pembayaran selesai',
+                'Akses BNI Mobile Banking',
+                "Masukkan User ID dan Password",
+                "Pilih menu Transfer",
+                "Pilih menu Virtual Account Billing kemudian pilih rekening debet",
+                "Masukkan 16 digit nomor Virtual Account yang tertera pada halaman konfirmasi (Contoh: 988002XXXXXXXXXX) pada menu 'inputbaru'",
+                'Tagihan yang harus dibayarkan akan muncul pada layar konfirmasi',
+                'Konfirmasi transaksi dan masukkan Password Transaksi',
+                'Pembayaran Anda Telah Berhasil',
+                'Simpan bukti transaksi'
               ],
             ),
           ],

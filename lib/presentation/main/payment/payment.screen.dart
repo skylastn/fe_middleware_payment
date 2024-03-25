@@ -95,6 +95,7 @@ class PaymentScreen extends GetView<PaymentController> {
           children: [
             const SizedBox(height: 16),
             ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: listPayment.length,
               itemBuilder: (context, index) => paymentMethodWidget(

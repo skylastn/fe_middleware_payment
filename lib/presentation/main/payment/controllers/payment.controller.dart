@@ -30,7 +30,7 @@ class PaymentController extends GetxController {
   void increment() => count.value++;
 
   routeToDetail(PaymentMethod content, PaymentCategory category) {
-    if (!['BCA_VA', 'EW_DANA', 'QRIS_SHOPEE'].contains(content.paymentCode)) {
+    if (category.paymentType != PaymentType.bankTransfer) {
       Snackbar.showInfo(message: 'Unsupport Payment Method');
       return;
     }

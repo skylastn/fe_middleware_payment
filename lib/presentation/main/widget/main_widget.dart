@@ -62,6 +62,7 @@ Widget paymentMethodWidget({
       const Divider(thickness: 1),
       const SizedBox(height: 6),
       ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: paymentCategory.paymentMethod.length,
         itemBuilder: (context, index) => ListTile(
