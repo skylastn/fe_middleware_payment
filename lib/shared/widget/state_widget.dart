@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../domain/model/state_status.dart';
-import '../shared/constants/colors.dart';
+import '../constants/colors.dart';
 
 class StateWidget {
   Widget initial({

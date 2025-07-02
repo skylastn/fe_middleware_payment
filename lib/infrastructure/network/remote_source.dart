@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get.dart';
 import '../../domain/model/response_model.dart';
-import '../shared/constants/network_status.dart';
+import '../../shared/constants/network_status.dart';
 import 'package:http/http.dart' as http;
 import 'http_config.dart';
 
 class RemoteSource {
   int timeOut = 120;
-  final String url = dotenv.env['API_URL'] ?? 'http://localhost:3000';
+  final String url = '${dotenv.env['API_URL'] ?? 'http://localhost:3000'}/api/';
   Future<ResponseModel> postApi(String urlPrefix,
       {Object? body, bool header = true}) async {
     var urlS = url + urlPrefix;
@@ -122,9 +122,7 @@ class RemoteSource {
   Future<ResponseModel> getApi(String urlPrefix,
       {bool header = true, Map<String, dynamic>? query}) async {
     var urlS = url + urlPrefix;
-    if (kDebugMode) {
-      Get.log('ambil data Get : $urlS');
-    }
+
     if (query != null && query.isNotEmpty) {
       int tempCount = 0;
       query.forEach((key, value) {
@@ -135,6 +133,9 @@ class RemoteSource {
         }
         tempCount++;
       });
+    }
+    if (kDebugMode) {
+      Get.log('ambil data Get : $urlS?$query');
     }
     try {
       Get.log('running here 1');
@@ -322,7 +323,7 @@ class RemoteSource {
 
   Map<String, String> headerMiddleware() {
     return {
-      'Key': 'oxJMxunHKiElhLwZyPsb',
+      'Token': Get.parameters['token'] ?? '',
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };

@@ -18,7 +18,7 @@ class Orders {
   String url;
   DateTime? createdAt;
   DateTime? updatedAt;
-  PaymentMethod? paymentMethods;
+  PaymentResponse? paymentMethods;
   Project? project;
 
   Orders({
@@ -43,54 +43,55 @@ class Orders {
   });
 
   factory Orders.fromJson(Map<String, dynamic> json) => Orders(
-        id: json["id"],
-        type: json["type"],
-        status: json["status"],
-        reference: json["reference"],
-        mode: json["mode"],
-        address: json["address"],
-        phone: json["phone"],
-        email: json["email"],
-        notes: json["notes"],
-        paymentMethod: json["payment_method"],
-        request: json["request"],
-        response: json["response"],
-        callback: json["callback"],
-        url: json["url"],
-        createdAt: json["created_at"] == null
+        id: json['id'],
+        type: json['type'],
+        status: json['status'],
+        reference: json['reference'],
+        mode: json['mode'],
+        address: json['address'],
+        phone: json['phone'],
+        email: json['email'],
+        notes: json['notes'],
+        paymentMethod: json['payment_method'],
+        request: json['request'],
+        response: json['response'],
+        callback: json['callback'],
+        url: json['url'],
+        createdAt: json['created_at'] == null
             ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
+            : DateTime.parse(json['created_at']),
+        updatedAt: json['updated_at'] == null
             ? null
-            : DateTime.parse(json["updated_at"]),
-        paymentMethods: json["payment_methods"] == null
+            : DateTime.parse(json['updated_at']),
+        // paymentMethods: null,
+        paymentMethods: json['payment_methods'] == null
             ? null
-            : PaymentMethod.fromJson(json["payment_methods"]),
-        project: json["project"] == null
+            : PaymentResponse.fromMap(json['payment_methods']),
+        project: json['project'] == null
             ? null
             : Project.fromJson(
-                json["project"],
+                json['project'],
               ),
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "type": type,
-        "status": status,
-        "reference": reference,
-        "mode": mode,
+        'id': id,
+        'type': type,
+        'status': status,
+        'reference': reference,
+        'mode': mode,
         'address': address,
         'phone': phone,
         'email': email,
         'notes': notes,
-        "payment_method": paymentMethod,
-        "request": request,
-        "response": response,
-        "callback": callback,
-        "url": url,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "payment_methods": paymentMethods?.toJson(),
-        "project": project?.toJson(),
+        'payment_method': paymentMethod,
+        'request': request,
+        'response': response,
+        'callback': callback,
+        'url': url,
+        'created_at': createdAt?.toIso8601String(),
+        'updated_at': updatedAt?.toIso8601String(),
+        'payment_methods': paymentMethods?.toMap(),
+        'project': project?.toJson(),
       };
 }

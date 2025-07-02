@@ -24,33 +24,33 @@ class Project {
   });
 
   factory Project.fromJson(Map<String, dynamic> json) => Project(
-        id: json["id"],
-        name: json["name"],
-        type: json["type"],
-        key: json["key"],
-        secure: json["secure"],
-        value: json["value"],
-        callback: json["callback"],
-        createdAt: json["created_at"] == null
+        id: json['id'],
+        name: json['name'],
+        type: json['type'],
+        key: json['key'],
+        secure: json['secure'],
+        value: json['value'],
+        callback: json['callback'],
+        createdAt: json['created_at'] == null
             ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
+            : DateTime.parse(json['created_at']),
+        updatedAt: json['updated_at'] == null
             ? null
-            : DateTime.parse(json["updated_at"]),
-        slug: json["slug"],
+            : DateTime.parse(json['updated_at']),
+        slug: json['slug'],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "type": type,
-        "key": key,
-        "secure": secure,
-        "value": value,
-        "callback": callback,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "slug": slug,
+        'id': id,
+        'name': name,
+        'type': type,
+        'key': key,
+        'secure': secure,
+        'value': value,
+        'callback': callback,
+        'created_at': createdAt?.toIso8601String(),
+        'updated_at': updatedAt?.toIso8601String(),
+        'slug': slug,
       };
   ProjectType get projectType {
     switch (slug) {
@@ -70,4 +70,5 @@ enum ProjectType {
   spnpay,
   duitku,
   midtrans,
+  xendit,
 }

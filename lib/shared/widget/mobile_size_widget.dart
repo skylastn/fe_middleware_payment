@@ -22,7 +22,7 @@ class MobileSizeWidget extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/images/im_background_dashboard.jpg"),
+            image: AssetImage('assets/images/im_background_dashboard.jpg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -31,19 +31,33 @@ class MobileSizeWidget extends StatelessWidget {
             margin: context.isPhone
                 ? null
                 : const EdgeInsets.fromLTRB(16, 16, 16, 16),
-            child: Card(
-              color: Colors.white,
-              elevation: 2,
-              child: Container(
-                color: Colors.white,
-                width: DeviceSize.getMobileSize(),
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                child: body,
-              ),
-            ),
+            child: context.isPhone
+                ? mobileWidget(context)
+                : desktopWidget(context),
           ),
         ),
       ),
+    );
+  }
+
+  Widget desktopWidget(BuildContext context) {
+    return Card(
+      color: Colors.white,
+      elevation: 2,
+      child: Container(
+        width: DeviceSize.getMobileSize(),
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+        child: body,
+      ),
+    );
+  }
+
+  Widget mobileWidget(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      width: DeviceSize.getMobileSize(),
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+      child: body,
     );
   }
 }

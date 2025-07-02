@@ -18,18 +18,18 @@ class SpnPayOrder {
   });
 
   factory SpnPayOrder.fromJson(Map<String, dynamic> json) => SpnPayOrder(
-        request: json["request"] == null
+        request: json['request'] == null
             ? null
-            : SpnPayOrderRequest.fromJson(json["request"]),
-        response: json["response"] == null
+            : SpnPayOrderRequest.fromJson(json['request']),
+        response: json['response'] == null
             ? null
-            : SpnPayOrderResponse.fromJson(json["response"]),
-        callback: json["callback"],
+            : SpnPayOrderResponse.fromJson(json['response']),
+        callback: json['callback'],
       );
 
   Map<String, dynamic> toJson() => {
-        "request": request?.toJson(),
-        "response": response?.toJson(),
+        'request': request?.toJson(),
+        'response': response?.toJson(),
         'callback': callback,
       };
 }
@@ -69,37 +69,37 @@ class SpnPayOrderResponse {
 
   factory SpnPayOrderResponse.fromJson(Map<String, dynamic> json) =>
       SpnPayOrderResponse(
-        id: json["id"],
-        merchantRef: json["merchantRef"],
-        status: json["status"],
-        feePayer: json["feePayer"],
-        amount: json["amount"].toString(),
-        fee: json["fee"],
-        totalAmount: json["totalAmount"],
-        expiredDate: DateTime.parse(json["expiredDate"]),
-        additionalInfo: AdditionalInfo.fromJson(json["additionalInfo"]),
-        virtualAccount: VirtualAccount.fromJson(json["virtualAccount"]),
-        qris: Qris.fromJson(json["qris"]),
-        eWallet: EWallet.fromJson(json["eWallet"]),
-        retail: Retail.fromJson(json["retail"]),
-        creditCard: CreditCard.fromJson(json["creditCard"]),
+        id: json['id'],
+        merchantRef: json['merchantRef'],
+        status: json['status'],
+        feePayer: json['feePayer'],
+        amount: json['amount'].toString(),
+        fee: json['fee'],
+        totalAmount: json['totalAmount'],
+        expiredDate: DateTime.parse(json['expiredDate']),
+        additionalInfo: AdditionalInfo.fromJson(json['additionalInfo']),
+        virtualAccount: VirtualAccount.fromJson(json['virtualAccount']),
+        qris: Qris.fromJson(json['qris']),
+        eWallet: EWallet.fromJson(json['eWallet']),
+        retail: Retail.fromJson(json['retail']),
+        creditCard: CreditCard.fromJson(json['creditCard']),
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "merchantRef": merchantRef,
-        "status": status,
-        "feePayer": feePayer,
-        "amount": amount,
-        "fee": fee,
-        "totalAmount": totalAmount,
-        "expiredDate": expiredDate.toIso8601String(),
-        "additionalInfo": additionalInfo.toJson(),
-        "virtualAccount": virtualAccount.toJson(),
-        "qris": qris.toJson(),
-        "eWallet": eWallet.toJson(),
-        "retail": retail.toJson(),
-        "creditCard": creditCard.toJson(),
+        'id': id,
+        'merchantRef': merchantRef,
+        'status': status,
+        'feePayer': feePayer,
+        'amount': amount,
+        'fee': fee,
+        'totalAmount': totalAmount,
+        'expiredDate': expiredDate.toIso8601String(),
+        'additionalInfo': additionalInfo.toJson(),
+        'virtualAccount': virtualAccount.toJson(),
+        'qris': qris.toJson(),
+        'eWallet': eWallet.toJson(),
+        'retail': retail.toJson(),
+        'creditCard': creditCard.toJson(),
       };
 }
 
@@ -130,25 +130,25 @@ class SpnPayOrderRequest {
 
   factory SpnPayOrderRequest.fromJson(Map<String, dynamic> json) =>
       SpnPayOrderRequest(
-        singleUse: json["singleUse"],
-        type: json["type"],
-        reference: json["reference"],
-        amount: json["amount"].runtimeType == String
-            ? int.tryParse(json["amount"]) ?? 0
-            : json["amount"],
-        expiryMinutes: json["expiryMinutes"],
-        viewName: json["viewName"],
-        additionalInfo: AdditionalInfo.fromJson(json["additionalInfo"]),
+        singleUse: json['singleUse'],
+        type: json['type'],
+        reference: json['reference'],
+        amount: json['amount'].runtimeType == String
+            ? int.tryParse(json['amount']) ?? 0
+            : json['amount'],
+        expiryMinutes: json['expiryMinutes'],
+        viewName: json['viewName'],
+        additionalInfo: AdditionalInfo.fromJson(json['additionalInfo']),
       );
 
   Map<String, dynamic> toJson() => {
-        "singleUse": singleUse,
-        "type": type,
-        "reference": reference,
-        "amount": amount,
-        "expiryMinutes": expiryMinutes,
-        "viewName": viewName,
-        "additionalInfo": additionalInfo.toJson(),
+        'singleUse': singleUse,
+        'type': type,
+        'reference': reference,
+        'amount': amount,
+        'expiryMinutes': expiryMinutes,
+        'viewName': viewName,
+        'additionalInfo': additionalInfo.toJson(),
       };
 }
 
@@ -160,11 +160,11 @@ class AdditionalInfo {
   });
 
   factory AdditionalInfo.fromJson(Map<String, dynamic> json) => AdditionalInfo(
-        callback: json["callback"],
+        callback: json['callback'],
       );
 
   Map<String, dynamic> toJson() => {
-        "callback": callback,
+        'callback': callback,
       };
 }
 
@@ -176,11 +176,11 @@ class CreditCard {
   });
 
   factory CreditCard.fromJson(Map<String, dynamic> json) => CreditCard(
-        url: json["url"],
+        url: json['url'],
       );
 
   Map<String, dynamic> toJson() => {
-        "url": url,
+        'url': url,
       };
 }
 
@@ -196,15 +196,15 @@ class EWallet {
   });
 
   factory EWallet.fromJson(Map<String, dynamic> json) => EWallet(
-        viewName: json["viewName"],
-        channel: json["channel"],
-        url: json["url"],
+        viewName: json['viewName'],
+        channel: json['channel'],
+        url: json['url'],
       );
 
   Map<String, dynamic> toJson() => {
-        "viewName": viewName,
-        "channel": channel,
-        "url": url,
+        'viewName': viewName,
+        'channel': channel,
+        'url': url,
       };
 }
 
@@ -218,13 +218,13 @@ class Qris {
   });
 
   factory Qris.fromJson(Map<String, dynamic> json) => Qris(
-        content: json["content"],
-        url: json["url"],
+        content: json['content'],
+        url: json['url'],
       );
 
   Map<String, dynamic> toJson() => {
-        "content": content,
-        "url": url,
+        'content': content,
+        'url': url,
       };
 }
 
@@ -240,15 +240,15 @@ class Retail {
   });
 
   factory Retail.fromJson(Map<String, dynamic> json) => Retail(
-        viewName: json["viewName"],
-        channel: json["channel"],
-        paymentCode: json["paymentCode"],
+        viewName: json['viewName'],
+        channel: json['channel'],
+        paymentCode: json['paymentCode'],
       );
 
   Map<String, dynamic> toJson() => {
-        "viewName": viewName,
-        "channel": channel,
-        "paymentCode": paymentCode,
+        'viewName': viewName,
+        'channel': channel,
+        'paymentCode': paymentCode,
       };
 }
 
@@ -264,14 +264,14 @@ class VirtualAccount {
   });
 
   factory VirtualAccount.fromJson(Map<String, dynamic> json) => VirtualAccount(
-        bankCode: json["bankCode"],
-        vaNumber: json["vaNumber"],
-        viewName: json["viewName"],
+        bankCode: json['bankCode'],
+        vaNumber: json['vaNumber'],
+        viewName: json['viewName'],
       );
 
   Map<String, dynamic> toJson() => {
-        "bankCode": bankCode,
-        "vaNumber": vaNumber,
-        "viewName": viewName,
+        'bankCode': bankCode,
+        'vaNumber': vaNumber,
+        'viewName': viewName,
       };
 }

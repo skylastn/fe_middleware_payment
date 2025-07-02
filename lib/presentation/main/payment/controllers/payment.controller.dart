@@ -1,5 +1,5 @@
-import 'package:fe_middleware_payment/infrastructure/shared/utils/snackbar.dart';
-import 'package:fe_middleware_payment/presentation/main/payment/controllers/payment.state.dart';
+import '../../../../shared/utils/snackbar.dart';
+import 'payment.state.dart';
 import 'package:get/get.dart';
 
 import '../../../../infrastructure/navigation/routes.dart';

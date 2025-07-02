@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:dartz/dartz.dart';
-import 'package:fe_middleware_payment/domain/model/response_model.dart';
+import '../../domain/model/response_model.dart';
 import '../../domain/model/response/payment_category.dart';
 import '../../domain/model/response/payment_method.dart';
 import '../network/remote_source.dart';
@@ -19,25 +19,28 @@ class PaymentRepository {
     return Left(response);
   }
 
-  Future<Either<ResponseModel, List<PaymentMethod>>> getPaymentMethod() async {
+  Future<Either<ResponseModel, List<PaymentResponse>>>
+      getPaymentMethod() async {
     var response = await RemoteSource().getApi('payment/getPaymentMethod');
     if (!response.isError) {
       return Right(
-        paymentMethodFromJson(
-          jsonDecode(response.result?.body ?? '')['data'],
+        List.from(
+          jsonDecode(response.result?.body ?? '')['data']
+              .map((e) => PaymentResponse.fromMap(e)),
         ),
       );
     }
     return Left(response);
   }
 
-  Future<Either<ResponseModel, PaymentMethod>> getDetailPaymentMethod() async {
+  Future<Either<ResponseModel, PaymentResponse>>
+      getDetailPaymentMethod() async {
     var response =
         await RemoteSource().getApi('payment/getDetailPaymentMethod');
     if (!response.isError &&
         jsonDecode(response.result?.body ?? '')['data'] != null) {
       return Right(
-        PaymentMethod.fromJson(
+        PaymentResponse.fromMap(
           jsonDecode(response.result?.body ?? '')['data'],
         ),
       );

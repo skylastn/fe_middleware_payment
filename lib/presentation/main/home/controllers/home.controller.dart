@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:fe_middleware_payment/domain/model/response/spnpay_order.dart';
-import 'package:fe_middleware_payment/domain/model/state_status.dart';
-import 'package:fe_middleware_payment/infrastructure/repository/order_repository.dart';
-import 'package:fe_middleware_payment/presentation/main/home/controllers/home.state.dart';
+import '../../../../domain/model/response/spnpay_order.dart';
+import '../../../../domain/model/state_status.dart';
+import '../../../../infrastructure/repository/order_repository.dart';
+import 'home.state.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -1,13 +1,16 @@
+import '../../../../app/global/network_logic.dart';
+import '../../../../app/global/socket_logic.dart';
+import 'widget/duitku_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:get/get.dart';
 
 import '../../../../domain/model/response/project.dart';
-import '../../../../infrastructure/shared/utils/format.dart';
-import '../../../../infrastructure/shared/utils/snackbar.dart';
-import '../../../../infrastructure/shared/widget/mobile_size_widget.dart';
-import '../../../../infrastructure/widget/state_widget.dart';
+import '../../../../shared/utils/format.dart';
+import '../../../../shared/utils/snackbar.dart';
+import '../../../../shared/widget/mobile_size_widget.dart';
+import '../../../../shared/widget/state_widget.dart';
 import '../../widget/main_widget.dart';
 import '../controllers/payment.state.dart';
 import 'controllers/detailpayment.controller.dart';
@@ -16,162 +19,181 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
   DetailPaymentScreen({super.key});
   final logic = Get.find<DetailPaymentController>();
   final state = Get.find<DetailPaymentController>().state;
+  final networkLogic = Get.find<NetworkLogic>();
+  final socketLogic = Get.find<SocketLogic>();
 
   @override
   Widget build(BuildContext context) {
     return MobileSizeWidget(
-      body: SizedBox(
-        height: context.isPhone ? Get.height : Get.height * 0.88,
-        child: GetBuilder<DetailPaymentController>(
-          builder: (_) => Column(
-            children: [
-              Stack(
+      body: GetBuilder<DetailPaymentController>(
+        builder: (_) => Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(height: 12),
+                  if (Navigator.canPop(context))
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                      ),
+                    ),
+                  if (Navigator.canPop(context)) const SizedBox(width: 12),
                   const Center(
                     child: Text(
-                      'Dashboard',
+                      'Detail Payment',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      onPressed: () => Get.back(),
-                      icon: const Icon(
-                        Icons.arrow_back_ios_new,
-                      ),
-                    ),
-                  ),
+                  const SizedBox(width: 12),
+                  Row(children: [
+                    Obx(() => networkWidget(networkLogic.isConnected.value)),
+                    const SizedBox(width: 8),
+                    Obx(() => socketWidget(socketLogic.isConnected.value)),
+                  ]),
                 ],
               ),
-              const Divider(thickness: 1),
-              const SizedBox(height: 8),
-              Card(
-                elevation: 3,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        flex: 6,
-                        child: Text(
-                          state.paymentMethod?.name ?? '',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      const Expanded(
-                        flex: 2,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: FlutterLogo(),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Container(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: StateWidget().initial(
-                  stateStatus: state.status,
-                  body: descriptionWidget(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Divider(thickness: 1),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      const Text(
-                        'Total Pembayaran',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                      Text(
-                        Format.rupiahConvert(
-                          state.order?.project?.projectType ==
-                                  ProjectType.spnpay
-                              ? (state.spnPayOrder.request?.amount ?? 0)
-                                  .toDouble()
-                              : 0.0,
-                        ),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-                        const EdgeInsets.only(
-                          top: 16,
-                          bottom: 16,
-                          left: 12,
-                          right: 12,
-                        ),
-                      ),
-                      foregroundColor: WidgetStateProperty.all<Color>(
-                        Colors.white,
-                      ),
-                      backgroundColor: WidgetStateProperty.all<Color>(
-                        Colors.blue,
-                      ),
-                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                        const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          side: BorderSide(color: Colors.blue),
-                        ),
+            ),
+            const Divider(thickness: 1),
+            const SizedBox(height: 8),
+            Card(
+              elevation: 3,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: Text(
+                        state.paymentMethod?.name ?? '',
+                        style: const TextStyle(fontSize: 20),
                       ),
                     ),
-                    onPressed: () async {
-                      try {
-                        if (!state.isPayment) {
-                          state.isPayment = true;
-                          logic.createOrderPayment();
-                          return;
-                        }
-                        await logic.getDetailOrder(isLoading: false);
-                        if (state.order?.status == 'PAID') {
-                          Snackbar.showInfo(
-                            title: 'Sukses',
-                            message: 'Pembayaran anda berhasil',
-                          );
-                        }
-                      } catch (e) {
+                    const Expanded(
+                      flex: 2,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: FlutterLogo(),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: StateWidget().initial(
+                stateStatus: state.status,
+                body: descriptionWidget(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Divider(thickness: 1),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    const Text(
+                      'Total Pembayaran',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    totalWidget(),
+                  ],
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+                      const EdgeInsets.only(
+                        top: 16,
+                        bottom: 16,
+                        left: 12,
+                        right: 12,
+                      ),
+                    ),
+                    foregroundColor: WidgetStateProperty.all<Color>(
+                      Colors.white,
+                    ),
+                    backgroundColor: WidgetStateProperty.all<Color>(
+                      Colors.blue,
+                    ),
+                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                      const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                        side: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                  onPressed: () async {
+                    try {
+                      if (!state.isPayment) {
+                        state.isPayment = true;
+                        logic.createOrderPayment();
+                        return;
+                      }
+                      await logic.getDetailOrder(isLoading: false);
+                      if (state.order?.status == 'PAID') {
                         Snackbar.showInfo(
-                          title: 'Error',
-                          message: e.toString(),
+                          title: 'Sukses',
+                          message: 'Pembayaran anda berhasil',
                         );
                       }
-                    },
-                    child: Text(
-                      !state.isPayment
-                          ? "pembayaran".toUpperCase()
-                          : 'Cek Transaksi',
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  )
-                ],
-              ),
-            ],
-          ),
+                    } catch (e) {
+                      Snackbar.showInfo(
+                        title: 'Error',
+                        message: e.toString(),
+                      );
+                    }
+                  },
+                  child: Text(
+                    !state.isPayment
+                        ? 'pembayaran'.toUpperCase()
+                        : 'Cek Transaksi',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                )
+              ],
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget totalWidget() {
+    if (state.order?.project?.projectType == ProjectType.duitku) {
+      return Text(
+        Format.rupiahConvert(
+          (state.duitkuOrder.request?.paymentAmount ?? 0).toDouble(),
+        ),
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    }
+    return Text(
+      Format.rupiahConvert(
+        state.order?.project?.projectType == ProjectType.spnpay
+            ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
+            : 0.0,
+      ),
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
       ),
     );
   }
@@ -224,11 +246,37 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
               child: const Icon(Icons.copy),
             ),
           ),
+        if (state.order?.project?.projectType == ProjectType.duitku)
+          DuitkuWidget(),
         itemWidget(
           title: 'Status Transaksi',
-          subTitle: 'Transaction ${state.order?.status}.',
+          subTitle:
+              'Transaction ${(state.order?.status ?? '').isEmpty ? 'PENDING' : state.order?.status}.',
         ),
       ],
+    );
+  }
+
+  Widget socketWidget(bool isConnected) {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: isConnected ? Colors.green : Colors.red,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+
+  Widget networkWidget(bool isConnected) {
+    return SizedBox(
+      width: 30,
+      height: 30,
+      child: Icon(
+        Icons.wifi,
+        size: 30,
+        color: isConnected ? Colors.green : Colors.red,
+      ),
     );
   }
 

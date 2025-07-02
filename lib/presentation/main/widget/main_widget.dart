@@ -1,7 +1,7 @@
-import 'package:fe_middleware_payment/presentation/main/payment/controllers/payment.state.dart';
+import '../payment/controllers/payment.state.dart';
 import 'package:flutter/material.dart';
 
-import '../../../infrastructure/widget/picture_handler_widget.dart';
+import '../../../shared/widget/picture_handler_widget.dart';
 
 Widget itemWidget({
   required String title,

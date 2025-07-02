@@ -1,5 +1,5 @@
-import 'package:fe_middleware_payment/domain/model/response/spnpay_order.dart';
-import 'package:fe_middleware_payment/domain/model/state_status.dart';
+import '../../../../domain/model/response/spnpay_order.dart';
+import '../../../../domain/model/state_status.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../domain/model/response/orders.dart';

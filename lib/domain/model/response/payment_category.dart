@@ -26,20 +26,20 @@ class PaymentCategory {
 
   factory PaymentCategory.fromJson(Map<String, dynamic> json) =>
       PaymentCategory(
-        id: json["id"],
-        key: json["key"],
-        title: json["title"],
-        detail: json["detail"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
+        id: json['id'],
+        key: json['key'],
+        title: json['title'],
+        detail: json['detail'],
+        createdAt: DateTime.parse(json['created_at']),
+        updatedAt: DateTime.parse(json['updated_at']),
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "key": key,
-        "title": title,
-        "detail": detail,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        'id': id,
+        'key': key,
+        'title': title,
+        'detail': detail,
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': updatedAt.toIso8601String(),
       };
 }

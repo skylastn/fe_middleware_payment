@@ -1,4 +1,4 @@
-import '../../../presentation/main/payment/controllers/payment.state.dart';
+import '../../presentation/main/payment/controllers/payment.state.dart';
 
 List<PaymentCategory> listPayment = [
   // PaymentCategory(
@@ -96,9 +96,9 @@ List<PaymentCategory> listPayment = [
               title: 'BRIMO',
               step: [
                 'Lakukan log in pada aplikasi BRI Mobile (Android/Iphone)',
-                "Pilih Menu BRIVA",
-                "Pilih Pembayaran Baru",
-                "Masukan Nomor VA yang tertera pada halaman konfirmasi",
+                'Pilih Menu BRIVA',
+                'Pilih Pembayaran Baru',
+                'Masukan Nomor VA yang tertera pada halaman konfirmasi',
                 'Masukan PIN BRIMO Anda',
                 'Validasi pembayaran anda',
                 'Pembayaran Selesai',
@@ -108,9 +108,9 @@ List<PaymentCategory> listPayment = [
               title: 'ATM BRI',
               step: [
                 'Masukkan Kartu ATM BRI dan PIN',
-                "Pilih menu LAINNYA",
-                "Pilih menu PEMBAYARAN/PEMBELIAN",
-                "Pilih menu PEMBAYARAN/PEMBELIAN LAIN",
+                'Pilih menu LAINNYA',
+                'Pilih menu PEMBAYARAN/PEMBELIAN',
+                'Pilih menu PEMBAYARAN/PEMBELIAN LAIN',
                 'Pilih menu BRIVA',
                 'Masukkan nomor VA yang tertera pada halaman konfirmasi dan tekan BENAR',
                 'Konfirmasi pembayaran dengan menekan Ya',
@@ -134,9 +134,9 @@ List<PaymentCategory> listPayment = [
               title: 'Livin By Mandiri',
               step: [
                 'Pilih Menu Bayar',
-                "Pilih menu e-Commerce",
-                "Cari penyedia jasa Plink Pay (8903)",
-                "Masukan nomor Virtual Account (MVA)",
+                'Pilih menu e-Commerce',
+                'Cari penyedia jasa Plink Pay (8903)',
+                'Masukan nomor Virtual Account (MVA)',
                 'Masukan nominal pembayaran',
                 'Klik Lanjutkan',
                 'Pilih Konfirmasi untuk membayarkan tagihan',
@@ -160,9 +160,9 @@ List<PaymentCategory> listPayment = [
               title: 'Mobile Banking BNI',
               step: [
                 'Akses BNI Mobile Banking',
-                "Masukkan User ID dan Password",
-                "Pilih menu Transfer",
-                "Pilih menu Virtual Account Billing kemudian pilih rekening debet",
+                'Masukkan User ID dan Password',
+                'Pilih menu Transfer',
+                'Pilih menu Virtual Account Billing kemudian pilih rekening debet',
                 "Masukkan 16 digit nomor Virtual Account yang tertera pada halaman konfirmasi (Contoh: 988002XXXXXXXXXX) pada menu 'inputbaru'",
                 'Tagihan yang harus dibayarkan akan muncul pada layar konfirmasi',
                 'Konfirmasi transaksi dan masukkan Password Transaksi',
@@ -219,55 +219,55 @@ List<PaymentCategory> listPayment = [
   //     ),
   //   ],
   // ),
-  // PaymentCategory(
-  //   title: 'QRIS',
-  //   paymentType: PaymentType.qris,
-  //   paymentMethod: [
-  //     PaymentMethod(
-  //       name: 'SHOPEEPAY QRIS',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/shopeepay.png',
-  //       paymentCode: 'QRIS_SHOPEE',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'ShopeePay',
-  //             step: [
-  //               'Buka Aplikasi Shopee',
-  //               'Pilih menu “Saya” dan pilih ShopeePay',
-  //               'Pilih Scan dan lakukan scan pada barcode pembayaran',
-  //               'Pilih Bayar Sekarang',
-  //               'Tunggu hingga proses pembayaran berhasil',
-  //               'Transaksi Anda akan otomatis terkonfirmasi di sistem',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //     // PaymentMethod(
-  //     //   name: 'LINKAJA QRIS',
-  //     //   description: 'Tanpa Biaya Layanan',
-  //     //   imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/LQ.svg',
-  //     //   paymentCode: 'QRIS_DANA',
-  //     //   paymentInstruction: PaymentInstruction(
-  //     //     detail:
-  //     //         'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //     //         'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //     //     stepPaymentInstruction: [
-  //     //       StepPaymentInstruction(
-  //     //         title: 'm-BCA',
-  //     //         step: [
-  //     //           'Lakukan log in pada aplikasi BCA mobile',
-  //     //         ],
-  //     //       ),
-  //     //     ],
-  //     //   ),
-  //     // ),
-  //   ],
-  // ),
+  PaymentCategory(
+    title: 'QRIS',
+    paymentType: PaymentType.qris,
+    paymentMethod: [
+      PaymentMethod(
+        name: 'SHOPEEPAY QRIS',
+        description: 'Tanpa Biaya Layanan',
+        imageUrl: 'assets/images/payment/shopeepay.png',
+        paymentCode: 'SP',
+        paymentInstruction: PaymentInstruction(
+          detail:
+              'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
+              'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
+          stepPaymentInstruction: [
+            StepPaymentInstruction(
+              title: 'ShopeePay',
+              step: [
+                'Buka Aplikasi Shopee',
+                'Pilih menu “Saya” dan pilih ShopeePay',
+                'Pilih Scan dan lakukan scan pada barcode pembayaran',
+                'Pilih Bayar Sekarang',
+                'Tunggu hingga proses pembayaran berhasil',
+                'Transaksi Anda akan otomatis terkonfirmasi di sistem',
+              ],
+            ),
+          ],
+        ),
+      ),
+      // PaymentMethod(
+      //   name: 'LINKAJA QRIS',
+      //   description: 'Tanpa Biaya Layanan',
+      //   imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/LQ.svg',
+      //   paymentCode: 'QRIS_DANA',
+      //   paymentInstruction: PaymentInstruction(
+      //     detail:
+      //         'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
+      //         'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
+      //     stepPaymentInstruction: [
+      //       StepPaymentInstruction(
+      //         title: 'm-BCA',
+      //         step: [
+      //           'Lakukan log in pada aplikasi BCA mobile',
+      //         ],
+      //       ),
+      //     ],
+      //   ),
+      // ),
+    ],
+  ),
   // PaymentCategory(
   //   title: 'Retail',
   //   paymentType: PaymentType.retail,

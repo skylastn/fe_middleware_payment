@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../infrastructure/shared/constants/sample.dart';
-import '../../../infrastructure/shared/widget/mobile_size_widget.dart';
+import '../../../shared/constants/sample.dart';
+import '../../../shared/widget/mobile_size_widget.dart';
 import '../widget/main_widget.dart';
 import 'controllers/payment.controller.dart';
 

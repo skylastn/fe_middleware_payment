@@ -1,12 +1,12 @@
-import 'package:fe_middleware_payment/infrastructure/shared/utils/snackbar.dart';
-import 'package:fe_middleware_payment/infrastructure/shared/widget/mobile_size_widget.dart';
+import '../../../shared/utils/snackbar.dart';
+import '../../../shared/widget/mobile_size_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../domain/model/response/project.dart';
 import '../../../infrastructure/navigation/routes.dart';
-import '../../../infrastructure/shared/utils/format.dart';
-import '../../../infrastructure/widget/state_widget.dart';
+import '../../../shared/utils/format.dart';
+import '../../../shared/widget/state_widget.dart';
 import '../widget/main_widget.dart';
 import 'controllers/home.controller.dart';
 
@@ -184,7 +184,7 @@ class HomeScreen extends GetView<HomeController> {
                       },
                     ),
                     child: Text(
-                      "pembayaran".toUpperCase(),
+                      'pembayaran'.toUpperCase(),
                       style: const TextStyle(fontSize: 14),
                     ),
                   )
