@@ -1,17 +1,56 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-      {
-          "label": "replace-env-development",
-          "command": "./scripts/replace_env.sh",
-          "args": ["development"],
-          "type": "shell"
-      },
-      {
-          "label": "replace-env-production",
-          "command": "./scripts/replace_env.sh",
-          "args": ["production"],
-          "type": "shell"
-      },
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "replace-env-development",
+            "command": "./scripts/run.sh",
+            "args": [
+                "development"
+            ],
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "replace-env-development-wasm",
+            "command": "./scripts/run_wasm.sh",
+            "args": [
+                "development"
+            ],
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "replace-env-production",
+            "command": "./scripts/run.sh",
+            "args": [
+                "production"
+            ],
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+    ]
 }

@@ -1,8 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
+import '../../shared/utils/env.dart';
+
 class SocketRepository {
-  final String urlSocket = dotenv.env['SOCKET_URL'] ?? '';
+  final String urlSocket = Env.socketUrl;
 
   Future<Socket> init({
     required String project,

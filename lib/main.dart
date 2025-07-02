@@ -2,7 +2,6 @@ import 'package:dynamic_path_url_strategy/dynamic_path_url_strategy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:get/get.dart';
 
@@ -15,7 +14,6 @@ void main() async {
     setPathUrlStrategy();
   }
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: '.env');
   await DenpendencyInjection.start();
   await DenpendencyInjection.inject();
   var initialRoute = await Routes.initialRoute;

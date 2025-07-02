@@ -8,10 +8,7 @@
       "program": "${workspaceFolder}/lib/main.dart",
       "flutterMode": "debug",
       "preLaunchTask": "replace-env-development",
-      "args": [
-        "--web-port",
-        "10000"
-      ],
+      "console": "terminal"
     },
     {
       "name": "PROD",
@@ -20,10 +17,6 @@
       "program": "${workspaceFolder}/lib/main.dart",
       "flutterMode": "debug",
       "preLaunchTask": "replace-env-production",
-      "args": [
-        "--web-port",
-        "10001"
-      ]
     },
     {
       "name": "Web (WASM)",
@@ -31,12 +24,7 @@
       "type": "dart",
       "program": "${workspaceFolder}/lib/main.dart",
       "flutterMode": "debug",
-      "preLaunchTask": "replace-env-development",
-      "args": [
-        "-d",
-        "chrome",
-        "--wasm"
-      ]
+      "preLaunchTask": "replace-env-development-wasm",
     }
   ]
 }

@@ -22,11 +22,14 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
+PORT=10000
 # Set the input file based on the argument
 case "$1" in
   "development") INPUT=".env.development"
+  PORT=10000
   ;;
   "production") INPUT=".env.production"
+  PORT=10001
   ;;
   *)
     echo "Missing arguments [development|production]"
@@ -43,9 +46,14 @@ fi
 
 echo "Copied '$INPUT' to '.env'"
 
-# Create the flag file to indicate that the environment has been replaced
-# touch "$flagFile"
+#!/bin/bash
 
-# Optional Dart build commands
-# dart run build_runner clean
-# dart run build_runner build --delete-conflicting-outputs
+# Baca file .env dan export sebagai variabel lingkungan
+# Ini adalah cara sederhana untuk parsing, sesuaikan jika .env lebih kompleks
+export $(grep -v '^#' .env | xargs)
+
+# Jalankan flutter run dengan --dart-define
+flutter run -d chrome \
+    --web-port "$PORT" \
+    --dart-define=API_URL="$API_URL" \
+    --dart-define=SOCKET_URL="$SOCKET_URL"

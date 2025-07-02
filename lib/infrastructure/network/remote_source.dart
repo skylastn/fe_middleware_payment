@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import '../../domain/model/response_model.dart';
 import '../../shared/constants/network_status.dart';
 import 'package:http/http.dart' as http;
+import '../../shared/utils/env.dart';
 import 'http_config.dart';
 
 class RemoteSource {
   int timeOut = 120;
-  final String url = '${dotenv.env['API_URL'] ?? 'http://localhost:3000'}/api/';
+  final String url = '${Env.apiUrl}/api/';
   Future<ResponseModel> postApi(String urlPrefix,
       {Object? body, bool header = true}) async {
     var urlS = url + urlPrefix;
