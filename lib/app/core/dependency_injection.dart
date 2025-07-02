@@ -29,7 +29,7 @@ class DenpendencyInjection {
     try {
       // await Get.find<LocalLogic>().initLocalDatabase();
       await Get.find<NetworkLogic>().init();
-      await Get.find<SocketLogic>().init();
+      // await Get.find<SocketLogic>().init();
       // await Get.find<GlobalLogic>().initFirstTime();
       // await Get.find<AuthLogic>().initAfterLogin();
     } catch (e) {
