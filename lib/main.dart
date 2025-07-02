@@ -1,8 +1,8 @@
-import 'package:dynamic_path_url_strategy/dynamic_path_url_strategy.dart';
+// import 'package:dynamic_path_url_strategy/dynamic_path_url_strategy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_web_plugins/flutter_web_plugins.dart'; // Import ini
 import 'package:get/get.dart';
 
 import 'app/core/dependency_injection.dart';
@@ -11,7 +11,8 @@ import 'infrastructure/navigation/routes.dart';
 
 void main() async {
   if (kIsWeb) {
-    setPathUrlStrategy();
+    // setPathUrlStrategy();
+    usePathUrlStrategy();
   }
   WidgetsFlutterBinding.ensureInitialized();
   await DenpendencyInjection.start();
