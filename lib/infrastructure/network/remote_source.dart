@@ -1,20 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:fe_middleware_payment/config.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get_core/src/get_main.dart';
-import '../../domain/model/ResponseModel.dart';
+import '../../domain/model/response_model.dart';
 import '../shared/constants/network_status.dart';
 import 'package:http/http.dart' as http;
 import 'http_config.dart';
 
-String url = ConfigEnvironments.getEnvironments()['url']! + urlApi;
-String urlApi = '/api/';
-// var env = DotEnv(includePlatformEnvironment: true)..load();
-
 class RemoteSource {
   int timeOut = 120;
-
+  final String url = dotenv.env['API_URL'] ?? 'http://localhost:3000';
   Future<ResponseModel> postApi(String urlPrefix,
       {Object? body, bool header = true}) async {
     var urlS = url + urlPrefix;
@@ -324,7 +320,7 @@ class RemoteSource {
     }
   }
 
-  headerMiddleware() {
+  Map<String, String> headerMiddleware() {
     return {
       'Key': 'oxJMxunHKiElhLwZyPsb',
       'Content-Type': 'application/json',
@@ -332,7 +328,7 @@ class RemoteSource {
     };
   }
 
-  headerNormal() {
+  Map<String, String> headerNormal() {
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

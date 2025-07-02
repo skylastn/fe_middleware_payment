@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 class PictureHandlerWidget {
   Widget pictureHandler(String source) {
     if (source.contains('.')) {
-      if (source.split('.').last == svg) {
+      if (source.split('.').last == 'svg') {
         return svgHandler(source);
       }
       return imageHandler(source);

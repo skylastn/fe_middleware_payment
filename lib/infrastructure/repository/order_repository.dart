@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
 
-import '../../domain/model/ResponseModel.dart';
+import '../../domain/model/response_model.dart';
 import '../../domain/model/response/orders.dart';
 import '../network/remote_source.dart';
 

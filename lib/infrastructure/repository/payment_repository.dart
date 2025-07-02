@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:dartz/dartz.dart';
-import 'package:fe_middleware_payment/domain/model/ResponseModel.dart';
+import 'package:fe_middleware_payment/domain/model/response_model.dart';
 import '../../domain/model/response/payment_category.dart';
 import '../../domain/model/response/payment_method.dart';
 import '../network/remote_source.dart';

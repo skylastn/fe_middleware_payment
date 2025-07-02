@@ -29,11 +29,6 @@ class DetailPaymentController extends GetxController {
     getDetailOrder();
   }
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
   PaymentCategory getSelectedPaymentCategory(String paymentType) =>
       listPayment.firstWhere(
         (element) => paymentType == element.paymentType.name,

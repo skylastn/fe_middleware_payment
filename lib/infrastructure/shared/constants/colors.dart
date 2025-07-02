@@ -69,7 +69,8 @@ Color hexToColor(String hex) {
 }
 
 String colorToHex(Color color) {
-  return '#${color.value.toRadixString(16).substring(2)}';
+  // return '#${color.value.toRadixString(16).substring(2)}';
+  return '#${color.toARGB32().toRadixString(16).substring(2)}';
 }
 
 Color randomColor() {

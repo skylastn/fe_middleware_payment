@@ -4,11 +4,11 @@ import 'package:get/get.dart';
 import '../utils/device_size.dart';
 
 class MobileSizeWidget extends StatelessWidget {
-  String? backgroundImage;
-  Widget body;
-  Widget? floatingActionButton;
+  final String? backgroundImage;
+  final Widget body;
+  final Widget? floatingActionButton;
 
-  MobileSizeWidget({
+  const MobileSizeWidget({
     required this.body,
     this.backgroundImage,
     this.floatingActionButton,

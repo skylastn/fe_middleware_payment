@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../../domain/model/response/project.dart';
-import '../../../../infrastructure/navigation/routes.dart';
 import '../../../../infrastructure/shared/utils/format.dart';
 import '../../../../infrastructure/shared/utils/snackbar.dart';
 import '../../../../infrastructure/shared/widget/mobile_size_widget.dart';
@@ -14,9 +13,9 @@ import '../controllers/payment.state.dart';
 import 'controllers/detailpayment.controller.dart';
 
 class DetailPaymentScreen extends GetView<DetailPaymentController> {
-  DetailPaymentScreen({Key? key}) : super(key: key);
-  var logic = Get.find<DetailPaymentController>();
-  var state = Get.find<DetailPaymentController>().state;
+  DetailPaymentScreen({super.key});
+  final logic = Get.find<DetailPaymentController>();
+  final state = Get.find<DetailPaymentController>().state;
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +118,7 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
                   ),
                   ElevatedButton(
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                      padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
                         const EdgeInsets.only(
                           top: 16,
                           bottom: 16,
@@ -127,13 +126,13 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
                           right: 12,
                         ),
                       ),
-                      foregroundColor: MaterialStateProperty.all<Color>(
+                      foregroundColor: WidgetStateProperty.all<Color>(
                         Colors.white,
                       ),
-                      backgroundColor: MaterialStateProperty.all<Color>(
+                      backgroundColor: WidgetStateProperty.all<Color>(
                         Colors.blue,
                       ),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                           side: BorderSide(color: Colors.blue),

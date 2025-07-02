@@ -11,9 +11,9 @@ import '../widget/main_widget.dart';
 import 'controllers/home.controller.dart';
 
 class HomeScreen extends GetView<HomeController> {
-  HomeScreen({Key? key}) : super(key: key);
-  var logic = Get.find<HomeController>();
-  var state = Get.find<HomeController>().state;
+  HomeScreen({super.key});
+  final logic = Get.find<HomeController>();
+  final state = Get.find<HomeController>().state;
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +156,7 @@ class HomeScreen extends GetView<HomeController> {
                   ),
                   ElevatedButton(
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                      padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
                         const EdgeInsets.only(
                           top: 16,
                           bottom: 16,
@@ -164,13 +164,13 @@ class HomeScreen extends GetView<HomeController> {
                           right: 12,
                         ),
                       ),
-                      foregroundColor: MaterialStateProperty.all<Color>(
+                      foregroundColor: WidgetStateProperty.all<Color>(
                         Colors.white,
                       ),
-                      backgroundColor: MaterialStateProperty.all<Color>(
+                      backgroundColor: WidgetStateProperty.all<Color>(
                         Colors.blue,
                       ),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                           side: BorderSide(color: Colors.blue),

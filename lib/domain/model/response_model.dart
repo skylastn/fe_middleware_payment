@@ -1,5 +1,3 @@
-// import 'package:get/get_connect/connect.dart';
-
 import 'package:http/http.dart';
 
 class ResponseModel {

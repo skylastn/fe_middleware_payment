@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../infrastructure/navigation/routes.dart';
 import '../../../infrastructure/shared/constants/sample.dart';
 import '../../../infrastructure/shared/widget/mobile_size_widget.dart';
 import '../widget/main_widget.dart';
 import 'controllers/payment.controller.dart';
 
 class PaymentScreen extends GetView<PaymentController> {
-  PaymentScreen({Key? key}) : super(key: key);
-  var logic = Get.find<PaymentController>();
-  var state = Get.find<PaymentController>().state;
+  PaymentScreen({super.key});
+  final logic = Get.find<PaymentController>();
+  final state = Get.find<PaymentController>().state;
 
   @override
   Widget build(BuildContext context) {

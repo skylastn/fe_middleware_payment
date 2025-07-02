@@ -8,10 +8,6 @@ class PaymentController extends GetxController {
   PaymentState state = PaymentState();
 
   final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   @override
   void onReady() {
@@ -22,14 +18,9 @@ class PaymentController extends GetxController {
     }
   }
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
   void increment() => count.value++;
 
-  routeToDetail(PaymentMethod content, PaymentCategory category) {
+  void routeToDetail(PaymentMethod content, PaymentCategory category) {
     if (category.paymentType != PaymentType.bankTransfer) {
       Snackbar.showInfo(message: 'Unsupport Payment Method');
       return;

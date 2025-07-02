@@ -1,6 +1,5 @@
 import 'package:fe_middleware_payment/presentation/main/payment/controllers/payment.state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../infrastructure/widget/picture_handler_widget.dart';
 
