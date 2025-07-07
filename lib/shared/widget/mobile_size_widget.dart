@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../constants/colors.dart';
+import '../constants/constant.dart';
 import '../utils/device_size.dart';
 
 class MobileSizeWidget extends StatelessWidget {
@@ -20,11 +22,17 @@ class MobileSizeWidget extends StatelessWidget {
     return Scaffold(
       floatingActionButton: floatingActionButton,
       body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/im_background_dashboard.jpg'),
-            fit: BoxFit.cover,
-          ),
+        decoration: BoxDecoration(
+          color: Constant.backgroundModel.type == BackgroundType.color
+              ? hexToColor(Constant.backgroundModel.value ?? '#FFFFFF')
+              : null,
+          image: Constant.backgroundModel.type == BackgroundType.image
+              ? const DecorationImage(
+                  image:
+                      AssetImage('assets/images/im_background_dashboard.jpg'),
+                  fit: BoxFit.cover,
+                )
+              : null,
         ),
         child: Center(
           child: Container(

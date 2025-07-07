@@ -75,7 +75,6 @@ class HomeScreen extends GetView<HomeController> {
                   body: descriptionWidget(),
                 ),
               ),
-              // Row
             ],
           ),
         ),
