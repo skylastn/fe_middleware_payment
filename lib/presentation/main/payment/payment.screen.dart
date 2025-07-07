@@ -58,11 +58,12 @@ class PaymentScreen extends GetView<PaymentController> {
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Align(
                           alignment: Alignment.centerRight,
-                          child: FlutterLogo(),
+                          // child: FlutterLogo(),
+                          child: Container(),
                         ),
                       ),
                       Expanded(
