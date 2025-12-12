@@ -247,25 +247,31 @@ List<PaymentCategory> listPayment = [
           ],
         ),
       ),
-      // PaymentMethod(
-      //   name: 'LINKAJA QRIS',
-      //   description: 'Tanpa Biaya Layanan',
-      //   imageUrl: 'https://api-sandbox.duitku.com/pgimages/pg/LQ.svg',
-      //   paymentCode: 'QRIS_DANA',
-      //   paymentInstruction: PaymentInstruction(
-      //     detail:
-      //         'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-      //         'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-      //     stepPaymentInstruction: [
-      //       StepPaymentInstruction(
-      //         title: 'm-BCA',
-      //         step: [
-      //           'Lakukan log in pada aplikasi BCA mobile',
-      //         ],
-      //       ),
-      //     ],
-      //   ),
-      // ),
+      PaymentMethod(
+        name: 'NUSA QRIS',
+        description: 'Tanpa Biaya Layanan',
+        imageUrl:
+            'https://play-lh.googleusercontent.com/KMVnnWmi8RNAJG3FZDvBt6bmeaBrpOUh508mSsAhmzFWy_kmTHQhUxfSErrJd1i-GDs',
+        paymentCode: 'SQ',
+        paymentInstruction: PaymentInstruction(
+          detail:
+              'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
+              'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
+          stepPaymentInstruction: [
+            StepPaymentInstruction(
+              title: 'ShopeePay',
+              step: [
+                'Buka Aplikasi Shopee',
+                'Pilih menu “Saya” dan pilih ShopeePay',
+                'Pilih Scan dan lakukan scan pada barcode pembayaran',
+                'Pilih Bayar Sekarang',
+                'Tunggu hingga proses pembayaran berhasil',
+                'Transaksi Anda akan otomatis terkonfirmasi di sistem',
+              ],
+            ),
+          ],
+        ),
+      ),
     ],
   ),
   // PaymentCategory(
