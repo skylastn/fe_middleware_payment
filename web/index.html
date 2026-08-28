@@ -1,95 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
   <head>
     <base href="$FLUTTER_BASE_HREF" />
 
     <meta charset="UTF-8" />
     <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
-    <meta name="description" content="A new Flutter project." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Payment Gateway & Checkout System" />
+    <meta name="theme-color" content="#2563EB" />
 
     <!-- iOS meta tags & icons -->
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="apple-mobile-web-app-title" content="fe_middleware_payment" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Payment Gateway" />
     <link rel="apple-touch-icon" href="icons/Icon-192.png" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png" />
 
-    <title>Payment</title>
+    <title>Payment Gateway</title>
     <link rel="manifest" href="manifest.json" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
     <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
         margin: 0;
         padding: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        background-color: #f3f4f6;
+        background-color: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #0f172a;
       }
 
-      .loading-container {
+      .splash-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+        border: 1px solid #e2e8f0;
+        max-width: 320px;
+        width: 90%;
         text-align: center;
+        transition: opacity 0.4s ease-out, transform 0.4s ease-out;
       }
 
-      .progress-bar {
+      .splash-container.fade-out {
+        opacity: 0;
+        transform: scale(0.96);
+        pointer-events: none;
+      }
+
+      .logo-wrapper {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .spinner-ring {
+        position: absolute;
         width: 100%;
-        background-color: #e0e0e0;
-        border-radius: 5px;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid #eff6ff;
+        border-top-color: #2563eb;
+        animation: spin 1s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+      }
+
+      .logo-icon {
+        width: 32px;
+        height: 32px;
+        color: #2563eb;
+      }
+
+      .splash-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 6px;
+        letter-spacing: -0.01em;
+      }
+
+      .splash-subtitle {
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+        margin-bottom: 20px;
+      }
+
+      .progress-track {
+        width: 100%;
+        height: 5px;
+        background-color: #f1f5f9;
+        border-radius: 999px;
         overflow: hidden;
-        margin: 20px 0;
-        height: 20px;
         position: relative;
       }
 
-      .progress-bar-fill {
+      .progress-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
         height: 100%;
-        background-color: #007bff;
-        width: 0%;
-        transition: width 0.5s;
+        width: 40%;
+        background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+        border-radius: 999px;
+        animation: indeterminate 1.5s ease-in-out infinite;
       }
 
-      .loading-text {
-        font-size: 1.2em;
-        margin-top: 10px;
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @keyframes indeterminate {
+        0% {
+          left: -40%;
+          width: 40%;
+        }
+        50% {
+          left: 30%;
+          width: 60%;
+        }
+        100% {
+          left: 100%;
+          width: 40%;
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #0b0f19;
+          color: #f8fafc;
+        }
+
+        .splash-container {
+          background: #111827;
+          border-color: #1f2937;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .splash-title {
+          color: #f8fafc;
+        }
+
+        .splash-subtitle {
+          color: #94a3b8;
+        }
+
+        .spinner-ring {
+          border-color: #1e293b;
+          border-top-color: #3b82f6;
+        }
+
+        .progress-track {
+          background-color: #1e293b;
+        }
       }
     </style>
-    <script>
-      function updateProgressBar(percent) {
-        const progressBarFill = document.querySelector(".progress-bar-fill");
-        const loadingText = document.querySelector(".loading-text");
-        progressBarFill.style.width = percent + "%";
-        loadingText.textContent = `Loading ${percent}%`;
-      }
-
-      // Simulate progress for demo purposes
-      document.addEventListener("DOMContentLoaded", function () {
-        let percent = 0;
-        const interval = setInterval(function () {
-          percent += 10;
-          updateProgressBar(percent);
-          if (percent >= 100) {
-            clearInterval(interval);
-            document.querySelector(".loading-container").style.display = "none";
-            // Initialize Flutter app
-            window.flutterWebRenderer = "html";
-            // var script = document.createElement("script");
-            // script.src = "main.dart.js";
-            // script.async = true;
-            // document.body.appendChild(script);
-          }
-        }, 500);
-      });
-    </script>
   </head>
   <body>
-    <div class="loading-container">
-      <div class="progress-bar">
-        <div class="progress-bar-fill"></div>
+    <div id="loading" class="splash-container">
+      <div class="logo-wrapper">
+        <div class="spinner-ring"></div>
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+        </svg>
       </div>
-      <div class="loading-text">Loading 0%</div>
+      <div class="splash-title">Payment Gateway</div>
+      <div class="splash-subtitle">Memuat sistem pembayaran...</div>
+      <div class="progress-track">
+        <div class="progress-indicator"></div>
+      </div>
     </div>
+
+    <script>
+      window.addEventListener('flutter-first-frame', function () {
+        const loading = document.getElementById('loading');
+        if (loading) {
+          loading.classList.add('fade-out');
+          setTimeout(function () {
+            loading.remove();
+          }, 400);
+        }
+      });
+    </script>
     <script src="flutter_bootstrap.js" async></script>
   </body>
 </html>

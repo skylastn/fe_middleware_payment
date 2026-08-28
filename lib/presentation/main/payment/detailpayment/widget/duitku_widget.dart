@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 
+import '../../../../../shared/constants/colors.dart';
 import '../../../../../shared/utils/snackbar.dart';
 import '../../../widget/main_widget.dart';
 import '../../controllers/payment.state.dart';
@@ -25,76 +26,96 @@ class DuitkuWidget extends StatelessWidget {
   }
 
   Widget qrisWidget() {
+    final qrString = state.duitkuOrder.response?.qrString ?? '';
     return Column(
       children: [
-        if ((state.duitkuOrder.response?.qrString ?? '').isNotEmpty)
+        if (qrString.isNotEmpty)
           RepaintBoundary(
             key: globalKey,
             child: Container(
-              height: 220,
-              color: Colors.white,
-              padding: const EdgeInsets.all(8),
-              child: PrettyQrView.data(
-                  data: state.duitkuOrder.response?.qrString ?? '',
-                  decoration: const PrettyQrDecoration()
-                  // version: QrVersions.auto,
-                  // size: 200.0,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: ColorConstants.border, width: 1),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0A0F172A),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
-            ),
-          ),
-        // else
-        //   const Text("QR Code not available."),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          style: ButtonStyle(
-            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-              const EdgeInsets.only(
-                top: 16,
-                bottom: 16,
-                left: 12,
-                right: 12,
+                ],
               ),
-            ),
-            foregroundColor: WidgetStateProperty.all<Color>(
-              Colors.white,
-            ),
-            backgroundColor: WidgetStateProperty.all<Color>(
-              Colors.blue,
-            ),
-            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-              const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-                side: BorderSide(color: Colors.blue),
+              child: PrettyQrView.data(
+                data: qrString,
+                decoration: const PrettyQrDecoration(
+                  shape: PrettyQrSmoothSymbol(
+                    color: ColorConstants.textPrimary,
+                  ),
+                ),
               ),
             ),
           ),
-          onPressed: (state.duitkuOrder.response?.qrString ?? '').isNotEmpty
-              ? () => logic.saveQRCode(
-                    state.duitkuOrder.response?.qrString ?? '',
-                    globalKey,
-                  )
+        const SizedBox(height: 12),
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: ColorConstants.surfaceMuted,
+            foregroundColor: ColorConstants.textPrimary,
+            elevation: 0,
+            side: const BorderSide(color: ColorConstants.border, width: 1),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          onPressed: qrString.isNotEmpty
+              ? () => logic.saveQRCode(qrString, globalKey)
               : null,
-          child: const Text('Save QR'),
+          icon: const Icon(Icons.download_rounded, size: 18),
+          label: const Text(
+            'Simpan QR Code',
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          ),
         ),
       ],
     );
   }
 
   Widget vaWidget() {
+    final vaNumber = state.duitkuOrder.response?.vaNumber ?? '';
     return itemWidget(
-      title: 'Nomor Akun Virtual',
-      subTitle: state.duitkuOrder.response?.vaNumber ?? '',
-      endWidget: InkWell(
-        onTap: () async {
-          await Clipboard.setData(
-            ClipboardData(
-              text: state.duitkuOrder.response?.vaNumber ?? '',
-            ),
-          );
-          Snackbar.showInfo(message: 'Copied to your clipboard !');
-        },
-        child: const Icon(Icons.copy),
-      ),
+      title: 'Nomor Virtual Account',
+      subTitle: vaNumber,
+      endWidget: vaNumber.isNotEmpty
+          ? Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () async {
+                  await Clipboard.setData(ClipboardData(text: vaNumber));
+                  Snackbar.showInfo(
+                      message: 'Nomor VA disalin ke clipboard');
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: ColorConstants.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: ColorConstants.border,
+                      width: 0.8,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.copy_rounded,
+                    size: 16,
+                    color: ColorConstants.primary,
+                  ),
+                ),
+              ),
+            )
+          : null,
     );
   }
 }

@@ -1,3 +1,4 @@
+import '../../../shared/constants/colors.dart';
 import '../../../shared/utils/snackbar.dart';
 import '../../../shared/widget/mobile_size_widget.dart';
 import 'package:flutter/material.dart';
@@ -19,238 +20,235 @@ class HomeScreen extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return MobileSizeWidget(
       body: GetBuilder<HomeController>(
-        builder: (_) => SizedBox(
-          height: context.isPhone
-              ? Get.height
-              : state.tabIndex == 0
-                  ? Get.height * 0.65
-                  : Get.height * 0.88,
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              const Text(
-                'Dashboard',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Divider(thickness: 1),
-              const SizedBox(height: 8),
-              Card(
-                elevation: 3,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Expanded(
-                        flex: 6,
-                        child: Text(
-                          'Rincian Belanja',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          // child: FlutterLogo(),
-                          child: Container(),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Container(),
-                      ),
-                    ],
+        builder: (_) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Header Bar
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: const Row(
+                children: [
+                  Icon(
+                    Icons.receipt_long_rounded,
+                    color: ColorConstants.primary,
+                    size: 24,
                   ),
-                ),
+                  SizedBox(width: 10),
+                  Text(
+                    'Rincian Pesanan',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: ColorConstants.textPrimary,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: StateWidget().initial(
-                  stateStatus: state.status,
-                  body: descriptionWidget(),
-                ),
+            ),
+            const Divider(color: ColorConstants.border),
+            const SizedBox(height: 12),
+
+            // Content Area
+            Expanded(
+              child: StateWidget().initial(
+                stateStatus: state.status,
+                body: descriptionWidget(),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget descriptionWidget() {
-    return Card(
-      elevation: 3,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-        child: DefaultTabController(
-          length: 2,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TabBar(
-                controller: state.tabController,
-                onTap: (index) {
-                  state.tabIndex = index;
-                  logic.update();
-                },
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelPadding: const EdgeInsets.only(bottom: 10, top: 10),
-                tabs: const [
-                  Text(
-                    'PESANAN',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+    return Column(
+      children: [
+        // Tab Selector Card
+        Container(
+          height: 44,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: ColorConstants.surfaceMuted,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: TabBar(
+            controller: state.tabController,
+            onTap: (index) {
+              state.tabIndex = index;
+              logic.update();
+            },
+            indicator: BoxDecoration(
+              color: ColorConstants.surface,
+              borderRadius: BorderRadius.circular(9),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x0A0F172A),
+                  blurRadius: 4,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            indicatorSize: TabBarIndicatorSize.tab,
+            labelPadding: EdgeInsets.zero,
+            labelColor: ColorConstants.primary,
+            unselectedLabelColor: ColorConstants.textSecondary,
+            tabs: const [
+              Tab(
+                child: Text(
+                  'Pesanan',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                   ),
-                  Text(
-                    'PELANGGAN',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: TabBarView(
-                  controller: state.tabController,
-                  children: [
-                    orderDetailWidget(),
-                    customerDetailWidget(),
-                  ],
                 ),
               ),
-              const SizedBox(height: 12),
-              const Divider(thickness: 1),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      const Text(
-                        'Total Pembayaran',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                      if (state.order?.project?.projectType ==
-                          ProjectType.spnpay)
-                        Text(
-                          Format.rupiahConvert(
-                            (state.spnPayOrder.request?.amount ?? 0).toDouble(),
-                          ),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                    ],
+              Tab(
+                child: Text(
+                  'Pelanggan',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                   ),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-                        const EdgeInsets.only(
-                          top: 16,
-                          bottom: 16,
-                          left: 12,
-                          right: 12,
-                        ),
-                      ),
-                      foregroundColor: WidgetStateProperty.all<Color>(
-                        Colors.white,
-                      ),
-                      backgroundColor: WidgetStateProperty.all<Color>(
-                        Colors.blue,
-                      ),
-                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                        const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          side: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                    ),
-                    onPressed: () => Get.toNamed(
-                      Routes.PAYMENT,
-                      parameters: {
-                        'reference': state.orderId,
-                      },
-                    ),
-                    child: Text(
-                      'pembayaran'.toUpperCase(),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  )
-                ],
+                ),
               ),
             ],
           ),
         ),
-      ),
+        const SizedBox(height: 16),
+
+        // Tab Views
+        Expanded(
+          child: TabBarView(
+            controller: state.tabController,
+            children: [
+              orderDetailWidget(),
+              customerDetailWidget(),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 12),
+        const Divider(color: ColorConstants.border),
+        const SizedBox(height: 12),
+
+        // Bottom Summary & Checkout Button
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Total Pembayaran',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: ColorConstants.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    Format.rupiahConvert(
+                      state.order?.project?.projectType == ProjectType.spnpay
+                          ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
+                          : 0.0,
+                    ),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: ColorConstants.primary,
+                    ),
+                  ),
+                ],
+              ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorConstants.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: () => Get.toNamed(
+                  Routes.PAYMENT,
+                  parameters: {
+                    'reference': state.orderId,
+                  },
+                ),
+                icon: const Icon(Icons.payment_rounded, size: 18),
+                label: const Text(
+                  'Bayar Sekarang',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
   Widget orderDetailWidget() {
     return ListView(
+      padding: EdgeInsets.zero,
       children: [
-        const SizedBox(height: 16),
         itemWidget(
-          title: 'Id Pemesanan',
+          title: 'ID Pemesanan',
           subTitle: state.orderId,
-          endWidget: InkWell(
-            onTap: () async {
-              await Clipboard.setData(ClipboardData(text: state.orderId));
-              Snackbar.showInfo(message: 'Copied to your clipboard !');
-            },
-            child: const Icon(Icons.copy),
+          endWidget: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () async {
+                await Clipboard.setData(ClipboardData(text: state.orderId));
+                Snackbar.showInfo(message: 'ID Pemesanan disalin ke clipboard');
+              },
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: ColorConstants.surface,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: ColorConstants.border, width: 0.8),
+                ),
+                child: const Icon(
+                  Icons.copy_rounded,
+                  size: 16,
+                  color: ColorConstants.primary,
+                ),
+              ),
+            ),
           ),
         ),
         itemWidget(
           title: 'Catatan',
-          subTitle: state.order?.notes ?? '',
+          subTitle: (state.order?.notes ?? '').isEmpty
+              ? 'Tidak ada catatan'
+              : state.order!.notes!,
         ),
         itemWidget(
           title: 'Daftar Barang',
-          subTitle: '${state.order?.notes ?? ''} x 1',
+          subTitle: '${state.order?.notes ?? 'Item'} x 1',
           endWidget: Text(
             Format.rupiahConvert(
-                state.order?.project?.projectType == ProjectType.spnpay
-                    ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
-                    : 0),
+              state.order?.project?.projectType == ProjectType.spnpay
+                  ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
+                  : 0,
+            ),
             style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.normal,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: ColorConstants.textPrimary,
             ),
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Total',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(
-              Format.rupiahConvert(
-                  state.order?.project?.projectType == ProjectType.spnpay
-                      ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
-                      : 0),
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-          ],
         ),
       ],
     );
@@ -258,63 +256,35 @@ class HomeScreen extends GetView<HomeController> {
 
   Widget customerDetailWidget() {
     return ListView(
+      padding: EdgeInsets.zero,
       children: [
-        const SizedBox(height: 16),
         itemWidget(
           title: 'Nama Lengkap',
           subTitle: state.order?.project?.projectType == ProjectType.spnpay
-              ? state.spnPayOrder.request?.viewName ?? ''
-              : '',
+              ? state.spnPayOrder.request?.viewName ?? '-'
+              : '-',
         ),
         itemWidget(
           title: 'Nomor Telepon',
           subTitle: (state.order?.phone ?? '').isNotEmpty
-              ? state.order!.phone!.substring(1, state.order?.phone?.length)
-              : '',
+              ? (state.order!.phone!.startsWith('0') ||
+                      state.order!.phone!.startsWith('+')
+                  ? state.order!.phone!
+                  : '0${state.order!.phone!}')
+              : '-',
         ),
         itemWidget(
           title: 'Email',
-          subTitle: state.order?.email ?? '',
+          subTitle: (state.order?.email ?? '').isEmpty
+              ? '-'
+              : state.order!.email!,
         ),
-
-        const Text(
-          'Alamat',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const Divider(thickness: 1),
         itemWidget(
-          title: state.order?.project?.projectType == ProjectType.spnpay
-              ? state.spnPayOrder.request?.viewName ?? ''
-              : '',
-          subTitle: state.order?.address ?? '',
+          title: 'Alamat Pengiriman',
+          subTitle: (state.order?.address ?? '').isEmpty
+              ? '-'
+              : state.order!.address!,
         ),
-        // const Text(
-        //   'Alamat Pengiriman',
-        //   style: TextStyle(
-        //     fontSize: 15,
-        //     fontWeight: FontWeight.w600,
-        //   ),
-        // ),
-        // const Divider(thickness: 1),
-        // itemWidget(
-        //   title: 'Sahid Rahutomo',
-        //   subTitle: 'Jl. Jakarta Bandung',
-        // ),
-        // const Text(
-        //   'Alamat Penagihan',
-        //   style: TextStyle(
-        //     fontSize: 15,
-        //     fontWeight: FontWeight.w600,
-        //   ),
-        // ),
-        // const Divider(thickness: 1),
-        // itemWidget(
-        //   title: 'Sahid Rahutomo',
-        //   subTitle: 'Jl. Jakarta Bandung',
-        // ),
       ],
     );
   }

@@ -20,6 +20,7 @@ class DetailPaymentState {
   SpnPayOrder spnPayOrder = SpnPayOrder();
   DuitkuOrder duitkuOrder = DuitkuOrder();
   LightSubscription<Orders?>? orderSubscribition;
-  StreamSubscription<bool>? isInternetConnectedSubscription,
-      isSocketConnectedSubscription;
+  LightSubscription<void>? socketReconnectSubscription;
+  StreamSubscription<bool>? isInternetConnectedSubscription;
+  StreamSubscription<bool>? isSocketConnectedSubscription;
 }

@@ -32,10 +32,22 @@ class DetailPaymentController extends GetxController {
     state.orderId = Get.parameters['reference'] ?? '';
   }
 
+  bool _isFetching = false;
+
   @override
   void onReady() {
     super.onReady();
     init();
+    listenSocket();
+  }
+
+  @override
+  void onClose() {
+    state.orderSubscribition?.cancel();
+    state.socketReconnectSubscription?.cancel();
+    state.isInternetConnectedSubscription?.cancel();
+    state.isSocketConnectedSubscription?.cancel();
+    super.onClose();
   }
 
   Future<void> init() async {
@@ -82,45 +94,39 @@ class DetailPaymentController extends GetxController {
     });
   }
 
-  void listenConnection() {
-    state.isInternetConnectedSubscription?.cancel();
-    state.isInternetConnectedSubscription =
-        networkLogic.isConnected.listen((data) async {
-      if (!data) {
-        return;
-      }
-      await getDetailOrder(isRedirect: true);
-    });
-  }
-
   void listenSocket() {
-    state.isSocketConnectedSubscription?.cancel();
-    state.isSocketConnectedSubscription =
-        networkLogic.isConnected.listen((data) async {
-      if (!data) {
-        return;
-      }
-      await getDetailOrder(isRedirect: true);
+    state.socketReconnectSubscription?.cancel();
+    state.socketReconnectSubscription =
+        socketLogic.reconnectStream.listen((_) async {
+      await getDetailOrder(isLoading: false, isRedirect: true);
     });
   }
 
   Future<void> getDetailOrder(
       {bool isLoading = true, bool isRedirect = false}) async {
+    if (_isFetching) return;
+    _isFetching = true;
+
     if (isLoading) {
       state.status = StateStatus.loading;
+      update();
     }
-    update();
-    var response = await repo.getDetailOrder(reference: state.orderId);
-    response.fold((l) {
-      state.status = StateStatus.error;
-      state.errorMsg = l.msg;
-      update();
-    }, (r) {
-      state.status = StateStatus.success;
-      state.order = r;
-      handleSuccess(isRedirect: isRedirect);
-      update();
-    });
+
+    try {
+      var response = await repo.getDetailOrder(reference: state.orderId);
+      response.fold((l) {
+        state.status = StateStatus.error;
+        state.errorMsg = l.msg;
+        update();
+      }, (r) {
+        state.status = StateStatus.success;
+        state.order = r;
+        handleSuccess(isRedirect: isRedirect);
+        update();
+      });
+    } finally {
+      _isFetching = false;
+    }
   }
 
   Future<void> handleSuccess({bool isRedirect = false}) async {

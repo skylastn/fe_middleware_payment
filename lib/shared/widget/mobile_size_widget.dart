@@ -20,16 +20,16 @@ class MobileSizeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorConstants.background,
       floatingActionButton: floatingActionButton,
       body: Container(
         decoration: BoxDecoration(
           color: Constant.backgroundModel.type == BackgroundType.color
-              ? hexToColor(Constant.backgroundModel.value ?? '#FFFFFF')
+              ? hexToColor(Constant.backgroundModel.value ?? '#F8FAFC')
               : null,
           image: Constant.backgroundModel.type == BackgroundType.image
               ? const DecorationImage(
-                  image:
-                      AssetImage('assets/images/im_background_dashboard.jpg'),
+                  image: AssetImage('assets/images/im_background_dashboard.jpg'),
                   fit: BoxFit.cover,
                 )
               : null,
@@ -37,8 +37,8 @@ class MobileSizeWidget extends StatelessWidget {
         child: Center(
           child: Container(
             margin: context.isPhone
-                ? null
-                : const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                ? EdgeInsets.zero
+                : const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             child: context.isPhone
                 ? mobileWidget(context)
                 : desktopWidget(context),
@@ -49,23 +49,37 @@ class MobileSizeWidget extends StatelessWidget {
   }
 
   Widget desktopWidget(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 2,
-      child: Container(
-        width: DeviceSize.getMobileSize(),
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-        child: body,
+    return Container(
+      width: DeviceSize.getMobileSize(),
+      decoration: BoxDecoration(
+        color: ColorConstants.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: ColorConstants.border, width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0F0F172A),
+            blurRadius: 24,
+            offset: Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Color(0x050F172A),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
+      clipBehavior: Clip.antiAlias,
+      padding: const EdgeInsets.all(16),
+      child: body,
     );
   }
 
   Widget mobileWidget(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: ColorConstants.surface,
       width: DeviceSize.getMobileSize(),
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-      child: body,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: SafeArea(child: body),
     );
   }
 }

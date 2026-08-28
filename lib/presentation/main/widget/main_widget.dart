@@ -1,6 +1,7 @@
 import '../payment/controllers/payment.state.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/constants/colors.dart';
 import '../../../shared/widget/picture_handler_widget.dart';
 
 Widget itemWidget({
@@ -8,38 +9,51 @@ Widget itemWidget({
   required String subTitle,
   Widget? endWidget,
 }) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        title,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      const SizedBox(height: 6),
-      Row(
-        mainAxisAlignment: endWidget == null
-            ? MainAxisAlignment.start
-            : MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Text(
-              subTitle,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
+  return Container(
+    margin: const EdgeInsets.only(bottom: 12),
+    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    decoration: BoxDecoration(
+      color: ColorConstants.surfaceMuted,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: ColorConstants.border, width: 0.8),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: ColorConstants.textSecondary,
+                  letterSpacing: 0.1,
+                ),
               ),
-            ),
+              const SizedBox(height: 4),
+              Text(
+                subTitle.isEmpty ? '-' : subTitle,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: ColorConstants.textPrimary,
+                ),
+              ),
+            ],
           ),
-          if (endWidget != null) endWidget,
-        ],
-      ),
-      const SizedBox(height: 6),
-      const Divider(thickness: 1),
-      const SizedBox(height: 8),
-    ],
+        ),
+        if (endWidget != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: endWidget,
+          ),
+      ],
+    ),
   );
 }
 
@@ -50,45 +64,101 @@ Widget paymentMethodWidget({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
-        paymentCategory.title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+      Padding(
+        padding: const EdgeInsets.only(left: 4, bottom: 10, top: 12),
+        child: Text(
+          paymentCategory.title,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: ColorConstants.textPrimary,
+            letterSpacing: 0.1,
+          ),
         ),
       ),
-      const SizedBox(height: 6),
-      const Divider(thickness: 1),
-      const SizedBox(height: 6),
-      ListView.builder(
+      ListView.separated(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: paymentCategory.paymentMethod.length,
-        itemBuilder: (context, index) => ListTile(
-          onTap: () => callback(paymentCategory.paymentMethod[index]),
-          contentPadding: EdgeInsets.zero,
-          leading: SizedBox(
-            height: 40,
-            width: 50,
-            child: PictureHandlerWidget().pictureHandler(
-              paymentCategory.paymentMethod[index].imageUrl,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        itemBuilder: (context, index) {
+          final item = paymentCategory.paymentMethod[index];
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () => callback(item),
+              child: Ink(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: ColorConstants.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: ColorConstants.border, width: 1),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x060F172A),
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 48,
+                      width: 56,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: ColorConstants.surfaceMuted,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: ColorConstants.border,
+                          width: 0.8,
+                        ),
+                      ),
+                      child: Center(
+                        child: PictureHandlerWidget().pictureHandler(
+                          item.imageUrl,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: ColorConstants.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            item.description,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              color: ColorConstants.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.chevron_right,
+                      size: 22,
+                      color: ColorConstants.textTertiary,
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          title: Text(
-            paymentCategory.paymentMethod[index].name,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          subtitle: Text(paymentCategory.paymentMethod[index].description),
-          trailing: const Icon(
-            Icons.arrow_forward_ios_sharp,
-          ),
-        ),
+          );
+        },
       ),
-      const SizedBox(height: 6),
-      const Divider(thickness: 1),
       const SizedBox(height: 8),
     ],
   );

@@ -1,60 +1,84 @@
 // ignore_for_file: use_full_hex_values_for_flutter_colors
 
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class ColorConstants {
-  static Color lightScaffoldBackgroundColor = Colors.white;
+  // Theme Colors
+  static const Color primary = Color(0xFF2563EB); // Modern Royal Blue
+  static const Color primaryDark = Color(0xFF1D4ED8);
+  static const Color primaryLight = Color(0xFFEFF6FF);
+  static const Color accent = Color(0xFF0EA5E9);
+
+  // Background & Surface
+  static const Color background = Color(0xFFF8FAFC); // Slate-50
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceMuted = Color(0xFFF1F5F9); // Slate-100
+  static const Color border = Color(0xFFE2E8F0); // Slate-200
+  static const Color borderLight = Color(0xFFF1F5F9);
+
+  // Text Colors
+  static const Color textPrimary = Color(0xFF0F172A); // Slate-900
+  static const Color textSecondary = Color(0xFF64748B); // Slate-500
+  static const Color textTertiary = Color(0xFF94A3B8); // Slate-400
+
+  // Status Colors
+  static const Color success = Color(0xFF10B981); // Emerald
+  static const Color successLight = Color(0xFFECFDF5);
+  static const Color warning = Color(0xFFF59E0B); // Amber
+  static const Color warningLight = Color(0xFFFFFBEB);
+  static const Color error = Color(0xFFEF4444); // Red
+  static const Color errorLight = Color(0xFFFEF2F2);
+  static const Color info = Color(0xFF3B82F6);
+  static const Color infoLight = Color(0xFFEFF6FF);
+
+  // Legacy mappings for backward compatibility
+  static Color lightScaffoldBackgroundColor = background;
   static Color darkScaffoldBackgroundColor = const Color(0xFF030B1A);
-  static Color secondaryAppColor = hexToColor('#ffffff');
+  static Color secondaryAppColor = surface;
   static Color secondaryDarkAppColor = Colors.white;
-  static Color tipColor = hexToColor('#B6B6B6');
-  static Color lightGray = const Color(0xFFF6F6F6);
-  static Color darkGray = const Color(0xFF9F9F9F);
-  static Color black = const Color(0xFF000000);
-  static Color white = const Color(0xFFFFFFFF);
+  static Color tipColor = textTertiary;
+  static Color lightGray = surfaceMuted;
+  static Color darkGray = textSecondary;
+  static Color black = textPrimary;
+  static Color white = surface;
   static Color grey300 = const Color(0xFFF7FAFA);
-  static Color grey100 = const Color(0xFFF5F5FF);
+  static Color grey100 = borderLight;
   static Color positiveButton = const Color(0xFFffe4cf);
   static Color negativeButton = const Color(0xFF2D0E15);
   static Color headerFooter = const Color(0xFFD8A48F);
-  static Color lightTextColor = const Color(0xff3f3f3f);
+  static Color lightTextColor = textPrimary;
   static Color darkTextColor = const Color(0xffffffff);
   static Color badgesColor = const Color(0xFFD8A48F);
   static Color badgesText = const Color(0xFFFFFFFF);
-  static Color cardBackground = const Color(0xFFFFFFFF);
+  static Color cardBackground = surface;
   static Color darkCardBackground = const Color(0xFF151a24);
-  static Color solidIconColor = Colors.black;
+  static Color solidIconColor = textPrimary;
   static Color unactiveIconColor = const Color(0xFFDADEDE);
-  static Color textMenuColor = const Color(0xFF212529);
+  static Color textMenuColor = textPrimary;
   static Color shadowBlue = const Color(0xFFF7FAFA);
-  static Color primaryColor = const Color(0xff1D74F5);
-  static Color secondaryColor = const Color(0xff63C4EB);
-  static Color backgroundColors = const Color(0xffF1F3F5);
-  static Color backgroundShadowColor = const Color(0xff282828);
+  static Color primaryColor = primary;
+  static Color secondaryColor = accent;
+  static Color backgroundColors = background;
+  static Color backgroundShadowColor = const Color(0x0A000000);
   static Color darkShadowColor = Colors.transparent;
-  static Color kWhiteGrey = const Color(0xffF1F1F5);
-  static Color kBlack = const Color(0xff222222);
+  static Color kWhiteGrey = surfaceMuted;
+  static Color kBlack = textPrimary;
   static Color kBlackAccent = const Color(0xff2A2B37);
-  static Color kGrey = const Color(0xffac4c4c4);
-  static Color kLineDark = const Color(0xffEAEAEA);
-  static Color kWhite = const Color(0xffFFFFFF);
-  static Color lightBlue = const Color(0xffE9F2FF);
-  static Color pink = const Color(0xffFFE9E9);
-  static Color red = const Color(0xffFF6060);
+  static Color kGrey = textTertiary;
+  static Color kLineDark = border;
+  static Color kWhite = Colors.white;
+  static Color lightBlue = primaryLight;
+  static Color pink = errorLight;
+  static Color red = error;
   static Color disableColor = const Color(0xffB3AFAF);
 }
 
 Color textToColor(String inputString) {
-  // Konversi string ke daftar kode ASCII
   List<int> codeUnits = inputString.codeUnits;
-
-  // Konversi kode ASCII ke heksadesimal
   String hexString = codeUnits.map((int codeUnit) {
     return codeUnit.toRadixString(16).padLeft(2, '0');
   }).join('');
-
   return hexToColor(hexString);
 }
 
@@ -69,7 +93,6 @@ Color hexToColor(String hex) {
 }
 
 String colorToHex(Color color) {
-  // return '#${color.value.toRadixString(16).substring(2)}';
   return '#${color.toARGB32().toRadixString(16).substring(2)}';
 }
 

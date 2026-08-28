@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../shared/constants/colors.dart';
 import '../../../shared/constants/sample.dart';
 import '../../../shared/widget/mobile_size_widget.dart';
 import '../widget/main_widget.dart';
@@ -14,96 +15,85 @@ class PaymentScreen extends GetView<PaymentController> {
   Widget build(BuildContext context) {
     return MobileSizeWidget(
       body: GetBuilder<PaymentController>(
-        builder: (_) => SizedBox(
-          height: context.isPhone ? Get.height : Get.height * 0.88,
-          child: Column(
-            children: [
-              Stack(
+        builder: (_) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Header Bar
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
                 children: [
-                  const SizedBox(height: 12),
-                  const Center(
-                    child: Text(
-                      'Dashboard',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () => Get.back(),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: ColorConstants.surfaceMuted,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: ColorConstants.border,
+                            width: 0.8,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 16,
+                          color: ColorConstants.textPrimary,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      onPressed: () => Get.back(),
-                      icon: const Icon(
-                        Icons.arrow_back_ios_new,
-                      ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Metode Pembayaran',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: ColorConstants.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          'Pilih saluran pembayaran yang Anda inginkan',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: ColorConstants.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              const Divider(thickness: 1),
-              const SizedBox(height: 8),
-              Card(
-                elevation: 3,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Expanded(
-                        flex: 6,
-                        child: Text(
-                          'Pilih Metode Pembayaran',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          // child: FlutterLogo(),
-                          child: Container(),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Container(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: descriptionWidget(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+            ),
+            const SizedBox(height: 10),
+            const Divider(color: ColorConstants.border),
+            const SizedBox(height: 8),
 
-  Widget descriptionWidget() {
-    return Card(
-      elevation: 3,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            const SizedBox(height: 16),
-            ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: listPayment.length,
-              itemBuilder: (context, index) => paymentMethodWidget(
-                paymentCategory: listPayment[index],
-                callback: (content) => logic.routeToDetail(
-                  content,
-                  listPayment[index],
-                ),
+            // Payment Categories & Methods
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: listPayment.length,
+                    itemBuilder: (context, index) => paymentMethodWidget(
+                      paymentCategory: listPayment[index],
+                      callback: (content) => logic.routeToDetail(
+                        content,
+                        listPayment[index],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

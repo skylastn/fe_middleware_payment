@@ -7,7 +7,7 @@ import '../constants/colors.dart';
 class StateWidget {
   Widget initial({
     required StateStatus stateStatus,
-    required body,
+    required Widget body,
     String? emptyMsg,
     String? errorMsg,
   }) {
@@ -18,7 +18,7 @@ class StateWidget {
       return emptyWidget(msg: emptyMsg);
     }
     if (stateStatus == StateStatus.error) {
-      return errorWidget(msg: 'Empty Field');
+      return errorWidget(msg: errorMsg ?? 'Terjadi kesalahan memuat data');
     }
     if (stateStatus == StateStatus.success) {
       return body;
@@ -27,55 +27,113 @@ class StateWidget {
   }
 
   Widget emptyWidget({String? msg}) {
-    return Center(child: Text(msg ?? 'Empty'));
-  }
-
-  Widget errorWidget({String? msg}) {
-    return Center(child: Text(msg ?? 'Error'));
-  }
-
-  Widget loadingWidget(
-      {double? height, BorderRadius? borderRadius, String loadingText = ''}) {
-    return Container(
-      height: height,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          customLoadingWidget(
-            text: (loadingText.isNotEmpty) ? loadingText : '',
-            color: ColorConstants.secondaryColor,
-          ),
-        ],
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: ColorConstants.surfaceMuted,
+                shape: BoxShape.circle,
+                border: Border.all(color: ColorConstants.border, width: 1),
+              ),
+              child: const Icon(
+                Icons.inbox_rounded,
+                size: 36,
+                color: ColorConstants.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              msg ?? 'Data tidak ditemukan',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: ColorConstants.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget customLoadingWidget({String text = '', Color color = Colors.blue}) {
+  Widget errorWidget({String? msg}) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: ColorConstants.errorLight,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: ColorConstants.error.withAlpha(0x40),
+                  width: 1,
+                ),
+              ),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                size: 36,
+                color: ColorConstants.error,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              msg ?? 'Gagal memuat data',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: ColorConstants.textPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget loadingWidget(
+      {double? height, BorderRadius? borderRadius, String loadingText = ''}) {
+    return SizedBox(
+      height: height,
+      child: Center(
+        child: customLoadingWidget(
+          text: loadingText,
+          color: ColorConstants.primary,
+        ),
+      ),
+    );
+  }
+
+  Widget customLoadingWidget(
+      {String text = '', Color color = ColorConstants.primary}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ClipOval(
-          child: SpinKitDoubleBounce(
-            color: color,
-            // size: 50.0,
-          ),
+        SpinKitThreeBounce(
+          color: color,
+          size: 28.0,
         ),
-        if (text.isNotEmpty)
-          const SizedBox(
-            height: 15,
-          ),
-        if (text.isNotEmpty)
+        if (text.isNotEmpty) ...[
+          const SizedBox(height: 14),
           Text(
             text,
             style: TextStyle(
               color: color,
-              fontSize: 16,
-              // fontFamily: Global.font,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
           )
+        ],
       ],
     );
   }

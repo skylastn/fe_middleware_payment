@@ -13,8 +13,11 @@ class SocketRepository {
       urlSocket,
       OptionBuilder()
           .setTransports(['websocket'])
-          .disableAutoConnect() // disable auto-connection
+          .disableAutoConnect()
           .enableReconnection()
+          .setReconnectionAttempts(999999)
+          .setReconnectionDelay(1000)
+          .setReconnectionDelayMax(5000)
           .setQuery({'project': project, 'path': path})
           .build(),
     );
@@ -28,32 +31,53 @@ class SocketRepository {
     return socket.disconnect();
   }
 
-  dynamic Function() listenConnected(
+  void listenConnected(
     Socket socket, {
     required dynamic Function(dynamic) onData,
   }) {
-    return socket.onConnect(onData);
+    socket.onConnect(onData);
   }
 
-  dynamic Function() listenDisconnected(
+  void listenDisconnected(
     Socket socket, {
     required dynamic Function(dynamic) onData,
   }) {
-    return socket.onDisconnect(onData);
+    socket.onDisconnect(onData);
   }
 
-  dynamic Function() listenReconnecting(
+  void listenReconnect(
     Socket socket, {
     required dynamic Function(dynamic) onData,
   }) {
-    return socket.onReconnect(onData);
+    socket.onReconnect(onData);
   }
 
-  dynamic Function() listenError(
+  void listenReconnectAttempt(
     Socket socket, {
     required dynamic Function(dynamic) onData,
   }) {
-    return socket.onError(onData);
+    socket.onReconnectAttempt(onData);
+  }
+
+  void listenReconnectError(
+    Socket socket, {
+    required dynamic Function(dynamic) onData,
+  }) {
+    socket.onReconnectError(onData);
+  }
+
+  void listenConnectError(
+    Socket socket, {
+    required dynamic Function(dynamic) onData,
+  }) {
+    socket.onConnectError(onData);
+  }
+
+  void listenError(
+    Socket socket, {
+    required dynamic Function(dynamic) onData,
+  }) {
+    socket.onError(onData);
   }
 
   void sendEvent(
@@ -61,28 +85,36 @@ class SocketRepository {
     required String event,
     Map<String, dynamic>? body,
   }) {
-    return socket.emit(
+    socket.emit(
       event,
       body,
     );
   }
 
-  dynamic Function() subscribeEvent(
+  void subscribeEvent(
     Socket socket, {
     required String event,
     required dynamic Function(dynamic) onData,
   }) {
-    return socket.on(event, onData);
+    socket.on(event, onData);
   }
 
-  dynamic Function() subscribeNotification({
+  void unsubscribeEvent(Socket socket, {required String event}) {
+    socket.off(event);
+  }
+
+  void subscribeNotification({
     required Socket socket,
     required dynamic Function(dynamic) onData,
   }) {
-    return subscribeEvent(
+    subscribeEvent(
       socket,
       event: 'notification',
       onData: onData,
     );
+  }
+
+  void unsubscribeNotification({required Socket socket}) {
+    unsubscribeEvent(socket, event: 'notification');
   }
 }

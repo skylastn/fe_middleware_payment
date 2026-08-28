@@ -5,7 +5,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
-// import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import '../../domain/model/response/orders.dart';
 import '../../domain/model/socket_model.dart';
@@ -18,9 +17,10 @@ class SocketLogic extends GetxController {
   final networkLogic = Get.find<NetworkLogic>();
   SocketModel socketModel = SocketModel();
   GetStream<Orders?> orderStream = GetStream();
+  GetStream<void> reconnectStream = GetStream();
   RxBool isConnected = false.obs;
-  void Function()? notificationSubscribition;
   StreamSubscription<bool>? isConnectedSubscription;
+  bool _hasConnectedOnce = false;
 
   @override
   void onClose() {
@@ -37,8 +37,8 @@ class SocketLogic extends GetxController {
   void disposeCall() {
     disconnect();
     orderStream.close();
+    reconnectStream.close();
     isConnectedSubscription?.cancel();
-    notificationSubscribition?.call();
     socketModel.dispose();
   }
 
@@ -47,10 +47,15 @@ class SocketLogic extends GetxController {
       init();
     }
     isConnectedSubscription =
-        networkLogic.connectSubscription.listen((isConnected) {
-      if (isConnected) {
-        init();
+        networkLogic.connectSubscription.listen((isNetworkConnected) {
+      if (isNetworkConnected) {
+        if (socketModel.socket == null) {
+          init();
+        } else {
+          connect();
+        }
       } else {
+        isConnected.value = false;
         socketModel.dispose();
       }
     });
@@ -59,31 +64,45 @@ class SocketLogic extends GetxController {
   Future<void> init() async {
     try {
       print('Connecting Socket .... ');
-      socketModel = SocketModel(
-        socket: await _services.init(
-          project: 'payment',
-          path: 'notification',
-        ),
+      socketModel.dispose();
+      final socket = await _services.init(
+        project: 'payment',
+        path: 'notification',
       );
-      socketModel.onConnect = _services.listenConnected(
-        socketModel.socket!,
+      socketModel = SocketModel(socket: socket);
+
+      _services.listenConnected(
+        socket,
         onData: (_) => onConnect(),
       );
-      socketModel.onDisconnected = _services.listenDisconnected(
-        socketModel.socket!,
-        onData: (_) => onDisconnect(),
+      _services.listenDisconnected(
+        socket,
+        onData: (data) => onDisconnect(data),
       );
-      socketModel.onError = _services.listenError(
-        socketModel.socket!,
+      _services.listenError(
+        socket,
         onData: (data) => onErrorSocket(data),
       );
-      socketModel.onReconnecting = _services.listenReconnecting(
-        socketModel.socket!,
+      _services.listenConnectError(
+        socket,
+        onData: (data) => onConnectError(data),
+      );
+      _services.listenReconnect(
+        socket,
         onData: (data) => onReconnect(data),
       );
+      _services.listenReconnectAttempt(
+        socket,
+        onData: (data) => print('Socket Reconnect Attempt: $data'),
+      );
+      _services.listenReconnectError(
+        socket,
+        onData: (data) => print('Socket Reconnect Error: $data'),
+      );
+
       await connect();
     } catch (e) {
-      log('error Connecting Socket');
+      log('error Connecting Socket: $e');
     }
   }
 
@@ -109,16 +128,24 @@ class SocketLogic extends GetxController {
 
   void onConnect() {
     print('Socket Connected');
+    final wasDisconnected = !isConnected.value && _hasConnectedOnce;
     isConnected.value = true;
-    isConnected.subject.add(true);
     subscribeNotification();
+    if (wasDisconnected) {
+      print('Socket Reconnected successfully (via connect event)');
+      reconnectStream.add(null);
+    }
+    _hasConnectedOnce = true;
   }
 
-  void onDisconnect() {
-    print('Socket Disconnected');
+  void onDisconnect(dynamic data) {
+    print('Socket Disconnected : $data');
     isConnected.value = false;
-    isConnected.subject.add(false);
-    notificationSubscribition?.call();
+  }
+
+  void onConnectError(dynamic data) {
+    print('Socket Connect Error : $data');
+    isConnected.value = false;
   }
 
   void onErrorSocket(dynamic data) {
@@ -127,7 +154,10 @@ class SocketLogic extends GetxController {
   }
 
   void onReconnect(dynamic data) {
-    print('reconnect Socket : $data');
+    print('Socket Reconnected : $data');
+    isConnected.value = true;
+    subscribeNotification();
+    reconnectStream.add(null);
   }
 
   void sendEvent({required String event, Map<String, dynamic>? data}) {
@@ -141,11 +171,10 @@ class SocketLogic extends GetxController {
     if (socketModel.socket == null) {
       return;
     }
-    notificationSubscribition?.call();
-    notificationSubscribition = _services.subscribeNotification(
+    _services.unsubscribeNotification(socket: socketModel.socket!);
+    _services.subscribeNotification(
       socket: socketModel.socket!,
       onData: (data) {
-        // try {
         if (data == null) {
           return;
         }
@@ -157,9 +186,6 @@ class SocketLogic extends GetxController {
             break;
           default:
         }
-        // } catch (e) {
-        //   Get.log('error receiving notification : $e');
-        // }
       },
     );
   }

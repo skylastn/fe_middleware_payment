@@ -1,5 +1,6 @@
 import '../../../../app/global/network_logic.dart';
 import '../../../../app/global/socket_logic.dart';
+import '../../../../shared/constants/colors.dart';
 import 'widget/duitku_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,8 +12,8 @@ import '../../../../shared/utils/format.dart';
 import '../../../../shared/utils/snackbar.dart';
 import '../../../../shared/widget/mobile_size_widget.dart';
 import '../../../../shared/widget/state_widget.dart';
+import '../../../../shared/widget/picture_handler_widget.dart';
 import '../../widget/main_widget.dart';
-import '../controllers/payment.state.dart';
 import 'controllers/detailpayment.controller.dart';
 
 class DetailPaymentScreen extends GetView<DetailPaymentController> {
@@ -27,116 +28,182 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
     return MobileSizeWidget(
       body: GetBuilder<DetailPaymentController>(
         builder: (_) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Top App Bar
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (Navigator.canPop(context))
-                    IconButton(
-                      onPressed: () => Get.back(),
-                      icon: const Icon(
-                        Icons.arrow_back_ios_new,
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(10),
+                        onTap: () => Get.back(),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: ColorConstants.surfaceMuted,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: ColorConstants.border,
+                              width: 0.8,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 16,
+                            color: ColorConstants.textPrimary,
+                          ),
+                        ),
                       ),
                     ),
                   if (Navigator.canPop(context)) const SizedBox(width: 12),
-                  const Center(
-                    child: Text(
-                      'Detail Payment',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Pembayaran',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: ColorConstants.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          'Selesaikan transaksi Anda',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: ColorConstants.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Obx(() => connectionBadge(
+                            isOnline: networkLogic.isConnected.value,
+                            label: 'Internet',
+                            icon: Icons.wifi,
+                          )),
+                      const SizedBox(width: 6),
+                      Obx(() => connectionBadge(
+                            isOnline: socketLogic.isConnected.value,
+                            label: 'Live Sync',
+                            icon: Icons.sync_rounded,
+                          )),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Divider(color: ColorConstants.border),
+            const SizedBox(height: 12),
+
+            // Selected Payment Method Header Card
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: ColorConstants.surfaceMuted,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: ColorConstants.border, width: 0.8),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    height: 40,
+                    width: 50,
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: ColorConstants.border,
+                        width: 0.8,
+                      ),
+                    ),
+                    child: Center(
+                      child: PictureHandlerWidget().pictureHandler(
+                        state.paymentMethod?.imageUrl ?? '',
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Row(children: [
-                    Obx(() => networkWidget(networkLogic.isConnected.value)),
-                    const SizedBox(width: 8),
-                    Obx(() => socketWidget(socketLogic.isConnected.value)),
-                  ]),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          state.paymentMethod?.name ?? 'Metode Pembayaran',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: ColorConstants.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          state.paymentCategory?.title ?? '',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: ColorConstants.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            const Divider(thickness: 1),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 3,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      flex: 6,
-                      child: Text(
-                        state.paymentMethod?.name ?? '',
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        // child: FlutterLogo(),
-                        child: Container(),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Container(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+
+            // Content Area
             Expanded(
               child: StateWidget().initial(
                 stateStatus: state.status,
                 body: descriptionWidget(),
               ),
             ),
-            const SizedBox(height: 12),
-            const Divider(thickness: 1),
+
+            const SizedBox(height: 10),
+            const Divider(color: ColorConstants.border),
+            const SizedBox(height: 10),
+
+            // Bottom Action Bar
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Total Pembayaran',
+                      'Total Tagihan',
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: ColorConstants.textSecondary,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     totalWidget(),
                   ],
                 ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-                      const EdgeInsets.only(
-                        top: 16,
-                        bottom: 16,
-                        left: 12,
-                        right: 12,
-                      ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorConstants.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 14,
                     ),
-                    foregroundColor: WidgetStateProperty.all<Color>(
-                      Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    backgroundColor: WidgetStateProperty.all<Color>(
-                      Colors.blue,
-                    ),
-                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                        side: BorderSide(color: Colors.blue),
-                      ),
-                    ),
+                    elevation: 0,
                   ),
                   onPressed: () async {
                     try {
@@ -146,10 +213,17 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
                         return;
                       }
                       await logic.getDetailOrder(isLoading: false);
-                      if (state.order?.status == 'PAID') {
+                      if (state.order?.status == 'PAID' ||
+                          state.order?.status == 'SUCCESS') {
                         Snackbar.showInfo(
                           title: 'Sukses',
-                          message: 'Pembayaran anda berhasil',
+                          message: 'Pembayaran Anda berhasil!',
+                        );
+                      } else {
+                        Snackbar.showInfo(
+                          title: 'Status',
+                          message:
+                              'Status saat ini: ${state.order?.status ?? 'PENDING'}',
                         );
                       }
                     } catch (e) {
@@ -159,13 +233,20 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
                       );
                     }
                   },
-                  child: Text(
+                  icon: Icon(
                     !state.isPayment
-                        ? 'pembayaran'.toUpperCase()
-                        : 'Cek Transaksi',
-                    style: const TextStyle(fontSize: 14),
+                        ? Icons.lock_outline_rounded
+                        : Icons.refresh_rounded,
+                    size: 18,
                   ),
-                )
+                  label: Text(
+                    !state.isPayment ? 'Bayar Sekarang' : 'Cek Status',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
@@ -175,154 +256,321 @@ class DetailPaymentScreen extends GetView<DetailPaymentController> {
   }
 
   Widget totalWidget() {
+    double amount = 0.0;
     if (state.order?.project?.projectType == ProjectType.duitku) {
-      return Text(
-        Format.rupiahConvert(
-          (state.duitkuOrder.request?.paymentAmount ?? 0).toDouble(),
-        ),
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
-      );
+      amount = (state.duitkuOrder.request?.paymentAmount ?? 0).toDouble();
+    } else if (state.order?.project?.projectType == ProjectType.spnpay) {
+      amount = (state.spnPayOrder.request?.amount ?? 0).toDouble();
     }
     return Text(
-      Format.rupiahConvert(
-        state.order?.project?.projectType == ProjectType.spnpay
-            ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
-            : 0.0,
-      ),
+      Format.rupiahConvert(amount),
       style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: ColorConstants.primary,
       ),
     );
   }
 
   Widget descriptionWidget() {
-    return Card(
-      elevation: 3,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            const SizedBox(height: 16),
-            if (!state.isPayment)
-              itemWidget(
-                title: 'Deskripsi',
-                subTitle: state.paymentMethod?.paymentInstruction.detail ?? '',
-              ),
-            if (state.isPayment) statusWidget(),
-            const SizedBox(height: 8),
-            if ((state.paymentMethod?.paymentInstruction
-                        .stepPaymentInstruction ??
-                    [])
-                .isNotEmpty)
-              paymentInstructionWidget(),
-          ],
-        ),
-      ),
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        if (!state.isPayment) ...[
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: ColorConstants.surfaceMuted,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: ColorConstants.border, width: 0.8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 16,
+                      color: ColorConstants.textSecondary,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'Informasi Pembayaran',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: ColorConstants.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  state.paymentMethod?.paymentInstruction.detail ?? '',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: ColorConstants.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (state.isPayment) ...[
+          statusWidget(),
+          const SizedBox(height: 12),
+        ],
+        if ((state.paymentMethod?.paymentInstruction.stepPaymentInstruction ??
+                [])
+            .isNotEmpty)
+          paymentInstructionWidget(),
+      ],
     );
   }
 
   Widget statusWidget() {
-    return ListView(
-      shrinkWrap: true,
+    final status = (state.order?.status ?? '').isEmpty
+        ? 'PENDING'
+        : state.order!.status;
+    final isSuccess = status == 'PAID' || status == 'SUCCESS';
+    return Column(
       children: [
         if (state.order?.project?.projectType == ProjectType.spnpay)
           itemWidget(
-            title: 'Nomor Akun Virtual',
+            title: 'Nomor Virtual Account',
             subTitle: state.spnPayOrder.response?.virtualAccount.vaNumber ?? '',
-            endWidget: InkWell(
-              onTap: () async {
-                await Clipboard.setData(
-                  ClipboardData(
-                    text: state.spnPayOrder.response?.virtualAccount.vaNumber ??
-                        '',
+            endWidget: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () async {
+                  await Clipboard.setData(
+                    ClipboardData(
+                      text: state.spnPayOrder.response?.virtualAccount
+                              .vaNumber ??
+                          '',
+                    ),
+                  );
+                  Snackbar.showInfo(
+                      message: 'Nomor VA disalin ke clipboard');
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: ColorConstants.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: ColorConstants.border,
+                      width: 0.8,
+                    ),
                   ),
-                );
-                Snackbar.showInfo(message: 'Copied to your clipboard !');
-              },
-              child: const Icon(Icons.copy),
+                  child: const Icon(
+                    Icons.copy_rounded,
+                    size: 16,
+                    color: ColorConstants.primary,
+                  ),
+                ),
+              ),
             ),
           ),
         if (state.order?.project?.projectType == ProjectType.duitku)
           DuitkuWidget(),
-        itemWidget(
-          title: 'Status Transaksi',
-          subTitle:
-              'Transaction ${(state.order?.status ?? '').isEmpty ? 'PENDING' : state.order?.status}.',
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: isSuccess
+                ? ColorConstants.successLight
+                : ColorConstants.warningLight,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSuccess
+                  ? ColorConstants.success.withAlpha(0x40)
+                  : ColorConstants.warning.withAlpha(0x40),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isSuccess
+                    ? Icons.check_circle_rounded
+                    : Icons.access_time_filled_rounded,
+                color: isSuccess ? ColorConstants.success : ColorConstants.warning,
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Status Transaksi',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: ColorConstants.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      status,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: isSuccess
+                            ? ColorConstants.success
+                            : ColorConstants.warning,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  Widget socketWidget(bool isConnected) {
+  Widget connectionBadge({
+    required bool isOnline,
+    required String label,
+    required IconData icon,
+  }) {
     return Container(
-      width: 30,
-      height: 30,
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
-        color: isConnected ? Colors.green : Colors.red,
-        shape: BoxShape.circle,
+        color: isOnline
+            ? ColorConstants.successLight
+            : ColorConstants.errorLight,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isOnline
+              ? ColorConstants.success.withAlpha(0x30)
+              : ColorConstants.error.withAlpha(0x30),
+          width: 0.8,
+        ),
       ),
-    );
-  }
-
-  Widget networkWidget(bool isConnected) {
-    return SizedBox(
-      width: 30,
-      height: 30,
-      child: Icon(
-        Icons.wifi,
-        size: 30,
-        color: isConnected ? Colors.green : Colors.red,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 12,
+            color: isOnline ? ColorConstants.success : ColorConstants.error,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: isOnline ? ColorConstants.success : ColorConstants.error,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget paymentInstructionWidget() {
-    return ListView(
-      shrinkWrap: true,
+    final instructions =
+        state.paymentMethod?.paymentInstruction.stepPaymentInstruction ?? [];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
-          children: [
-            Icon(
-              Icons.integration_instructions,
-            ),
-            SizedBox(width: 8),
-            Text(
-              'Cara Pembayaran',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Icon(
+                Icons.menu_book_rounded,
+                size: 18,
+                color: ColorConstants.primary,
               ),
-            ),
-          ],
+              SizedBox(width: 8),
+              Text(
+                'Petunjuk Pembayaran',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: ColorConstants.textPrimary,
+                ),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 12),
-        ListView.builder(
+        ListView.separated(
           shrinkWrap: true,
-          itemCount: state
-              .paymentMethod?.paymentInstruction.stepPaymentInstruction.length,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: instructions.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
-            StepPaymentInstruction? content = state.paymentMethod
-                ?.paymentInstruction.stepPaymentInstruction[index];
-            return Card(
+            final content = instructions[index];
+            return Container(
+              decoration: BoxDecoration(
+                color: ColorConstants.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: ColorConstants.border, width: 0.8),
+              ),
+              clipBehavior: Clip.antiAlias,
               child: ExpansionTile(
+                tilePadding: const EdgeInsets.symmetric(horizontal: 14),
+                childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+                shape: const Border(),
+                collapsedShape: const Border(),
                 title: Text(
-                  content?.title ?? '',
+                  content.title,
                   style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: ColorConstants.textPrimary,
                   ),
                 ),
                 children: List<Widget>.generate(
-                  (content?.step ?? []).length,
-                  (index) => ListTile(
-                    title: Text(
-                      content?.step[index] ?? '',
-                      style: const TextStyle(fontWeight: FontWeight.normal),
+                  content.step.length,
+                  (stepIndex) => Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 18,
+                          height: 18,
+                          margin: const EdgeInsets.only(top: 2, right: 8),
+                          decoration: BoxDecoration(
+                            color: ColorConstants.surfaceMuted,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: ColorConstants.border,
+                              width: 0.8,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${stepIndex + 1}',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: ColorConstants.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            content.step[stepIndex],
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: ColorConstants.textPrimary,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

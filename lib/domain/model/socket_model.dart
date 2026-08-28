@@ -2,28 +2,15 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 class SocketModel {
   Socket? socket;
-  dynamic Function()? onConnect;
-  dynamic Function()? onDisconnected;
-  dynamic Function()? onReconnecting;
-  dynamic Function()? onError;
 
-  SocketModel({
-    this.socket,
-    this.onConnect,
-    this.onDisconnected,
-    this.onReconnecting,
-    this.onError,
-  });
+  SocketModel({this.socket});
 
   void dispose() {
-    onConnect?.call();
-    onDisconnected?.call();
-    onReconnecting?.call();
-    onError?.call();
+    try {
+      socket?.clearListeners();
+      socket?.disconnect();
+      socket?.dispose();
+    } catch (_) {}
     socket = null;
-    onConnect = null;
-    onDisconnected = null;
-    onReconnecting = null;
-    onError = null;
   }
 }
