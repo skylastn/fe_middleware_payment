@@ -1,87 +1,10 @@
-import '../../presentation/main/payment/controllers/payment.state.dart';
+import '../../feature/payment/presentation/payment_method/payment_method_state.dart';
 
 List<PaymentCategory> listPayment = [
-  // PaymentCategory(
-  //   title: 'Credit Card',
-  //   paymentType: PaymentType.creditCard,
-  //   paymentMethod: [
-  //     PaymentMethod(
-  //       name: 'CREDIT CARD',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/cc.png',
-  //       paymentCode: 'CC',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   ],
-  // ),
   PaymentCategory(
     title: 'Bank Transfer',
     paymentType: PaymentType.bankTransfer,
     paymentMethod: [
-      // PaymentMethod(
-      //   name: 'BCA VA',
-      //   description: 'Tanpa Biaya Layanan',
-      //   imageUrl: 'assets/images/payment/bca.png',
-      //   paymentCode: 'BCA_VA',
-      //   paymentInstruction: PaymentInstruction(
-      //     detail:
-      //         'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-      //         'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-      //     stepPaymentInstruction: [
-      //       StepPaymentInstruction(
-      //         title: 'm-BCA',
-      //         step: [
-      //           'Lakukan log in pada aplikasi BCA mobile',
-      //           "Pilih 'm-BCA' Masukkan kode akses m-BCA",
-      //           "Pilih 'm-Transfer'",
-      //           "Pilih 'Virtual Account BCA'",
-      //           'Masukkan nomor Virtual Account BCA 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai ) atau pilih dari Daftar Transfer',
-      //           'Masukkan jumlah pembayaran sesuai dengan tagihan',
-      //           'Masukkan pin m-BCA',
-      //           'Pembayaran selesai',
-      //         ],
-      //       ),
-      //       StepPaymentInstruction(
-      //         title: 'Klik BCA',
-      //         step: [
-      //           'Lakukan log in pada aplikasi KlikBCA individual',
-      //           'Masukkan user ID dan PIN',
-      //           "Pilih 'Transfer Dana'",
-      //           "Pilih 'Transfer ke Virtual Account BCA'",
-      //           'Masukkan nomor Virtual Account BCA 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai ) atau pilih dari Daftar Transfer',
-      //           'Masukkan jumlah pembayaran sesuai dengan tagihan',
-      //           'Validasi pembayaran anda',
-      //           'Pembayaran selesai',
-      //         ],
-      //       ),
-      //       StepPaymentInstruction(
-      //         title: 'ATM BCA',
-      //         step: [
-      //           'Masukkan kartu ATM BCA dan PIN',
-      //           "Pilih 'Transaksi Lainya'",
-      //           "Pilih 'Transfer'",
-      //           "Pilih 'ke Rekening Virtual Account BCA'",
-      //           "Masukkan nomor BCA Virtual Account 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai )",
-      //           'Masukkan jumlah pembayaran sesuai dengan tagihan',
-      //           'Validasi pembayaran anda',
-      //           'Pembayaran selesai',
-      //         ],
-      //       ),
-      //     ],
-      //   ),
-      // ),
       PaymentMethod(
         name: 'BRI VA',
         description: 'Tanpa Biaya Layanan',
@@ -175,50 +98,6 @@ List<PaymentCategory> listPayment = [
       ),
     ],
   ),
-  // PaymentCategory(
-  //   title: 'E-Wallet',
-  //   paymentType: PaymentType.eWallet,
-  //   paymentMethod: [
-  //     PaymentMethod(
-  //       name: 'OVO',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/ovo.png',
-  //       paymentCode: 'EW_OVO',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //               "Pilih 'm-BCA' Masukkan kode akses m-BCA",
-  //               "Pilih 'm-Transfer'",
-  //               "Pilih 'Virtual Account BCA'",
-  //               'Masukkan nomor Virtual Account BCA 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai ) atau pilih dari Daftar Transfer',
-  //               'Masukkan jumlah pembayaran sesuai dengan tagihan',
-  //               'Masukkan pin m-BCA',
-  //               'Pembayaran selesai',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //     PaymentMethod(
-  //       name: 'DANA',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/dana.png',
-  //       paymentCode: 'EW_DANA',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail: 'Pembayaran DANA harus dilakukan melalui DANA website.\n\n'
-  //             'Pastikan bahwa Anda telah terdaftar pada layanan DANA. Klik tombol pembayaran untuk melanjutkan pembayaran ke halaman website DANA.\n\n'
-  //             'Periksa kembali data pembayaran Anda sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [],
-  //       ),
-  //     ),
-  //   ],
-  // ),
   PaymentCategory(
     title: 'QRIS',
     paymentType: PaymentType.qris,
@@ -274,73 +153,4 @@ List<PaymentCategory> listPayment = [
       ),
     ],
   ),
-  // PaymentCategory(
-  //   title: 'Retail',
-  //   paymentType: PaymentType.retail,
-  //   paymentMethod: [
-  //     PaymentMethod(
-  //       name: 'RETAIL',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/retail.png',
-  //       paymentCode: 'RT_R',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //     PaymentMethod(
-  //       name: 'INDOMARET',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/indomaret.png',
-  //       paymentCode: 'RT_IND',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   ],
-  // ),
-  // PaymentCategory(
-  //   title: 'E-Banking',
-  //   paymentType: PaymentType.retail,
-  //   paymentMethod: [
-  //     PaymentMethod(
-  //       name: 'JENIUS PAY',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/jenius.png',
-  //       paymentCode: 'EB_JENIUS',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   ],
-  // ),
 ];

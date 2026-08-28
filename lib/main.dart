@@ -1,14 +1,13 @@
-// import 'package:dynamic_path_url_strategy/dynamic_path_url_strategy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:get/get.dart';
 
-import 'app/core/dependency_injection.dart';
-import 'infrastructure/navigation/navigation.dart';
-import 'infrastructure/navigation/routes.dart';
+import 'shared/config/dependency_injection.dart';
 import 'shared/constants/colors.dart';
+import 'shared/navigation/navigation.dart';
+import 'shared/navigation/routes.dart';
 
 void main() async {
   if (kIsWeb) {

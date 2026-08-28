@@ -1,15 +1,10 @@
 class NetworkStatus {
-  static bool isStatusOkay(int statusCode) {
-    if ([200, 201, 202, 203, 204, 205].contains(statusCode)) {
-      return true;
-    }
-    return false;
+  static bool isStatusOkay(int? statusCode) {
+    if (statusCode == null) return false;
+    return statusCode >= 200 && statusCode < 300;
   }
 
-  static bool isUnauthorized(int statusCode) {
-    if ([403, 401].contains(statusCode)) {
-      return true;
-    }
-    return false;
+  static bool isUnauthorized(int? statusCode) {
+    return statusCode == 401 || statusCode == 403;
   }
 }
