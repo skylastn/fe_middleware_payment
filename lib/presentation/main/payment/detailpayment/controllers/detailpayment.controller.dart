@@ -62,7 +62,6 @@ class DetailPaymentController extends GetxController {
   }
 
   paymentstate.PaymentCategory? getSelectedPaymentCategory(String paymentType) {
-    // Get.log('paymentType : $paymentType');
     for (var cat in listPayment) {
       var found = cat.paymentMethod.firstWhereOrNull(
         (element) => paymentType == element.paymentCode,
@@ -85,7 +84,6 @@ class DetailPaymentController extends GetxController {
       if (data == null) {
         return;
       }
-      // Get.log('run here : ${data.toJson()}');
       if (data.reference == state.orderId) {
         state.order = data;
         handleSuccess(isRedirect: true);

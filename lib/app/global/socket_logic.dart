@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../../domain/model/response/orders.dart';
 import '../../domain/model/socket_model.dart';
@@ -178,8 +179,9 @@ class SocketLogic extends GetxController {
         if (data == null) {
           return;
         }
-        Get.log(
-            'data notification ${data['type']} (${data.runtimeType}) : ${jsonEncode(data)}');
+        if (kDebugMode) {
+          log('Notification received [${data['type']}]: ${jsonEncode(data)}');
+        }
         switch (data['type']) {
           case 'order':
             orderStream.add(Orders.fromJson(data['data']));

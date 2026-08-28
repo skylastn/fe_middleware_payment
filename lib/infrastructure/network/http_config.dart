@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'dart:io';
+import 'package:dio/io.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 
@@ -12,15 +13,20 @@ class TrustAllCertificates {
 
   static TrustAllCertificates get getInstance => _instance;
 
-  http.Client sslClient() {
+  HttpClient createHttpClient() {
     bool trustSelfSigned = true;
-    var ioClient = HttpClient()
+    return HttpClient()
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => trustSelfSigned;
-    // {
-    // return (host.compareTo("domain-name.com") == 0);
-    // };
+  }
+
+  http.Client sslClient() {
+    var ioClient = createHttpClient();
     http.Client client = IOClient(ioClient);
     return client;
+  }
+
+  IOHttpClientAdapter dioAdapter() {
+    return IOHttpClientAdapter(createHttpClient: () => createHttpClient());
   }
 }

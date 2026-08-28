@@ -11,7 +11,6 @@ class Snackbar {
       Color? textColor,
       Color? backgroundColor}) {
     double width = 300;
-    Get.log(message.length.toString());
     if (message.length < 30) {
       width = 12 * message.length.toDouble();
     }
