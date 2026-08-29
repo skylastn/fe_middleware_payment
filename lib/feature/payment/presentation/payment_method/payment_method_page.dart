@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../shared/constants/colors.dart';
-import '../../../../shared/constants/sample.dart';
 import '../../../../shared/widgets/mobile_size_widget.dart';
+import '../../../../shared/widgets/state_widget.dart';
 import '../widget/main_widget.dart';
 import 'payment_method_logic.dart';
 
@@ -75,24 +75,21 @@ class PaymentMethodPage extends GetView<PaymentMethodLogic> {
             const Divider(color: ColorConstants.border),
             const SizedBox(height: 8),
 
-            // Payment Categories & Methods
+            // Dynamic Payment Categories & Methods from API
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: listPayment.length,
-                    itemBuilder: (context, index) => paymentMethodWidget(
-                      paymentCategory: listPayment[index],
-                      callback: (content) => logic.routeToDetail(
-                        content,
-                        listPayment[index],
-                      ),
+              child: StateWidget().initial(
+                stateStatus: logic.state.status,
+                body: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  itemCount: logic.state.categories.length,
+                  itemBuilder: (context, index) => paymentMethodWidget(
+                    paymentCategory: logic.state.categories[index],
+                    callback: (content) => logic.routeToDetail(
+                      content,
+                      logic.state.categories[index],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ],

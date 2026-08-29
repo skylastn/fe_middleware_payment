@@ -6,14 +6,19 @@ class PaymentRemoteDataSource {
   final ApiProvider _apiProvider = Get.find<ApiProvider>();
 
   Future<ResponseModel> getPaymentCategory() {
-    return _apiProvider.get('payment/getPaymentCategory');
+    return _apiProvider.get('client/payment/getPaymentCategory');
   }
 
-  Future<ResponseModel> getPaymentMethod() {
-    return _apiProvider.get('payment/getPaymentMethod');
+  Future<ResponseModel> getPaymentMethod({String? from, String? categoriesKey}) {
+    final query = <String, dynamic>{};
+    if (from != null && from.isNotEmpty) query['from'] = from;
+    if (categoriesKey != null && categoriesKey.isNotEmpty) {
+      query['categoriesKey'] = categoriesKey;
+    }
+    return _apiProvider.get('client/payment/getPaymentMethod', query: query.isNotEmpty ? query : null);
   }
 
   Future<ResponseModel> getDetailPaymentMethod() {
-    return _apiProvider.get('payment/getDetailPaymentMethod');
+    return _apiProvider.get('client/payment/getDetailPaymentMethod');
   }
 }

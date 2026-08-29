@@ -8,16 +8,11 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../shared/constants/sample.dart';
 import '../../../../shared/logic/network_logic.dart';
 import '../../../../shared/logic/socket_logic.dart';
 import '../../../../shared/model/state_status.dart';
 import '../../../../shared/utility/snackbar.dart';
 import '../../application/order_service.dart';
-import '../../domain/model/response/duitku_order.dart';
-import '../../domain/model/response/project.dart';
-import '../../domain/model/response/spnpay_order.dart';
-import '../payment_method/payment_method_state.dart';
 import 'detail_payment_state.dart';
 
 class DetailPaymentLogic extends GetxController {
@@ -32,6 +27,12 @@ class DetailPaymentLogic extends GetxController {
   void onInit() {
     super.onInit();
     state.orderId = Get.parameters['reference'] ?? '';
+    state.paymentCode = Get.parameters['paymentCode'] ?? '';
+    state.categoryTitle = Get.parameters['categoryTitle'] ?? '';
+    state.paymentName = Get.parameters['paymentName'] ?? '';
+    state.imageUrl = Get.parameters['imageUrl'] ?? '';
+    state.paymentType = Get.parameters['paymentType'] ?? '';
+    state.from = Get.parameters['from'] ?? '';
   }
 
   @override
@@ -52,41 +53,49 @@ class DetailPaymentLogic extends GetxController {
 
   Future<void> init() async {
     await getDetailOrder();
-    state.paymentCategory = getSelectedPaymentCategory(
-      state.order?.paymentMethod ?? '',
-    );
-    state.paymentCode = state.order?.paymentMethod ?? '';
-    state.paymentMethod = getSelectedPaymentMethod();
+
+    if (state.paymentCode.isEmpty && (state.order?.paymentMethod ?? '').isNotEmpty) {
+      state.paymentCode = state.order!.paymentMethod!;
+    }
+
+    if (state.paymentName.isEmpty) {
+      state.paymentName = state.order?.paymentMethods?.name ??
+          state.paymentCode;
+    }
+
+    if (state.imageUrl.isEmpty) {
+      state.imageUrl = state.order?.paymentMethods?.imageUrl ??
+          state.order?.paymentMethods?.image ??
+          '';
+    }
+
+    if (state.categoryTitle.isEmpty) {
+      state.categoryTitle = state.order?.paymentMethods?.category?.title ??
+          'Metode Pembayaran';
+    }
+
     listenOrder();
     update();
-  }
 
-  PaymentCategory? getSelectedPaymentCategory(String paymentType) {
-    for (var cat in listPayment) {
-      var found = cat.paymentMethod.firstWhereOrNull(
-        (element) => paymentType == element.paymentCode,
-      );
-      if (found != null) {
-        return cat;
+    if (state.order?.status != 'PAID' && state.order?.status != 'SUCCESS') {
+      if ((state.order?.response ?? '').isEmpty &&
+          (state.order?.value ?? '').isEmpty &&
+          (state.order?.url ?? '').isEmpty) {
+        if (state.paymentCode.isNotEmpty) {
+          await createOrderPayment();
+        }
       }
     }
-    return null;
   }
-
-  PaymentMethod getSelectedPaymentMethod() =>
-      state.paymentCategory!.paymentMethod.firstWhere(
-        (element) => state.paymentCode == element.paymentCode,
-      );
 
   void listenOrder() {
     state.orderSubscribition?.cancel();
     state.orderSubscribition = socketLogic.orderStream.listen((data) {
-      if (data == null) {
-        return;
-      }
+      if (data == null) return;
       if (data.reference == state.orderId) {
         state.order = data;
         handleSuccess(isRedirect: true);
+        extractPaymentDetails();
         update();
       }
     });
@@ -120,6 +129,7 @@ class DetailPaymentLogic extends GetxController {
       }, (r) {
         state.status = StateStatus.success;
         state.order = r;
+        extractPaymentDetails();
         handleSuccess(isRedirect: isRedirect);
         update();
       });
@@ -128,71 +138,126 @@ class DetailPaymentLogic extends GetxController {
     }
   }
 
+  void extractPaymentDetails() {
+    final order = state.order;
+    if (order == null) return;
+
+    if ((order.value ?? '').isNotEmpty) {
+      final val = order.value!;
+      if (val.startsWith('000201') || val.contains('QRIS') || val.length > 50) {
+        state.qrString = val;
+      } else {
+        state.vaNumber = val;
+      }
+      state.isPayment = true;
+    }
+
+    if ((order.url).isNotEmpty && order.url.startsWith('http')) {
+      state.checkoutUrl = order.url;
+      state.isPayment = true;
+    }
+
+    if ((order.response ?? '').isNotEmpty) {
+      try {
+        final res = jsonDecode(order.response!);
+        if (res is Map<String, dynamic>) {
+          state.isPayment = true;
+
+          final qr = res['qrString'] ??
+              res['qrContent'] ??
+              res['qr_string'] ??
+              res['qr_url'];
+          if (qr != null && qr.toString().isNotEmpty) {
+            state.qrString = qr.toString();
+          }
+
+          final va = res['vaNumber'] ??
+              res['account_number'] ??
+              res['bill_key'] ??
+              res['permata_va_number'] ??
+              res['bca_va_number'] ??
+              res['bri_va_number'] ??
+              res['bni_va_number'];
+          if (va != null && va.toString().isNotEmpty) {
+            state.vaNumber = va.toString();
+          }
+
+          if (res['virtualAccount'] is Map && res['virtualAccount']['vaNumber'] != null) {
+            state.vaNumber = res['virtualAccount']['vaNumber'].toString();
+          }
+
+          if (res['va_numbers'] is List && (res['va_numbers'] as List).isNotEmpty) {
+            final firstVa = (res['va_numbers'] as List)[0];
+            if (firstVa is Map && firstVa['va_number'] != null) {
+              state.vaNumber = firstVa['va_number'].toString();
+            }
+          }
+
+          final link = res['paymentUrl'] ??
+              res['invoice_url'] ??
+              res['redirect_url'] ??
+              res['url'] ??
+              res['link'];
+          if (link != null && link.toString().startsWith('http')) {
+            state.checkoutUrl = link.toString();
+          }
+        }
+      } catch (_) {}
+    }
+  }
+
   Future<void> handleSuccess({bool isRedirect = false}) async {
     if (state.order == null) return;
-    switch (state.order?.project?.projectType) {
-      case ProjectType.spnpay:
-        if ((state.order?.request ?? '').isNotEmpty) {
-          state.spnPayOrder.request = SpnPayOrderRequest.fromJson(
-            jsonDecode(state.order?.request ?? ''),
-          );
-        }
-        if ((state.order?.response ?? '').isNotEmpty) {
-          state.spnPayOrder.response = SpnPayOrderResponse.fromJson(
-            jsonDecode(state.order?.response ?? ''),
-          );
-        }
-        if ((state.order?.callback ?? '').isNotEmpty) {
-          state.spnPayOrder.callback = state.order?.callback ?? '';
-        }
-      case ProjectType.duitku:
-        if ((state.order?.request ?? '').isNotEmpty) {
-          state.duitkuOrder.request = DuitkuOrderRequest.fromMap(
-            jsonDecode(state.order?.request ?? ''),
-          );
-        }
-        if ((state.order?.response ?? '').isNotEmpty) {
-          state.isPayment = true;
-          state.duitkuOrder.response = DuitkuOrderResponse.fromMap(
-            jsonDecode(state.order?.response ?? ''),
-          );
-        }
-        if ((state.order?.callback ?? '').isNotEmpty) {
-          state.duitkuOrder.callback = DuitkuOrderCallback.fromMap(
-            jsonDecode(state.order?.callback ?? ''),
-          );
-        }
-      default:
-    }
+
     if (isRedirect) {
-      if (state.order?.status == 'SUCCESS') {
-        if (state.order?.project?.projectType == ProjectType.duitku) {
-          Snackbar.showInfo(message: 'Payment Success');
-          await Future.delayed(const Duration(seconds: 1));
-          _launchUrl(state.duitkuOrder.request?.returnUrl ?? '');
-          return;
+      final status = state.order?.status ?? '';
+      if (status == 'SUCCESS' || status == 'PAID') {
+        Snackbar.showInfo(message: 'Pembayaran Berhasil Dikonfirmasi!');
+        String returnUrl = '';
+
+        if ((state.order?.request ?? '').isNotEmpty) {
+          try {
+            final req = jsonDecode(state.order!.request!);
+            if (req is Map<String, dynamic>) {
+              returnUrl = req['returnUrl'] ??
+                  req['return_url'] ??
+                  req['success_redirect_url'] ??
+                  '';
+            }
+          } catch (_) {}
+        }
+
+        if (returnUrl.isNotEmpty && returnUrl.startsWith('http')) {
+          await Future.delayed(const Duration(seconds: 2));
+          _launchUrl(returnUrl);
         }
       }
     }
   }
 
   Future<void> createOrderPayment() async {
-    if (state.order?.response != null) {
+    if (state.order?.response != null && state.order!.response!.isNotEmpty) {
+      state.isPayment = true;
+      extractPaymentDetails();
       update();
       return;
     }
     state.status = StateStatus.loading;
     update();
+
     var response = await _orderService.createOrderPayment(
-      paymentMethod: state.paymentMethod?.paymentCode ?? '',
+      paymentMethod: state.paymentCode.isNotEmpty
+          ? state.paymentCode
+          : (state.order?.paymentMethod ?? ''),
       reference: state.orderId,
     );
+
     response.fold((l) {
       state.status = StateStatus.error;
       state.errorMsg = l.msg;
       update();
     }, (r) async {
-      getDetailOrder(isLoading: false);
+      await getDetailOrder(isLoading: false);
     });
   }
 
@@ -207,12 +272,16 @@ class DetailPaymentLogic extends GetxController {
         await (image.toByteData(format: ui.ImageByteFormat.png));
     Uint8List? bytes = byteData?.buffer.asUint8List();
     await FileSaver.instance.saveFile(name: 'qrcode.png', bytes: bytes);
-    Snackbar.showInfo(message: 'File saved to storage successfully!');
+    Snackbar.showInfo(message: 'QR Code berhasil disimpan ke penyimpanan');
+  }
+
+  Future<void> launchPaymentUrl(String url) async {
+    _launchUrl(url);
   }
 
   Future<void> _launchUrl(String url) async {
-    if (!await launchUrl(Uri.parse(url))) {
-      Snackbar.showInfo(message: 'Could not launch $url');
+    if (!await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication)) {
+      Snackbar.showInfo(message: 'Tidak dapat membuka $url');
     }
   }
 }

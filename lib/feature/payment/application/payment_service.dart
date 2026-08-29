@@ -13,8 +13,14 @@ class PaymentService {
     return repository.getPaymentCategory();
   }
 
-  Future<Either<ResponseModel, List<PaymentResponse>>> getPaymentMethod() {
-    return repository.getPaymentMethod();
+  Future<Either<ResponseModel, List<PaymentResponse>>> getPaymentMethod({
+    String? from,
+    String? categoriesKey,
+  }) {
+    return repository.getPaymentMethod(
+      from: from,
+      categoriesKey: categoriesKey,
+    );
   }
 
   Future<Either<ResponseModel, PaymentResponse>> getDetailPaymentMethod() {

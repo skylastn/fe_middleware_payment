@@ -7,7 +7,10 @@
       "type": "dart",
       "program": "${workspaceFolder}/lib/main.dart",
       "flutterMode": "debug",
-      "preLaunchTask": "replace-env-development"
+      "preLaunchTask": "replace-env-development",
+      "args": [
+        "--dart-define-from-file=.env"
+      ]
     },
     {
       "name": "Prod All",
@@ -15,7 +18,10 @@
       "type": "dart",
       "program": "${workspaceFolder}/lib/main.dart",
       "flutterMode": "debug",
-      "preLaunchTask": "replace-env-production"
+      "preLaunchTask": "replace-env-production",
+      "args": [
+        "--dart-define-from-file=.env"
+      ]
     },
     {
       "name": "DEV (Chrome)",
@@ -26,7 +32,8 @@
       "deviceId": "chrome",
       "preLaunchTask": "replace-env-development",
       "args": [
-        "--web-port=10000"
+        "--web-port=10000",
+        "--dart-define-from-file=.env"
       ]
     },
     {
@@ -38,7 +45,8 @@
       "deviceId": "chrome",
       "preLaunchTask": "replace-env-production",
       "args": [
-        "--web-port=10001"
+        "--web-port=10001",
+        "--dart-define-from-file=.env"
       ]
     },
     {
@@ -50,7 +58,8 @@
       "deviceId": "chrome",
       "preLaunchTask": "replace-env-development-wasm",
       "args": [
-        "--wasm"
+        "--wasm",
+        "--dart-define-from-file=.env"
       ]
     }
   ]

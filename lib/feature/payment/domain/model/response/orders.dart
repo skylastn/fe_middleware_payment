@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'payment_method.dart';
 import 'project.dart';
 
@@ -12,6 +14,7 @@ class Orders {
   String? email;
   String? notes;
   String? paymentMethod;
+  String? value;
   String? request;
   String? response;
   String? callback;
@@ -32,6 +35,7 @@ class Orders {
     required this.email,
     required this.notes,
     required this.paymentMethod,
+    this.value,
     required this.request,
     required this.response,
     required this.callback,
@@ -43,20 +47,21 @@ class Orders {
   });
 
   factory Orders.fromJson(Map<String, dynamic> json) => Orders(
-        id: json['id'],
-        type: json['type'],
-        status: json['status'],
-        reference: json['reference'],
-        mode: json['mode'],
-        address: json['address'],
-        phone: json['phone'],
-        email: json['email'],
-        notes: json['notes'],
-        paymentMethod: json['payment_method'],
-        request: json['request'],
-        response: json['response'],
-        callback: json['callback'],
-        url: json['url'],
+        id: json['id']?.toString() ?? '',
+        type: json['type']?.toString() ?? '',
+        status: json['status']?.toString() ?? '',
+        reference: json['reference']?.toString() ?? '',
+        mode: json['mode']?.toString() ?? '',
+        address: json['address']?.toString(),
+        phone: json['phone']?.toString(),
+        email: json['email']?.toString(),
+        notes: json['notes']?.toString(),
+        paymentMethod: json['payment_method']?.toString(),
+        value: json['value']?.toString(),
+        request: json['request']?.toString(),
+        response: json['response']?.toString(),
+        callback: json['callback']?.toString(),
+        url: json['url']?.toString() ?? '',
         createdAt: json['created_at'] == null
             ? null
             : DateTime.parse(json['created_at']),
@@ -84,6 +89,7 @@ class Orders {
         'email': email,
         'notes': notes,
         'payment_method': paymentMethod,
+        'value': value,
         'request': request,
         'response': response,
         'callback': callback,
@@ -93,4 +99,59 @@ class Orders {
         'payment_methods': paymentMethods?.toMap(),
         'project': project?.toJson(),
       };
+
+  double get totalAmount {
+    if ((request ?? '').isNotEmpty) {
+      try {
+        final decoded = jsonDecode(request!);
+        if (decoded is Map<String, dynamic>) {
+          if (decoded['paymentAmount'] != null) {
+            return (decoded['paymentAmount'] as num).toDouble();
+          }
+          if (decoded['amount'] != null) {
+            if (decoded['amount'] is num) {
+              return (decoded['amount'] as num).toDouble();
+            }
+            if (decoded['amount'] is Map && decoded['amount']['value'] != null) {
+              return double.tryParse(decoded['amount']['value'].toString()) ?? 0.0;
+            }
+          }
+          if (decoded['transaction_details'] != null &&
+              decoded['transaction_details']['gross_amount'] != null) {
+            return (decoded['transaction_details']['gross_amount'] as num).toDouble();
+          }
+          if (decoded['line_items'] != null &&
+              decoded['line_items'] is List &&
+              (decoded['line_items'] as List).isNotEmpty) {
+            final first = decoded['line_items'][0];
+            if (first['price_data'] != null && first['price_data']['unit_amount'] != null) {
+              return (first['price_data']['unit_amount'] as num).toDouble();
+            }
+          }
+        }
+      } catch (_) {}
+    }
+    return 0.0;
+  }
+
+  String get customerDisplayName {
+    if ((request ?? '').isNotEmpty) {
+      try {
+        final decoded = jsonDecode(request!);
+        if (decoded is Map<String, dynamic>) {
+          if (decoded['viewName'] != null && decoded['viewName'].toString().isNotEmpty) {
+            return decoded['viewName'].toString();
+          }
+          if (decoded['customerVaName'] != null && decoded['customerVaName'].toString().isNotEmpty) {
+            return decoded['customerVaName'].toString();
+          }
+          final fn = decoded['firstName']?.toString() ?? '';
+          final ln = decoded['lastName']?.toString() ?? '';
+          final fullName = '$fn $ln'.trim();
+          if (fullName.isNotEmpty) return fullName;
+        }
+      } catch (_) {}
+    }
+    return '-';
+  }
 }

@@ -14,6 +14,8 @@ class PaymentResponse {
   String? type;
   String? name;
   String? from;
+  String? image;
+  String? imageUrl;
   DateTime? createdAt;
   DateTime? updatedAt;
   String? bankCode;
@@ -26,6 +28,8 @@ class PaymentResponse {
     this.type,
     this.name,
     this.from,
+    this.image,
+    this.imageUrl,
     this.createdAt,
     this.updatedAt,
     this.bankCode,
@@ -39,6 +43,8 @@ class PaymentResponse {
     String? type,
     String? name,
     String? from,
+    String? image,
+    String? imageUrl,
     DateTime? createdAt,
     DateTime? updatedAt,
     String? bankCode,
@@ -51,6 +57,8 @@ class PaymentResponse {
         type: type ?? this.type,
         name: name ?? this.name,
         from: from ?? this.from,
+        image: image ?? this.image,
+        imageUrl: imageUrl ?? this.imageUrl,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
         bankCode: bankCode ?? this.bankCode,
@@ -64,6 +72,8 @@ class PaymentResponse {
         type: json['type'],
         name: json['name'],
         from: json['from'],
+        image: json['image'],
+        imageUrl: json['image_url'],
         createdAt: json['created_at'] == null
             ? null
             : DateTime.parse(json['created_at']),
@@ -83,6 +93,8 @@ class PaymentResponse {
         'type': type,
         'name': name,
         'from': from,
+        'image': image,
+        'image_url': imageUrl,
         'created_at': createdAt?.toIso8601String(),
         'updated_at': updatedAt?.toIso8601String(),
         'bankCode': bankCode,

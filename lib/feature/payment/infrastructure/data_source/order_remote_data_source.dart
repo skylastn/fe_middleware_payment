@@ -6,14 +6,14 @@ class OrderRemoteDataSource {
   final ApiProvider _apiProvider = Get.find<ApiProvider>();
 
   Future<ResponseModel> getDetailOrder({required String reference}) {
-    return _apiProvider.get('order/detail', query: {'reference': reference});
+    return _apiProvider.get('client/order/detail', query: {'reference': reference});
   }
 
   Future<ResponseModel> createOrderPayment({
     required String paymentMethod,
     required String reference,
   }) {
-    return _apiProvider.post('order/createPayment', body: {
+    return _apiProvider.post('client/order/createPayment', body: {
       'reference': reference,
       'paymentMethod': paymentMethod,
     });

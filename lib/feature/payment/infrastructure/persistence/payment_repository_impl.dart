@@ -28,9 +28,14 @@ class PaymentRepositoryImpl implements PaymentRepository {
   }
 
   @override
-  Future<Either<ResponseModel, List<PaymentResponse>>>
-      getPaymentMethod() async {
-    final response = await remoteDataSource.getPaymentMethod();
+  Future<Either<ResponseModel, List<PaymentResponse>>> getPaymentMethod({
+    String? from,
+    String? categoriesKey,
+  }) async {
+    final response = await remoteDataSource.getPaymentMethod(
+      from: from,
+      categoriesKey: categoriesKey,
+    );
     if (!response.isError) {
       return Right(
         List.from(

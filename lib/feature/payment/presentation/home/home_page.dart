@@ -156,9 +156,10 @@ class HomePage extends GetView<HomeLogic> {
                   const SizedBox(height: 2),
                   Text(
                     Format.rupiahConvert(
-                      state.order?.project?.projectType == ProjectType.spnpay
-                          ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
-                          : 0.0,
+                      state.order?.totalAmount ??
+                          (state.order?.project?.projectType == ProjectType.spnpay
+                              ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
+                              : 0.0),
                     ),
                     style: const TextStyle(
                       fontSize: 18,
@@ -202,6 +203,10 @@ class HomePage extends GetView<HomeLogic> {
 
   Widget orderDetailWidget(HomeLogic logic) {
     final state = logic.state;
+    final amount = state.order?.totalAmount ??
+        (state.order?.project?.projectType == ProjectType.spnpay
+            ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
+            : 0.0);
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -242,11 +247,7 @@ class HomePage extends GetView<HomeLogic> {
           title: 'Daftar Barang',
           subTitle: '${state.order?.notes ?? 'Item'} x 1',
           endWidget: Text(
-            Format.rupiahConvert(
-              state.order?.project?.projectType == ProjectType.spnpay
-                  ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
-                  : 0,
-            ),
+            Format.rupiahConvert(amount),
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -260,14 +261,18 @@ class HomePage extends GetView<HomeLogic> {
 
   Widget customerDetailWidget(HomeLogic logic) {
     final state = logic.state;
+    final customerName = (state.order?.customerDisplayName ?? '-').isNotEmpty &&
+            state.order?.customerDisplayName != '-'
+        ? state.order!.customerDisplayName
+        : (state.order?.project?.projectType == ProjectType.spnpay
+            ? state.spnPayOrder.request?.viewName ?? '-'
+            : '-');
     return ListView(
       padding: EdgeInsets.zero,
       children: [
         itemWidget(
           title: 'Nama Lengkap',
-          subTitle: state.order?.project?.projectType == ProjectType.spnpay
-              ? state.spnPayOrder.request?.viewName ?? '-'
-              : '-',
+          subTitle: customerName,
         ),
         itemWidget(
           title: 'Nomor Telepon',

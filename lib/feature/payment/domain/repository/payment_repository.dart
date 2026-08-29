@@ -5,6 +5,9 @@ import '../model/response/payment_method.dart';
 
 abstract class PaymentRepository {
   Future<Either<ResponseModel, List<PaymentCategory>>> getPaymentCategory();
-  Future<Either<ResponseModel, List<PaymentResponse>>> getPaymentMethod();
+  Future<Either<ResponseModel, List<PaymentResponse>>> getPaymentMethod({
+    String? from,
+    String? categoriesKey,
+  });
   Future<Either<ResponseModel, PaymentResponse>> getDetailPaymentMethod();
 }

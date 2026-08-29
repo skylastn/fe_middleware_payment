@@ -54,16 +54,22 @@ class Project {
       };
 
   ProjectType get projectType {
-    switch (slug) {
+    switch (slug.toLowerCase()) {
       case 'spnpay':
         return ProjectType.spnpay;
       case 'duitku':
         return ProjectType.duitku;
       case 'midtrans':
         return ProjectType.midtrans;
+      case 'xendit':
+        return ProjectType.xendit;
+      case 'stripe':
+        return ProjectType.stripe;
+      case 'paprika':
+        return ProjectType.paprika;
       default:
+        return ProjectType.spnpay;
     }
-    return ProjectType.spnpay;
   }
 }
 
@@ -72,4 +78,6 @@ enum ProjectType {
   duitku,
   midtrans,
   xendit,
+  stripe,
+  paprika,
 }

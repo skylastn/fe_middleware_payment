@@ -44,14 +44,18 @@ class HomeLogic extends GetxController with GetSingleTickerProviderStateMixin {
       state.order = r;
       if (state.order?.project?.projectType == ProjectType.spnpay) {
         if ((r.request ?? '').isNotEmpty) {
-          state.spnPayOrder.request = SpnPayOrderRequest.fromJson(
-            jsonDecode(r.request ?? ''),
-          );
+          try {
+            state.spnPayOrder.request = SpnPayOrderRequest.fromJson(
+              jsonDecode(r.request ?? ''),
+            );
+          } catch (_) {}
         }
         if ((r.response ?? '').isNotEmpty) {
-          state.spnPayOrder.response = SpnPayOrderResponse.fromJson(
-            jsonDecode(r.response ?? ''),
-          );
+          try {
+            state.spnPayOrder.response = SpnPayOrderResponse.fromJson(
+              jsonDecode(r.response ?? ''),
+            );
+          } catch (_) {}
         }
         if ((r.callback ?? '').isNotEmpty) {
           state.spnPayOrder.callback = r.callback ?? '';

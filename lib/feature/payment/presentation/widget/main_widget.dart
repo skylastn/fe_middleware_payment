@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../shared/constants/colors.dart';
 import '../../../../shared/widgets/picture_handler_widget.dart';
-import '../payment_method/payment_method_state.dart';
+import '../../domain/model/response/payment_category.dart';
+import '../../domain/model/response/payment_method.dart';
 
 Widget itemWidget({
   required String title,
@@ -59,7 +60,7 @@ Widget itemWidget({
 
 Widget paymentMethodWidget({
   required PaymentCategory paymentCategory,
-  required Function(PaymentMethod) callback,
+  required Function(PaymentResponse) callback,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,10 +80,11 @@ Widget paymentMethodWidget({
       ListView.separated(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount: paymentCategory.paymentMethod.length,
+        itemCount: paymentCategory.paymentMethods.length,
         separatorBuilder: (_, __) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
-          final item = paymentCategory.paymentMethod[index];
+          final item = paymentCategory.paymentMethods[index];
+          final imgUrl = item.imageUrl ?? item.image ?? '';
           return Material(
             color: Colors.transparent,
             child: InkWell(
@@ -118,7 +120,7 @@ Widget paymentMethodWidget({
                       ),
                       child: Center(
                         child: PictureHandlerWidget().pictureHandler(
-                          item.imageUrl,
+                          imgUrl,
                         ),
                       ),
                     ),
@@ -128,7 +130,7 @@ Widget paymentMethodWidget({
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            item.name,
+                            item.name ?? item.key ?? '',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -137,7 +139,9 @@ Widget paymentMethodWidget({
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            item.description,
+                            paymentCategory.detail.isEmpty
+                                ? 'Tanpa Biaya Layanan'
+                                : paymentCategory.detail,
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,

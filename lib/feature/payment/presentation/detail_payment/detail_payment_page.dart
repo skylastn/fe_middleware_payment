@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../../shared/constants/colors.dart';
@@ -10,8 +9,6 @@ import '../../../../shared/utility/snackbar.dart';
 import '../../../../shared/widgets/mobile_size_widget.dart';
 import '../../../../shared/widgets/picture_handler_widget.dart';
 import '../../../../shared/widgets/state_widget.dart';
-import '../../domain/model/response/project.dart';
-import '../widget/main_widget.dart';
 import 'detail_payment_logic.dart';
 import 'detail_payment_state.dart';
 import 'widget/duitku_widget.dart';
@@ -28,6 +25,19 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
       body: GetBuilder<DetailPaymentLogic>(
         builder: (logic) {
           final state = logic.state;
+          final paymentName = state.paymentName.isNotEmpty
+              ? state.paymentName
+              : (state.order?.paymentMethods?.name ??
+                  state.paymentCode.replaceAll('_', ' '));
+          final categoryTitle = state.categoryTitle.isNotEmpty
+              ? state.categoryTitle
+              : (state.order?.paymentMethods?.category?.title ?? 'Saluran Pembayaran');
+          final imageUrl = state.imageUrl.isNotEmpty
+              ? state.imageUrl
+              : (state.order?.paymentMethods?.imageUrl ??
+                  state.order?.paymentMethods?.image ??
+                  '');
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -116,8 +126,8 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
                 child: Row(
                   children: [
                     Container(
-                      height: 40,
-                      width: 50,
+                      height: 44,
+                      width: 54,
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -128,9 +138,13 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
                         ),
                       ),
                       child: Center(
-                        child: PictureHandlerWidget().pictureHandler(
-                          state.paymentMethod?.imageUrl ?? '',
-                        ),
+                        child: imageUrl.isNotEmpty
+                            ? PictureHandlerWidget().pictureHandler(imageUrl)
+                            : const Icon(
+                                Icons.payment_rounded,
+                                size: 24,
+                                color: ColorConstants.primary,
+                              ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -139,15 +153,16 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            state.paymentMethod?.name ?? 'Metode Pembayaran',
+                            paymentName.isEmpty ? 'Metode Pembayaran' : paymentName,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: ColorConstants.textPrimary,
                             ),
                           ),
+                          const SizedBox(height: 2),
                           Text(
-                            state.paymentCategory?.title ?? '',
+                            categoryTitle,
                             style: const TextStyle(
                               fontSize: 12,
                               color: ColorConstants.textSecondary,
@@ -208,23 +223,34 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
                     ),
                     onPressed: () async {
                       try {
-                        if (!state.isPayment) {
+                        if (!state.isPayment &&
+                            (state.order?.response ?? '').isEmpty &&
+                            (state.order?.value ?? '').isEmpty) {
                           state.isPayment = true;
-                          logic.createOrderPayment();
+                          await logic.createOrderPayment();
                           return;
                         }
                         await logic.getDetailOrder(isLoading: false);
-                        if (state.order?.status == 'PAID' ||
-                            state.order?.status == 'SUCCESS') {
+                        final status = state.order?.status ?? '';
+                        if (status == 'PAID' || status == 'SUCCESS') {
                           Snackbar.showInfo(
                             title: 'Sukses',
                             message: 'Pembayaran Anda berhasil!',
                           );
+                        } else if (status == 'EXPIRED') {
+                          Snackbar.showInfo(
+                            title: 'Kadaluarsa',
+                            message: 'Waktu pembayaran telah habis.',
+                          );
+                        } else if (status == 'FAILED') {
+                          Snackbar.showInfo(
+                            title: 'Gagal',
+                            message: 'Pembayaran gagal diproses.',
+                          );
                         } else {
                           Snackbar.showInfo(
                             title: 'Status',
-                            message:
-                                'Status saat ini: ${state.order?.status ?? 'PENDING'}',
+                            message: 'Status saat ini: ${status.isEmpty ? 'PENDING' : status}',
                           );
                         }
                       } catch (e) {
@@ -235,13 +261,19 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
                       }
                     },
                     icon: Icon(
-                      !state.isPayment
+                      !state.isPayment &&
+                              (state.order?.response ?? '').isEmpty &&
+                              (state.order?.value ?? '').isEmpty
                           ? Icons.lock_outline_rounded
                           : Icons.refresh_rounded,
                       size: 18,
                     ),
                     label: Text(
-                      !state.isPayment ? 'Bayar Sekarang' : 'Cek Status',
+                      !state.isPayment &&
+                              (state.order?.response ?? '').isEmpty &&
+                              (state.order?.value ?? '').isEmpty
+                          ? 'Bayar Sekarang'
+                          : 'Cek Status',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -258,12 +290,7 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
   }
 
   Widget totalWidget(DetailPaymentState state) {
-    double amount = 0.0;
-    if (state.order?.project?.projectType == ProjectType.duitku) {
-      amount = (state.duitkuOrder.request?.paymentAmount ?? 0).toDouble();
-    } else if (state.order?.project?.projectType == ProjectType.spnpay) {
-      amount = (state.spnPayOrder.request?.amount ?? 0).toDouble();
-    }
+    final amount = state.order?.totalAmount ?? 0.0;
     return Text(
       Format.rupiahConvert(amount),
       style: const TextStyle(
@@ -279,57 +306,11 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        if (!state.isPayment) ...[
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: ColorConstants.surfaceMuted,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: ColorConstants.border, width: 0.8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      size: 16,
-                      color: ColorConstants.textSecondary,
-                    ),
-                    SizedBox(width: 6),
-                    Text(
-                      'Informasi Pembayaran',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: ColorConstants.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  state.paymentMethod?.paymentInstruction.detail ?? '',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: ColorConstants.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-        ],
-        if (state.isPayment) ...[
-          statusWidget(state),
-          const SizedBox(height: 12),
-        ],
-        if ((state.paymentMethod?.paymentInstruction.stepPaymentInstruction ??
-                [])
-            .isNotEmpty)
-          paymentInstructionWidget(state),
+        statusWidget(state),
+        const SizedBox(height: 12),
+        DuitkuWidget(),
+        const SizedBox(height: 12),
+        paymentInstructionWidget(state),
       ],
     );
   }
@@ -339,102 +320,68 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
         ? 'PENDING'
         : state.order!.status;
     final isSuccess = status == 'PAID' || status == 'SUCCESS';
-    return Column(
-      children: [
-        if (state.order?.project?.projectType == ProjectType.spnpay)
-          itemWidget(
-            title: 'Nomor Virtual Account',
-            subTitle: state.spnPayOrder.response?.virtualAccount.vaNumber ?? '',
-            endWidget: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () async {
-                  await Clipboard.setData(
-                    ClipboardData(
-                      text: state.spnPayOrder.response?.virtualAccount
-                              .vaNumber ??
-                          '',
-                    ),
-                  );
-                  Snackbar.showInfo(
-                      message: 'Nomor VA disalin ke clipboard');
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: ColorConstants.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: ColorConstants.border,
-                      width: 0.8,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.copy_rounded,
-                    size: 16,
-                    color: ColorConstants.primary,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        if (state.order?.project?.projectType == ProjectType.duitku)
-          DuitkuWidget(),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: isSuccess
-                ? ColorConstants.successLight
-                : ColorConstants.warningLight,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSuccess
-                  ? ColorConstants.success.withAlpha(0x40)
-                  : ColorConstants.warning.withAlpha(0x40),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                isSuccess
-                    ? Icons.check_circle_rounded
-                    : Icons.access_time_filled_rounded,
-                color: isSuccess ? ColorConstants.success : ColorConstants.warning,
-                size: 20,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Status Transaksi',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: ColorConstants.textSecondary,
-                      ),
-                    ),
-                    Text(
-                      status,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: isSuccess
-                            ? ColorConstants.success
-                            : ColorConstants.warning,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+    final isFailed = status == 'FAILED' || status == 'EXPIRED';
+
+    Color bgColor = ColorConstants.warningLight;
+    Color borderColor = ColorConstants.warning.withAlpha(0x40);
+    Color iconColor = ColorConstants.warning;
+    IconData icon = Icons.access_time_filled_rounded;
+
+    if (isSuccess) {
+      bgColor = ColorConstants.successLight;
+      borderColor = ColorConstants.success.withAlpha(0x40);
+      iconColor = ColorConstants.success;
+      icon = Icons.check_circle_rounded;
+    } else if (isFailed) {
+      bgColor = ColorConstants.errorLight;
+      borderColor = ColorConstants.error.withAlpha(0x40);
+      iconColor = ColorConstants.error;
+      icon = Icons.cancel_rounded;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: borderColor,
+          width: 1,
         ),
-      ],
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: iconColor,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Status Transaksi',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: ColorConstants.textSecondary,
+                  ),
+                ),
+                Text(
+                  status,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: iconColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -480,108 +427,108 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
   }
 
   Widget paymentInstructionWidget(DetailPaymentState state) {
-    final instructions =
-        state.paymentMethod?.paymentInstruction.stepPaymentInstruction ?? [];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            children: [
-              Icon(
-                Icons.menu_book_rounded,
-                size: 18,
-                color: ColorConstants.primary,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Petunjuk Pembayaran',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: ColorConstants.textPrimary,
-                ),
-              ),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        color: ColorConstants.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ColorConstants.border, width: 0.8),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: const ExpansionTile(
+        initiallyExpanded: true,
+        tilePadding: EdgeInsets.symmetric(horizontal: 14),
+        childrenPadding: EdgeInsets.fromLTRB(14, 0, 14, 12),
+        shape: Border(),
+        collapsedShape: Border(),
+        title: Text(
+          'Petunjuk Pembayaran',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: ColorConstants.textPrimary,
           ),
         ),
-        ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: instructions.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
-          itemBuilder: (context, index) {
-            final content = instructions[index];
-            return Container(
-              decoration: BoxDecoration(
-                color: ColorConstants.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: ColorConstants.border, width: 0.8),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: ExpansionTile(
-                tilePadding: const EdgeInsets.symmetric(horizontal: 14),
-                childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
-                shape: const Border(),
-                collapsedShape: const Border(),
-                title: Text(
-                  content.title,
-                  style: const TextStyle(
-                    fontSize: 13,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '1. ',
+                  style: TextStyle(
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: ColorConstants.textPrimary,
+                    color: ColorConstants.textSecondary,
                   ),
                 ),
-                children: List<Widget>.generate(
-                  content.step.length,
-                  (stepIndex) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 18,
-                          height: 18,
-                          margin: const EdgeInsets.only(top: 2, right: 8),
-                          decoration: BoxDecoration(
-                            color: ColorConstants.surfaceMuted,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: ColorConstants.border,
-                              width: 0.8,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${stepIndex + 1}',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: ColorConstants.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            content.step[stepIndex],
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: ColorConstants.textPrimary,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                      ],
+                Expanded(
+                  child: Text(
+                    'Periksa kembali nomor virtual account, kode bayar, atau scan QRIS yang tertera di atas.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: ColorConstants.textPrimary,
+                      height: 1.4,
                     ),
                   ),
                 ),
-              ),
-            );
-          },
-        ),
-      ],
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '2. ',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: ColorConstants.textSecondary,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Selesaikan pembayaran sesuai nominal yang ditentukan sebelum batas waktu transaksi berakhir.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: ColorConstants.textPrimary,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '3. ',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: ColorConstants.textSecondary,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Setelah pembayaran berhasil, sistem akan mendeteksi status secara otomatis dan mengarahkan kembali ke merchant.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: ColorConstants.textPrimary,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
