@@ -1,6 +1,6 @@
 FROM ubuntu:24.04 AS builder
 
-ARG FLUTTER_VERSION=3.29.0
+ARG FLUTTER_VERSION=3.47.1
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="/opt/flutter/bin:${PATH}"
