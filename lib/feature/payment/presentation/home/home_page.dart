@@ -182,12 +182,22 @@ class HomePage extends GetView<HomeLogic> {
                   ),
                   elevation: 0,
                 ),
-                onPressed: () => Get.toNamed(
-                  Routes.PAYMENT,
-                  parameters: {
+                onPressed: () {
+                  final token = Get.parameters['token'] ?? '';
+                  final params = <String, String>{
                     'reference': state.orderId,
-                  },
-                ),
+                  };
+                  if (token.isNotEmpty) {
+                    params['token'] = token;
+                  }
+                  if ((state.order?.project?.slug ?? '').isNotEmpty) {
+                    params['from'] = state.order!.project!.slug.toLowerCase();
+                  }
+                  Get.toNamed(
+                    Routes.PAYMENT,
+                    parameters: params,
+                  );
+                },
                 icon: const Icon(Icons.payment_rounded, size: 18),
                 label: const Text(
                   'Bayar Sekarang',
@@ -207,6 +217,7 @@ class HomePage extends GetView<HomeLogic> {
         (state.order?.project?.projectType == ProjectType.spnpay
             ? (state.spnPayOrder.request?.amount ?? 0).toDouble()
             : 0.0);
+    final notes = state.order?.orderNotes ?? 'Tidak ada catatan';
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -239,13 +250,11 @@ class HomePage extends GetView<HomeLogic> {
         ),
         itemWidget(
           title: 'Catatan',
-          subTitle: (state.order?.notes ?? '').isEmpty
-              ? 'Tidak ada catatan'
-              : state.order!.notes!,
+          subTitle: notes,
         ),
         itemWidget(
           title: 'Daftar Barang',
-          subTitle: '${state.order?.notes ?? 'Item'} x 1',
+          subTitle: '$notes x 1',
           endWidget: Text(
             Format.rupiahConvert(amount),
             style: const TextStyle(
@@ -261,12 +270,11 @@ class HomePage extends GetView<HomeLogic> {
 
   Widget customerDetailWidget(HomeLogic logic) {
     final state = logic.state;
-    final customerName = (state.order?.customerDisplayName ?? '-').isNotEmpty &&
-            state.order?.customerDisplayName != '-'
-        ? state.order!.customerDisplayName
-        : (state.order?.project?.projectType == ProjectType.spnpay
-            ? state.spnPayOrder.request?.viewName ?? '-'
-            : '-');
+    final customerName = state.order?.customerDisplayName ?? '-';
+    final customerPhone = state.order?.customerPhone ?? '-';
+    final customerEmail = state.order?.customerEmail ?? '-';
+    final customerAddress = state.order?.customerAddress ?? '-';
+
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -276,24 +284,15 @@ class HomePage extends GetView<HomeLogic> {
         ),
         itemWidget(
           title: 'Nomor Telepon',
-          subTitle: (state.order?.phone ?? '').isNotEmpty
-              ? (state.order!.phone!.startsWith('0') ||
-                      state.order!.phone!.startsWith('+')
-                  ? state.order!.phone!
-                  : '0${state.order!.phone!}')
-              : '-',
+          subTitle: customerPhone,
         ),
         itemWidget(
           title: 'Email',
-          subTitle: (state.order?.email ?? '').isEmpty
-              ? '-'
-              : state.order!.email!,
+          subTitle: customerEmail,
         ),
         itemWidget(
           title: 'Alamat Pengiriman',
-          subTitle: (state.order?.address ?? '').isEmpty
-              ? '-'
-              : state.order!.address!,
+          subTitle: customerAddress,
         ),
       ],
     );

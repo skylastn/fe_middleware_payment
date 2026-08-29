@@ -65,26 +65,36 @@ class PaymentResponse {
         category: category ?? this.category,
       );
 
-  factory PaymentResponse.fromMap(Map<String, dynamic> json) => PaymentResponse(
-        id: json['id'],
-        key: json['key'],
-        value: json['value'],
-        type: json['type'],
-        name: json['name'],
-        from: json['from'],
-        image: json['image'],
-        imageUrl: json['image_url'],
-        createdAt: json['created_at'] == null
-            ? null
-            : DateTime.parse(json['created_at']),
-        updatedAt: json['updated_at'] == null
-            ? null
-            : DateTime.parse(json['updated_at']),
-        bankCode: json['bankCode'],
-        category: json['category'] == null
-            ? null
-            : PaymentCategory.fromJson(json['category']),
-      );
+  factory PaymentResponse.fromMap(dynamic rawJson) {
+    if (rawJson == null || rawJson is! Map) {
+      return PaymentResponse();
+    }
+    final json = Map<String, dynamic>.from(rawJson);
+    return PaymentResponse(
+      id: json['id'] is int
+          ? json['id']
+          : int.tryParse(json['id']?.toString() ?? '0'),
+      key: json['key']?.toString(),
+      value: json['value']?.toString(),
+      type: json['type']?.toString(),
+      name: json['name']?.toString(),
+      from: json['from']?.toString(),
+      image: json['image']?.toString(),
+      imageUrl: json['image_url']?.toString() ??
+          json['imageUrl']?.toString() ??
+          json['image']?.toString(),
+      createdAt: json['created_at'] == null
+          ? null
+          : DateTime.tryParse(json['created_at'].toString()),
+      updatedAt: json['updated_at'] == null
+          ? null
+          : DateTime.tryParse(json['updated_at'].toString()),
+      bankCode: json['bankCode']?.toString(),
+      category: json['category'] != null && json['category'] is Map
+          ? PaymentCategory.fromJson(json['category'])
+          : null,
+    );
+  }
 
   Map<String, dynamic> toMap() => {
         'id': id,

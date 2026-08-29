@@ -109,17 +109,41 @@ class PaymentMethodLogic extends GetxController {
     );
   }
 
-  void routeToDetail(PaymentResponse content, PaymentCategory category) {
-    Get.toNamed(
-      Routes.DETAILPAYMENT,
-      parameters: {
-        'paymentCode': content.key ?? '',
-        'reference': state.orderId,
-        'paymentType': category.key,
-        'categoryTitle': category.title,
-        'paymentName': content.name ?? content.key ?? '',
-        'imageUrl': content.imageUrl ?? content.image ?? '',
-        'from': content.from ?? '',
+  Future<void> routeToDetail(PaymentResponse content, PaymentCategory category) async {
+    final token = Get.parameters['token'] ?? '';
+    final paymentCode = content.key ?? '';
+    if (paymentCode.isEmpty) return;
+
+    state.status = StateStatus.loading;
+    update();
+
+    final result = await _orderService.createOrderPayment(
+      paymentMethod: paymentCode,
+      reference: state.orderId,
+    );
+
+    result.fold(
+      (err) {
+        state.status = StateStatus.error;
+        state.errorMsg = err.msg;
+        Snackbar.showInfo(message: err.msg);
+        update();
+      },
+      (_) {
+        state.status = StateStatus.success;
+        update();
+
+        final params = <String, String>{
+          'reference': state.orderId,
+        };
+        if (token.isNotEmpty) {
+          params['token'] = token;
+        }
+
+        Get.toNamed(
+          Routes.DETAILPAYMENT,
+          parameters: params,
+        );
       },
     );
   }

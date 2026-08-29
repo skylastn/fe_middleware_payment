@@ -230,29 +230,7 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
                           await logic.createOrderPayment();
                           return;
                         }
-                        await logic.getDetailOrder(isLoading: false);
-                        final status = state.order?.status ?? '';
-                        if (status == 'PAID' || status == 'SUCCESS') {
-                          Snackbar.showInfo(
-                            title: 'Sukses',
-                            message: 'Pembayaran Anda berhasil!',
-                          );
-                        } else if (status == 'EXPIRED') {
-                          Snackbar.showInfo(
-                            title: 'Kadaluarsa',
-                            message: 'Waktu pembayaran telah habis.',
-                          );
-                        } else if (status == 'FAILED') {
-                          Snackbar.showInfo(
-                            title: 'Gagal',
-                            message: 'Pembayaran gagal diproses.',
-                          );
-                        } else {
-                          Snackbar.showInfo(
-                            title: 'Status',
-                            message: 'Status saat ini: ${status.isEmpty ? 'PENDING' : status}',
-                          );
-                        }
+                        await logic.checkStatusAndHandleRedirect();
                       } catch (e) {
                         Snackbar.showInfo(
                           title: 'Error',

@@ -46,37 +46,62 @@ class Orders {
     required this.project,
   });
 
-  factory Orders.fromJson(Map<String, dynamic> json) => Orders(
-        id: json['id']?.toString() ?? '',
-        type: json['type']?.toString() ?? '',
-        status: json['status']?.toString() ?? '',
-        reference: json['reference']?.toString() ?? '',
-        mode: json['mode']?.toString() ?? '',
-        address: json['address']?.toString(),
-        phone: json['phone']?.toString(),
-        email: json['email']?.toString(),
-        notes: json['notes']?.toString(),
-        paymentMethod: json['payment_method']?.toString(),
-        value: json['value']?.toString(),
-        request: json['request']?.toString(),
-        response: json['response']?.toString(),
-        callback: json['callback']?.toString(),
-        url: json['url']?.toString() ?? '',
-        createdAt: json['created_at'] == null
-            ? null
-            : DateTime.parse(json['created_at']),
-        updatedAt: json['updated_at'] == null
-            ? null
-            : DateTime.parse(json['updated_at']),
-        paymentMethods: json['payment_methods'] == null
-            ? null
-            : PaymentResponse.fromMap(json['payment_methods']),
-        project: json['project'] == null
-            ? null
-            : Project.fromJson(
-                json['project'],
-              ),
+  factory Orders.fromJson(dynamic rawJson) {
+    if (rawJson == null || rawJson is! Map) {
+      return Orders(
+        id: '',
+        type: '',
+        status: '',
+        reference: '',
+        mode: '',
+        address: null,
+        phone: null,
+        email: null,
+        notes: null,
+        paymentMethod: null,
+        request: null,
+        response: null,
+        callback: null,
+        url: '',
+        createdAt: null,
+        updatedAt: null,
+        paymentMethods: null,
+        project: null,
       );
+    }
+    final json = Map<String, dynamic>.from(rawJson);
+    return Orders(
+      id: json['id']?.toString() ?? '',
+      type: json['type']?.toString() ?? '',
+      status: json['status']?.toString() ?? '',
+      reference: json['reference']?.toString() ?? '',
+      mode: json['mode']?.toString() ?? '',
+      address: json['address']?.toString(),
+      phone: json['phone']?.toString(),
+      email: json['email']?.toString(),
+      notes: json['notes']?.toString(),
+      paymentMethod: json['payment_method']?.toString(),
+      value: json['value']?.toString(),
+      request: json['request']?.toString(),
+      response: json['response']?.toString(),
+      callback: json['callback']?.toString(),
+      url: json['url']?.toString() ?? '',
+      createdAt: json['created_at'] == null
+          ? null
+          : DateTime.tryParse(json['created_at'].toString()),
+      updatedAt: json['updated_at'] == null
+          ? null
+          : DateTime.tryParse(json['updated_at'].toString()),
+      paymentMethods: json['payment_methods'] == null
+          ? null
+          : PaymentResponse.fromMap(json['payment_methods']),
+      project: json['project'] == null
+          ? null
+          : Project.fromJson(
+              json['project'],
+            ),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -145,13 +170,92 @@ class Orders {
           if (decoded['customerVaName'] != null && decoded['customerVaName'].toString().isNotEmpty) {
             return decoded['customerVaName'].toString();
           }
-          final fn = decoded['firstName']?.toString() ?? '';
-          final ln = decoded['lastName']?.toString() ?? '';
+          final fn = decoded['firstName']?.toString() ??
+              decoded['customerDetail']?['firstName']?.toString() ??
+              '';
+          final ln = decoded['lastName']?.toString() ??
+              decoded['customerDetail']?['lastName']?.toString() ??
+              '';
           final fullName = '$fn $ln'.trim();
           if (fullName.isNotEmpty) return fullName;
         }
       } catch (_) {}
     }
     return '-';
+  }
+
+  String get customerPhone {
+    final rawPhone = (phone ?? '').trim();
+    if (rawPhone.isNotEmpty) {
+      return rawPhone.startsWith('0') || rawPhone.startsWith('+')
+          ? rawPhone
+          : '0$rawPhone';
+    }
+    if ((request ?? '').isNotEmpty) {
+      try {
+        final decoded = jsonDecode(request!);
+        if (decoded is Map<String, dynamic>) {
+          final p = decoded['phone']?.toString() ??
+              decoded['phoneNumber']?.toString() ??
+              decoded['customerDetail']?['phoneNumber']?.toString() ??
+              decoded['customerDetail']?['phone']?.toString();
+          if (p != null && p.isNotEmpty) {
+            return p.startsWith('0') || p.startsWith('+') ? p : '0$p';
+          }
+        }
+      } catch (_) {}
+    }
+    return '-';
+  }
+
+  String get customerEmail {
+    final rawEmail = (email ?? '').trim();
+    if (rawEmail.isNotEmpty) return rawEmail;
+    if ((request ?? '').isNotEmpty) {
+      try {
+        final decoded = jsonDecode(request!);
+        if (decoded is Map<String, dynamic>) {
+          final e = decoded['email']?.toString() ??
+              decoded['customerDetail']?['email']?.toString();
+          if (e != null && e.isNotEmpty) return e;
+        }
+      } catch (_) {}
+    }
+    return '-';
+  }
+
+  String get customerAddress {
+    final rawAddress = (address ?? '').trim();
+    if (rawAddress.isNotEmpty) return rawAddress;
+    if ((request ?? '').isNotEmpty) {
+      try {
+        final decoded = jsonDecode(request!);
+        if (decoded is Map<String, dynamic>) {
+          final a = decoded['address']?.toString() ??
+              decoded['customerDetail']?['billingAddress']?['address']?.toString() ??
+              decoded['customerDetail']?['shippingAddress']?['address']?.toString();
+          if (a != null && a.isNotEmpty) return a;
+        }
+      } catch (_) {}
+    }
+    return '-';
+  }
+
+  String get orderNotes {
+    final rawNotes = (notes ?? '').trim();
+    if (rawNotes.isNotEmpty) return rawNotes;
+    if ((request ?? '').isNotEmpty) {
+      try {
+        final decoded = jsonDecode(request!);
+        if (decoded is Map<String, dynamic>) {
+          final n = decoded['productDetails']?.toString() ??
+              decoded['productDetail']?.toString() ??
+              decoded['description']?.toString() ??
+              decoded['itemDetails']?[0]?['name']?.toString();
+          if (n != null && n.isNotEmpty) return n;
+        }
+      } catch (_) {}
+    }
+    return 'Item';
   }
 }

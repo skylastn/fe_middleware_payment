@@ -18,11 +18,13 @@ class PaymentRepositoryImpl implements PaymentRepository {
       getPaymentCategory() async {
     final response = await remoteDataSource.getPaymentCategory();
     if (!response.isError) {
-      return Right(
-        paymentCategoryFromJson(
-          jsonDecode(response.result?.body ?? '')['data'],
-        ),
-      );
+      try {
+        final body = jsonDecode(response.result?.body ?? '');
+        final data = body['data'];
+        return Right(paymentCategoryFromJson(data));
+      } catch (e) {
+        return Left(ResponseModel(isError: true, result: response.result, msg: e.toString()));
+      }
     }
     return Left(response);
   }
@@ -37,12 +39,20 @@ class PaymentRepositoryImpl implements PaymentRepository {
       categoriesKey: categoriesKey,
     );
     if (!response.isError) {
-      return Right(
-        List.from(
-          jsonDecode(response.result?.body ?? '')['data']
-              .map((e) => PaymentResponse.fromMap(e)),
-        ),
-      );
+      try {
+        final body = jsonDecode(response.result?.body ?? '');
+        final data = body['data'];
+        if (data is List) {
+          return Right(
+            List<PaymentResponse>.from(
+              data.map((e) => PaymentResponse.fromMap(e)),
+            ),
+          );
+        }
+        return const Right([]);
+      } catch (e) {
+        return Left(ResponseModel(isError: true, result: response.result, msg: e.toString()));
+      }
     }
     return Left(response);
   }
@@ -51,13 +61,16 @@ class PaymentRepositoryImpl implements PaymentRepository {
   Future<Either<ResponseModel, PaymentResponse>>
       getDetailPaymentMethod() async {
     final response = await remoteDataSource.getDetailPaymentMethod();
-    if (!response.isError &&
-        jsonDecode(response.result?.body ?? '')['data'] != null) {
-      return Right(
-        PaymentResponse.fromMap(
-          jsonDecode(response.result?.body ?? '')['data'],
-        ),
-      );
+    if (!response.isError) {
+      try {
+        final body = jsonDecode(response.result?.body ?? '');
+        final data = body['data'];
+        if (data != null) {
+          return Right(PaymentResponse.fromMap(data));
+        }
+      } catch (e) {
+        return Left(ResponseModel(isError: true, result: response.result, msg: e.toString()));
+      }
     }
     return Left(response);
   }

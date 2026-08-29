@@ -33,50 +33,54 @@ class DuitkuWidget extends StatelessWidget {
   Widget qrisWidget(String qrString) {
     return Column(
       children: [
-        RepaintBoundary(
-          key: globalKey,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: ColorConstants.border, width: 1),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x0A0F172A),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: PrettyQrView.data(
-              data: qrString,
-              decoration: const PrettyQrDecoration(
-                shape: PrettyQrSmoothSymbol(
-                  color: ColorConstants.textPrimary,
+        Center(
+          child: RepaintBoundary(
+            key: globalKey,
+            child: Container(
+              width: 230,
+              height: 230,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: ColorConstants.border, width: 1),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0A0F172A),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: PrettyQrView.data(
+                data: qrString,
+                decoration: const PrettyQrDecoration(
+                  shape: PrettyQrSmoothSymbol(
+                    color: ColorConstants.textPrimary,
+                  ),
                 ),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorConstants.surfaceMuted,
             foregroundColor: ColorConstants.textPrimary,
             elevation: 0,
             side: const BorderSide(color: ColorConstants.border, width: 1),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
           ),
           onPressed: () => logic.saveQRCode(qrString, globalKey),
-          icon: const Icon(Icons.download_rounded, size: 18),
+          icon: const Icon(Icons.download_rounded, size: 16),
           label: const Text(
             'Simpan QR Code',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
           ),
         ),
       ],

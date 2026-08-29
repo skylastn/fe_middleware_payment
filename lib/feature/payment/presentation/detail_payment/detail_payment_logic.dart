@@ -27,12 +27,6 @@ class DetailPaymentLogic extends GetxController {
   void onInit() {
     super.onInit();
     state.orderId = Get.parameters['reference'] ?? '';
-    state.paymentCode = Get.parameters['paymentCode'] ?? '';
-    state.categoryTitle = Get.parameters['categoryTitle'] ?? '';
-    state.paymentName = Get.parameters['paymentName'] ?? '';
-    state.imageUrl = Get.parameters['imageUrl'] ?? '';
-    state.paymentType = Get.parameters['paymentType'] ?? '';
-    state.from = Get.parameters['from'] ?? '';
   }
 
   @override
@@ -206,6 +200,33 @@ class DetailPaymentLogic extends GetxController {
     }
   }
 
+  Future<void> checkStatusAndHandleRedirect() async {
+    await getDetailOrder(isLoading: false, isRedirect: true);
+    final status = state.order?.status ?? '';
+    if (status == 'PAID' || status == 'SUCCESS') {
+      Snackbar.showInfo(
+        title: 'Sukses',
+        message: 'Pembayaran Anda berhasil!',
+      );
+      await handleSuccess(isRedirect: true);
+    } else if (status == 'EXPIRED') {
+      Snackbar.showInfo(
+        title: 'Kadaluarsa',
+        message: 'Waktu pembayaran telah habis.',
+      );
+    } else if (status == 'FAILED') {
+      Snackbar.showInfo(
+        title: 'Gagal',
+        message: 'Pembayaran gagal diproses.',
+      );
+    } else {
+      Snackbar.showInfo(
+        title: 'Status',
+        message: 'Status saat ini: ${status.isEmpty ? 'PENDING' : status}',
+      );
+    }
+  }
+
   Future<void> handleSuccess({bool isRedirect = false}) async {
     if (state.order == null) return;
 
@@ -228,7 +249,7 @@ class DetailPaymentLogic extends GetxController {
         }
 
         if (returnUrl.isNotEmpty && returnUrl.startsWith('http')) {
-          await Future.delayed(const Duration(seconds: 2));
+          await Future.delayed(const Duration(seconds: 1));
           _launchUrl(returnUrl);
         }
       }
@@ -280,7 +301,11 @@ class DetailPaymentLogic extends GetxController {
   }
 
   Future<void> _launchUrl(String url) async {
-    if (!await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication)) {
+    if (!await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.platformDefault,
+      webOnlyWindowName: '_self',
+    )) {
       Snackbar.showInfo(message: 'Tidak dapat membuka $url');
     }
   }
