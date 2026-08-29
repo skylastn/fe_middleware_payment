@@ -11,7 +11,7 @@ import '../../../../shared/widgets/picture_handler_widget.dart';
 import '../../../../shared/widgets/state_widget.dart';
 import 'detail_payment_logic.dart';
 import 'detail_payment_state.dart';
-import 'widget/duitku_widget.dart';
+import 'widget/payment_widget.dart';
 
 class DetailPaymentPage extends GetView<DetailPaymentLogic> {
   const DetailPaymentPage({super.key});
