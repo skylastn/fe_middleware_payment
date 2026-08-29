@@ -47,27 +47,6 @@ class DetailPaymentLogic extends GetxController {
 
   Future<void> init() async {
     await getDetailOrder();
-
-    if (state.paymentCode.isEmpty && (state.order?.paymentMethod ?? '').isNotEmpty) {
-      state.paymentCode = state.order!.paymentMethod!;
-    }
-
-    if (state.paymentName.isEmpty) {
-      state.paymentName = state.order?.paymentMethods?.name ??
-          state.paymentCode;
-    }
-
-    if (state.imageUrl.isEmpty) {
-      state.imageUrl = state.order?.paymentMethods?.imageUrl ??
-          state.order?.paymentMethods?.image ??
-          '';
-    }
-
-    if (state.categoryTitle.isEmpty) {
-      state.categoryTitle = state.order?.paymentMethods?.category?.title ??
-          'Metode Pembayaran';
-    }
-
     listenOrder();
     update();
 
@@ -75,7 +54,7 @@ class DetailPaymentLogic extends GetxController {
       if ((state.order?.response ?? '').isEmpty &&
           (state.order?.value ?? '').isEmpty &&
           (state.order?.url ?? '').isEmpty) {
-        if (state.paymentCode.isNotEmpty) {
+        if ((state.order?.paymentMethod ?? '').isNotEmpty) {
           await createOrderPayment();
         }
       }
@@ -136,14 +115,16 @@ class DetailPaymentLogic extends GetxController {
     final order = state.order;
     if (order == null) return;
 
-    if ((order.value ?? '').isNotEmpty) {
-      final val = order.value!;
-      if (val.startsWith('000201') || val.contains('QRIS') || val.length > 50) {
-        state.qrString = val;
-      } else {
-        state.vaNumber = val;
-      }
+    final isQris = order.categoryKey.isQris;
+    final value = (order.value ?? '').trim();
+
+    if (value.isNotEmpty) {
       state.isPayment = true;
+      if (isQris || value.startsWith('000201') || value.length > 50) {
+        state.qrString = value;
+      } else {
+        state.vaNumber = value;
+      }
     }
 
     if ((order.url).isNotEmpty && order.url.startsWith('http')) {
@@ -151,7 +132,7 @@ class DetailPaymentLogic extends GetxController {
       state.isPayment = true;
     }
 
-    if ((order.response ?? '').isNotEmpty) {
+    if (state.qrString == null && state.vaNumber == null && (order.response ?? '').isNotEmpty) {
       try {
         final res = jsonDecode(order.response!);
         if (res is Map<String, dynamic>) {
@@ -267,9 +248,7 @@ class DetailPaymentLogic extends GetxController {
     update();
 
     var response = await _orderService.createOrderPayment(
-      paymentMethod: state.paymentCode.isNotEmpty
-          ? state.paymentCode
-          : (state.order?.paymentMethod ?? ''),
+      paymentMethod: state.order?.paymentMethod ?? '',
       reference: state.orderId,
     );
 

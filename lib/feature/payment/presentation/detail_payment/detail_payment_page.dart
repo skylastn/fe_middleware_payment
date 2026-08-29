@@ -25,18 +25,13 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
       body: GetBuilder<DetailPaymentLogic>(
         builder: (logic) {
           final state = logic.state;
-          final paymentName = state.paymentName.isNotEmpty
-              ? state.paymentName
-              : (state.order?.paymentMethods?.name ??
-                  state.paymentCode.replaceAll('_', ' '));
-          final categoryTitle = state.categoryTitle.isNotEmpty
-              ? state.categoryTitle
-              : (state.order?.paymentMethods?.category?.title ?? 'Saluran Pembayaran');
-          final imageUrl = state.imageUrl.isNotEmpty
-              ? state.imageUrl
-              : (state.order?.paymentMethods?.imageUrl ??
-                  state.order?.paymentMethods?.image ??
-                  '');
+          final paymentName = state.order?.paymentMethods?.name ??
+              (state.order?.paymentMethod?.replaceAll('_', ' ') ??
+                  'Metode Pembayaran');
+          final categoryTitle = state.order?.paymentMethods?.category?.title ??
+              'Saluran Pembayaran';
+          final imgSource = state.order?.paymentMethods?.imageUrl ??
+              state.order?.paymentMethods?.image;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -138,13 +133,7 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
                         ),
                       ),
                       child: Center(
-                        child: imageUrl.isNotEmpty
-                            ? PictureHandlerWidget().pictureHandler(imageUrl)
-                            : const Icon(
-                                Icons.payment_rounded,
-                                size: 24,
-                                color: ColorConstants.primary,
-                              ),
+                        child: PictureHandlerWidget().pictureHandler(imgSource),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -153,7 +142,9 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            paymentName.isEmpty ? 'Metode Pembayaran' : paymentName,
+                            paymentName.isEmpty
+                                ? 'Metode Pembayaran'
+                                : paymentName,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -286,7 +277,7 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
       children: [
         statusWidget(state),
         const SizedBox(height: 12),
-        DuitkuWidget(),
+        PaymentWidget(),
         const SizedBox(height: 12),
         paymentInstructionWidget(state),
       ],
@@ -294,9 +285,8 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
   }
 
   Widget statusWidget(DetailPaymentState state) {
-    final status = (state.order?.status ?? '').isEmpty
-        ? 'PENDING'
-        : state.order!.status;
+    final status =
+        (state.order?.status ?? '').isEmpty ? 'PENDING' : state.order!.status;
     final isSuccess = status == 'PAID' || status == 'SUCCESS';
     final isFailed = status == 'FAILED' || status == 'EXPIRED';
 
@@ -371,9 +361,8 @@ class DetailPaymentPage extends GetView<DetailPaymentLogic> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
-        color: isOnline
-            ? ColorConstants.successLight
-            : ColorConstants.errorLight,
+        color:
+            isOnline ? ColorConstants.successLight : ColorConstants.errorLight,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isOnline

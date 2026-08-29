@@ -84,7 +84,7 @@ Widget paymentMethodWidget({
         separatorBuilder: (_, __) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
           final item = paymentCategory.paymentMethods[index];
-          final imgUrl = item.imageUrl ?? item.image ?? '';
+          final imgSource = item.imageUrl ?? item.image;
           return Material(
             color: Colors.transparent,
             child: InkWell(
@@ -120,7 +120,7 @@ Widget paymentMethodWidget({
                       ),
                       child: Center(
                         child: PictureHandlerWidget().pictureHandler(
-                          imgUrl,
+                          imgSource,
                         ),
                       ),
                     ),

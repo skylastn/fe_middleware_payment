@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'payment_category.dart';
 import 'payment_method.dart';
 import 'project.dart';
 
@@ -23,6 +24,9 @@ class Orders {
   DateTime? updatedAt;
   PaymentResponse? paymentMethods;
   Project? project;
+
+  PaymentCategoryKey get categoryKey =>
+      PaymentCategoryKey.fromKey(paymentMethods?.category?.key);
 
   Orders({
     required this.id,

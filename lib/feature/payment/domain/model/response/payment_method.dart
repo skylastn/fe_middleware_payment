@@ -21,6 +21,15 @@ class PaymentResponse {
   String? bankCode;
   PaymentCategory? category;
 
+  PaymentCategoryKey get categoryKey =>
+      PaymentCategoryKey.fromKey(category?.key);
+
+  String get effectiveImageUrl {
+    if (imageUrl != null && imageUrl!.isNotEmpty) return imageUrl!;
+    if (image != null && image!.isNotEmpty) return image!;
+    return '';
+  }
+
   PaymentResponse({
     this.id,
     this.key,
@@ -80,9 +89,7 @@ class PaymentResponse {
       name: json['name']?.toString(),
       from: json['from']?.toString(),
       image: json['image']?.toString(),
-      imageUrl: json['image_url']?.toString() ??
-          json['imageUrl']?.toString() ??
-          json['image']?.toString(),
+      imageUrl: json['image_url'],
       createdAt: json['created_at'] == null
           ? null
           : DateTime.tryParse(json['created_at'].toString()),

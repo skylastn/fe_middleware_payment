@@ -8,17 +8,19 @@ import '../../../../../shared/utility/snackbar.dart';
 import '../../widget/main_widget.dart';
 import '../detail_payment_logic.dart';
 
-class DuitkuWidget extends StatelessWidget {
-  DuitkuWidget({super.key});
+class PaymentWidget extends StatelessWidget {
+  PaymentWidget({super.key});
   final logic = Get.find<DetailPaymentLogic>();
   final GlobalKey globalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     final state = logic.state;
-    final qrData = state.qrString ?? '';
-    final vaData = state.vaNumber ?? '';
-    final checkoutUrl = state.checkoutUrl ?? '';
+    final isQris = state.order?.categoryKey.isQris ?? false;
+    final value = (state.order?.value ?? '').trim();
+    final qrData = state.qrString ?? (isQris ? value : '');
+    final vaData = state.vaNumber ?? (!isQris && value.isNotEmpty ? value : '');
+    final checkoutUrl = state.checkoutUrl ?? (state.order?.url ?? '');
 
     return Column(
       children: [
