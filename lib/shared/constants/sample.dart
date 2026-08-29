@@ -1,346 +1,169 @@
-import '../../presentation/main/payment/controllers/payment.state.dart';
+import '../../feature/payment/domain/model/response/payment_category.dart';
+import '../../feature/payment/domain/model/response/payment_method.dart';
 
-List<PaymentCategory> listPayment = [
-  // PaymentCategory(
-  //   title: 'Credit Card',
-  //   paymentType: PaymentType.creditCard,
-  //   paymentMethod: [
-  //     PaymentMethod(
-  //       name: 'CREDIT CARD',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/cc.png',
-  //       paymentCode: 'CC',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   ],
-  // ),
+List<PaymentCategory> samplePaymentCategories = [
   PaymentCategory(
-    title: 'Bank Transfer',
-    paymentType: PaymentType.bankTransfer,
-    paymentMethod: [
-      // PaymentMethod(
-      //   name: 'BCA VA',
-      //   description: 'Tanpa Biaya Layanan',
-      //   imageUrl: 'assets/images/payment/bca.png',
-      //   paymentCode: 'BCA_VA',
-      //   paymentInstruction: PaymentInstruction(
-      //     detail:
-      //         'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-      //         'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-      //     stepPaymentInstruction: [
-      //       StepPaymentInstruction(
-      //         title: 'm-BCA',
-      //         step: [
-      //           'Lakukan log in pada aplikasi BCA mobile',
-      //           "Pilih 'm-BCA' Masukkan kode akses m-BCA",
-      //           "Pilih 'm-Transfer'",
-      //           "Pilih 'Virtual Account BCA'",
-      //           'Masukkan nomor Virtual Account BCA 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai ) atau pilih dari Daftar Transfer',
-      //           'Masukkan jumlah pembayaran sesuai dengan tagihan',
-      //           'Masukkan pin m-BCA',
-      //           'Pembayaran selesai',
-      //         ],
-      //       ),
-      //       StepPaymentInstruction(
-      //         title: 'Klik BCA',
-      //         step: [
-      //           'Lakukan log in pada aplikasi KlikBCA individual',
-      //           'Masukkan user ID dan PIN',
-      //           "Pilih 'Transfer Dana'",
-      //           "Pilih 'Transfer ke Virtual Account BCA'",
-      //           'Masukkan nomor Virtual Account BCA 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai ) atau pilih dari Daftar Transfer',
-      //           'Masukkan jumlah pembayaran sesuai dengan tagihan',
-      //           'Validasi pembayaran anda',
-      //           'Pembayaran selesai',
-      //         ],
-      //       ),
-      //       StepPaymentInstruction(
-      //         title: 'ATM BCA',
-      //         step: [
-      //           'Masukkan kartu ATM BCA dan PIN',
-      //           "Pilih 'Transaksi Lainya'",
-      //           "Pilih 'Transfer'",
-      //           "Pilih 'ke Rekening Virtual Account BCA'",
-      //           "Masukkan nomor BCA Virtual Account 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai )",
-      //           'Masukkan jumlah pembayaran sesuai dengan tagihan',
-      //           'Validasi pembayaran anda',
-      //           'Pembayaran selesai',
-      //         ],
-      //       ),
-      //     ],
-      //   ),
-      // ),
-      PaymentMethod(
-        name: 'BRI VA',
-        description: 'Tanpa Biaya Layanan',
-        imageUrl: 'assets/images/payment/bri.png',
-        paymentCode: 'BRI_VA',
-        paymentInstruction: PaymentInstruction(
-          detail:
-              'Dapatkan nomor akun virtual BRI Anda setelah menekan tombol pembayaran dibawah.\n\n'
-              'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-          stepPaymentInstruction: [
-            StepPaymentInstruction(
-              title: 'BRIMO',
-              step: [
-                'Lakukan log in pada aplikasi BRI Mobile (Android/Iphone)',
-                'Pilih Menu BRIVA',
-                'Pilih Pembayaran Baru',
-                'Masukan Nomor VA yang tertera pada halaman konfirmasi',
-                'Masukan PIN BRIMO Anda',
-                'Validasi pembayaran anda',
-                'Pembayaran Selesai',
-              ],
-            ),
-            StepPaymentInstruction(
-              title: 'ATM BRI',
-              step: [
-                'Masukkan Kartu ATM BRI dan PIN',
-                'Pilih menu LAINNYA',
-                'Pilih menu PEMBAYARAN/PEMBELIAN',
-                'Pilih menu PEMBAYARAN/PEMBELIAN LAIN',
-                'Pilih menu BRIVA',
-                'Masukkan nomor VA yang tertera pada halaman konfirmasi dan tekan BENAR',
-                'Konfirmasi pembayaran dengan menekan Ya',
-                'Pembayaran Selesai'
-              ],
-            ),
-          ],
-        ),
+    id: 1,
+    key: 'va',
+    title: 'Virtual Account',
+    detail: 'Pembayaran melalui transfer Virtual Account Bank',
+    paymentMethods: [
+      PaymentResponse(
+        id: 38,
+        key: 'BR',
+        name: 'BRIVA',
+        from: 'duitku',
+        bankCode: 'bri',
+        type: 'va',
+        category: PaymentCategory(id: 1, key: 'va', title: 'Virtual Account', detail: 'Pembayaran melalui transfer Virtual Account Bank'),
       ),
-      PaymentMethod(
-        name: 'MANDIRI VA',
-        description: 'Tanpa Biaya Layanan',
-        imageUrl: 'assets/images/payment/mandiri.png',
-        paymentCode: 'MANDIRI_VA',
-        paymentInstruction: PaymentInstruction(
-          detail:
-              'Dapatkan nomor akun virtual Mandiri Anda setelah menekan tombol pembayaran dibawah.\n\n'
-              'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-          stepPaymentInstruction: [
-            StepPaymentInstruction(
-              title: 'Livin By Mandiri',
-              step: [
-                'Pilih Menu Bayar',
-                'Pilih menu e-Commerce',
-                'Cari penyedia jasa Plink Pay (8903)',
-                'Masukan nomor Virtual Account (MVA)',
-                'Masukan nominal pembayaran',
-                'Klik Lanjutkan',
-                'Pilih Konfirmasi untuk membayarkan tagihan',
-                'Cek status transaksi',
-              ],
-            ),
-          ],
-        ),
+      PaymentResponse(
+        id: 27,
+        key: 'M2',
+        name: 'Mandiri VA',
+        from: 'duitku',
+        bankCode: 'mandiri',
+        type: 'va',
+        category: PaymentCategory(id: 1, key: 'va', title: 'Virtual Account', detail: 'Pembayaran melalui transfer Virtual Account Bank'),
       ),
-      PaymentMethod(
+      PaymentResponse(
+        id: 35,
+        key: 'BC',
+        name: 'BCA VA',
+        from: 'duitku',
+        bankCode: 'bca',
+        type: 'va',
+        category: PaymentCategory(id: 1, key: 'va', title: 'Virtual Account', detail: 'Pembayaran melalui transfer Virtual Account Bank'),
+      ),
+      PaymentResponse(
+        id: 51,
+        key: 'BN',
         name: 'BNI VA',
-        description: 'Tanpa Biaya Layanan',
-        imageUrl: 'assets/images/payment/bni.png',
-        paymentCode: 'BNI_VA',
-        paymentInstruction: PaymentInstruction(
-          detail:
-              'Dapatkan nomor akun virtual BNI Anda setelah menekan tombol pembayaran dibawah.\n\n'
-              'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-          stepPaymentInstruction: [
-            StepPaymentInstruction(
-              title: 'Mobile Banking BNI',
-              step: [
-                'Akses BNI Mobile Banking',
-                'Masukkan User ID dan Password',
-                'Pilih menu Transfer',
-                'Pilih menu Virtual Account Billing kemudian pilih rekening debet',
-                "Masukkan 16 digit nomor Virtual Account yang tertera pada halaman konfirmasi (Contoh: 988002XXXXXXXXXX) pada menu 'inputbaru'",
-                'Tagihan yang harus dibayarkan akan muncul pada layar konfirmasi',
-                'Konfirmasi transaksi dan masukkan Password Transaksi',
-                'Pembayaran Anda Telah Berhasil',
-                'Simpan bukti transaksi'
-              ],
-            ),
-          ],
-        ),
+        from: 'duitku',
+        bankCode: 'bni',
+        type: 'va',
+        category: PaymentCategory(id: 1, key: 'va', title: 'Virtual Account', detail: 'Pembayaran melalui transfer Virtual Account Bank'),
+      ),
+      PaymentResponse(
+        id: 21,
+        key: 'BT',
+        name: 'Permata VA',
+        from: 'duitku',
+        bankCode: 'permata',
+        type: 'va',
+        category: PaymentCategory(id: 1, key: 'va', title: 'Virtual Account', detail: 'Pembayaran melalui transfer Virtual Account Bank'),
+      ),
+      PaymentResponse(
+        id: 22,
+        key: 'B1',
+        name: 'CIMB Niaga VA',
+        from: 'duitku',
+        bankCode: 'cimb',
+        type: 'va',
+        category: PaymentCategory(id: 1, key: 'va', title: 'Virtual Account', detail: 'Pembayaran melalui transfer Virtual Account Bank'),
       ),
     ],
   ),
-  // PaymentCategory(
-  //   title: 'E-Wallet',
-  //   paymentType: PaymentType.eWallet,
-  //   paymentMethod: [
-  //     PaymentMethod(
-  //       name: 'OVO',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/ovo.png',
-  //       paymentCode: 'EW_OVO',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //               "Pilih 'm-BCA' Masukkan kode akses m-BCA",
-  //               "Pilih 'm-Transfer'",
-  //               "Pilih 'Virtual Account BCA'",
-  //               'Masukkan nomor Virtual Account BCA 16 digit nomor virtual account 70070000xxxxxxxx( pastikan nomor sesuai ) atau pilih dari Daftar Transfer',
-  //               'Masukkan jumlah pembayaran sesuai dengan tagihan',
-  //               'Masukkan pin m-BCA',
-  //               'Pembayaran selesai',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //     PaymentMethod(
-  //       name: 'DANA',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/dana.png',
-  //       paymentCode: 'EW_DANA',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail: 'Pembayaran DANA harus dilakukan melalui DANA website.\n\n'
-  //             'Pastikan bahwa Anda telah terdaftar pada layanan DANA. Klik tombol pembayaran untuk melanjutkan pembayaran ke halaman website DANA.\n\n'
-  //             'Periksa kembali data pembayaran Anda sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [],
-  //       ),
-  //     ),
-  //   ],
-  // ),
   PaymentCategory(
+    id: 2,
+    key: 'qris',
     title: 'QRIS',
-    paymentType: PaymentType.qris,
-    paymentMethod: [
-      PaymentMethod(
-        name: 'SHOPEEPAY QRIS',
-        description: 'Tanpa Biaya Layanan',
-        imageUrl: 'assets/images/payment/shopeepay.png',
-        paymentCode: 'SP',
-        paymentInstruction: PaymentInstruction(
-          detail:
-              'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-              'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-          stepPaymentInstruction: [
-            StepPaymentInstruction(
-              title: 'ShopeePay',
-              step: [
-                'Buka Aplikasi Shopee',
-                'Pilih menu “Saya” dan pilih ShopeePay',
-                'Pilih Scan dan lakukan scan pada barcode pembayaran',
-                'Pilih Bayar Sekarang',
-                'Tunggu hingga proses pembayaran berhasil',
-                'Transaksi Anda akan otomatis terkonfirmasi di sistem',
-              ],
-            ),
-          ],
-        ),
+    detail: 'Pembayaran digital melalui scan QRIS (GoPay, OVO, Dana, ShopeePay, LinkAja, dll)',
+    paymentMethods: [
+      PaymentResponse(
+        id: 40,
+        key: 'NQ',
+        name: 'Nobu QRIS',
+        from: 'duitku',
+        bankCode: '',
+        type: 'qris',
+        category: PaymentCategory(id: 2, key: 'qris', title: 'QRIS', detail: 'Pembayaran digital melalui scan QRIS'),
       ),
-      PaymentMethod(
-        name: 'NUSA QRIS',
-        description: 'Tanpa Biaya Layanan',
-        imageUrl:
-            'https://play-lh.googleusercontent.com/KMVnnWmi8RNAJG3FZDvBt6bmeaBrpOUh508mSsAhmzFWy_kmTHQhUxfSErrJd1i-GDs',
-        paymentCode: 'SQ',
-        paymentInstruction: PaymentInstruction(
-          detail:
-              'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-              'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-          stepPaymentInstruction: [
-            StepPaymentInstruction(
-              title: 'ShopeePay',
-              step: [
-                'Buka Aplikasi Shopee',
-                'Pilih menu “Saya” dan pilih ShopeePay',
-                'Pilih Scan dan lakukan scan pada barcode pembayaran',
-                'Pilih Bayar Sekarang',
-                'Tunggu hingga proses pembayaran berhasil',
-                'Transaksi Anda akan otomatis terkonfirmasi di sistem',
-              ],
-            ),
-          ],
-        ),
+      PaymentResponse(
+        id: 29,
+        key: 'SP',
+        name: 'ShopeePay QRIS',
+        from: 'duitku',
+        bankCode: '',
+        type: 'qris',
+        category: PaymentCategory(id: 2, key: 'qris', title: 'QRIS', detail: 'Pembayaran digital melalui scan QRIS'),
+      ),
+      PaymentResponse(
+        id: 48,
+        key: 'DQ',
+        name: 'Dana QRIS',
+        from: 'duitku',
+        bankCode: '',
+        type: 'qris',
+        category: PaymentCategory(id: 2, key: 'qris', title: 'QRIS', detail: 'Pembayaran digital melalui scan QRIS'),
       ),
     ],
   ),
-  // PaymentCategory(
-  //   title: 'Retail',
-  //   paymentType: PaymentType.retail,
-  //   paymentMethod: [
-  //     PaymentMethod(
-  //       name: 'RETAIL',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/retail.png',
-  //       paymentCode: 'RT_R',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //     PaymentMethod(
-  //       name: 'INDOMARET',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/indomaret.png',
-  //       paymentCode: 'RT_IND',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   ],
-  // ),
-  // PaymentCategory(
-  //   title: 'E-Banking',
-  //   paymentType: PaymentType.retail,
-  //   paymentMethod: [
-  //     PaymentMethod(
-  //       name: 'JENIUS PAY',
-  //       description: 'Tanpa Biaya Layanan',
-  //       imageUrl: 'assets/images/payment/jenius.png',
-  //       paymentCode: 'EB_JENIUS',
-  //       paymentInstruction: PaymentInstruction(
-  //         detail:
-  //             'Dapatkan nomor akun virtual BCA Anda setelah menekan tombol pembayaran dibawah.\n\n'
-  //             'Periksa kembali data pembayaran Anda pada menu detail transaksi sebelum melanjutkan transaksi.',
-  //         stepPaymentInstruction: [
-  //           StepPaymentInstruction(
-  //             title: 'm-BCA',
-  //             step: [
-  //               'Lakukan log in pada aplikasi BCA mobile',
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   ],
-  // ),
+  PaymentCategory(
+    id: 4,
+    key: 'ewallet',
+    title: 'E-Wallet',
+    detail: 'Pembayaran melalui dompet digital (OVO, DANA, ShopeePay, LinkAja)',
+    paymentMethods: [
+      PaymentResponse(
+        id: 25,
+        key: 'OV',
+        name: 'OVO',
+        from: 'duitku',
+        type: 'ewallet',
+      ),
+      PaymentResponse(
+        id: 34,
+        key: 'DA',
+        name: 'DANA',
+        from: 'duitku',
+        type: 'ewallet',
+      ),
+      PaymentResponse(
+        id: 32,
+        key: 'SA',
+        name: 'SHOPEEPAY APP',
+        from: 'duitku',
+        type: 'ewallet',
+      ),
+    ],
+  ),
+  PaymentCategory(
+    id: 3,
+    key: 'cc',
+    title: 'Credit Card',
+    detail: 'Pembayaran instan menggunakan kartu kredit atau debit',
+    paymentMethods: [
+      PaymentResponse(
+        id: 20,
+        key: 'VC',
+        name: 'Credit Card',
+        from: 'duitku',
+        bankCode: '',
+        type: 'cc',
+      ),
+    ],
+  ),
+  PaymentCategory(
+    id: 5,
+    key: 'retail',
+    title: 'Retail / Convenience Store',
+    detail: 'Pembayaran melalui gerai retail (Indomaret, Alfamart)',
+    paymentMethods: [
+      PaymentResponse(
+        id: 36,
+        key: 'IR',
+        name: 'INDOMARET',
+        from: 'duitku',
+        type: 'retail',
+      ),
+      PaymentResponse(
+        id: 19,
+        key: 'FT',
+        name: 'RETAIL',
+        from: 'duitku',
+        type: 'retail',
+      ),
+    ],
+  ),
 ];
