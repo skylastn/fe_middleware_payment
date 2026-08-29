@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:webview_all/webview_all.dart';
 
 import '../../../../../shared/constants/colors.dart';
 import '../../../../../shared/utility/snackbar.dart';
@@ -27,187 +29,83 @@ class PaymentWidget extends StatelessWidget {
 
     return Column(
       children: [
-        if (isCreditCard) creditCardWidget(checkoutUrl),
+        if (isCreditCard && checkoutUrl.isNotEmpty) inAppWebviewWidget(checkoutUrl),
         if (!isCreditCard && qrData.isNotEmpty) qrisWidget(qrData),
         if (!isCreditCard && vaData.isNotEmpty) vaWidget(vaData),
         if (!isCreditCard && checkoutUrl.isNotEmpty && qrData.isEmpty && vaData.isEmpty)
-          checkoutLinkWidget(checkoutUrl),
+          inAppWebviewWidget(checkoutUrl),
       ],
     );
   }
 
-  Widget creditCardWidget(String url) {
-    final state = logic.state;
-    final customerName = state.order?.customerDisplayName ?? 'CARDHOLDER NAME';
-    final paymentName = state.order?.paymentMethods?.name ?? 'Credit / Debit Card';
+  Widget inAppWebviewWidget(String url) {
+    if (kIsWeb) {
+      return checkoutLinkWidget(url);
+    }
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      height: 520,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: ColorConstants.border, width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0A0F172A),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InAppPaymentWebview(url: url),
+    );
+  }
 
-    return Column(
-      children: [
-        // Visual Card Preview
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.all(20),
-          width: double.infinity,
-          height: 185,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+  Widget checkoutLinkWidget(String url) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: ColorConstants.surfaceMuted,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: ColorConstants.border, width: 1),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: const BoxDecoration(
+              color: ColorConstants.primaryLight,
+              shape: BoxShape.circle,
             ),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFF334155), width: 1),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x1A0F172A),
-                blurRadius: 16,
-                offset: Offset(0, 8),
-              ),
-            ],
+            child: const Icon(
+              Icons.lock_outline_rounded,
+              color: ColorConstants.primary,
+              size: 28,
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 34,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD97706),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(
-                        Icons.contactless_rounded,
-                        color: Color(0xFF94A3B8),
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                  Text(
-                    paymentName.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                ],
-              ),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '••••  ••••  ••••  ••••',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 3,
-                      fontFamily: 'monospace',
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'PEMEGANG KARTU',
-                          style: TextStyle(
-                            color: Color(0xFF94A3B8),
-                            fontSize: 9,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          customerName.toUpperCase(),
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'BERLAKU HINGGA',
-                        style: TextStyle(
-                          color: Color(0xFF94A3B8),
-                          fontSize: 9,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        'MM / YY',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+          const SizedBox(height: 12),
+          const Text(
+            'Portal Pembayaran Aman (3D Secure)',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: ColorConstants.textPrimary,
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-
-        // Security Notice
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: ColorConstants.surfaceMuted,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: ColorConstants.border, width: 0.8),
+          const SizedBox(height: 6),
+          const Text(
+            'Klik tombol di bawah untuk melanjutkan proses verifikasi kartu kredit Anda.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12.5,
+              color: ColorConstants.textSecondary,
+              height: 1.4,
+            ),
           ),
-          child: const Row(
-            children: [
-              Icon(
-                Icons.verified_user_rounded,
-                color: ColorConstants.primary,
-                size: 18,
-              ),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Pembayaran dilindungi enkripsi 256-bit dan otentikasi 3D Secure.',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    color: ColorConstants.textSecondary,
-                    height: 1.3,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // Action Button
-        if (url.isNotEmpty)
+          const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
@@ -221,14 +119,15 @@ class PaymentWidget extends StatelessWidget {
                 ),
               ),
               onPressed: () => logic.launchPaymentUrl(url),
-              icon: const Icon(Icons.credit_card_rounded, size: 18),
+              icon: const Icon(Icons.payment_rounded, size: 18),
               label: const Text(
-                'Lanjut ke Pembayaran 3DS Secure',
+                'Lanjut ke Pembayaran',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
             ),
           ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -321,47 +220,31 @@ class PaymentWidget extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget checkoutLinkWidget(String url) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: ColorConstants.surfaceMuted,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: ColorConstants.border, width: 0.8),
-      ),
-      child: Column(
-        children: [
-          const Text(
-            'Klik tombol di bawah untuk melanjutkan ke portal pembayaran gateway',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 13,
-              color: ColorConstants.textSecondary,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorConstants.primary,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () => logic.launchPaymentUrl(url),
-            icon: const Icon(Icons.open_in_new_rounded, size: 18),
-            label: const Text(
-              'Buka Halaman Pembayaran',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
+class InAppPaymentWebview extends StatefulWidget {
+  final String url;
+  const InAppPaymentWebview({super.key, required this.url});
+
+  @override
+  State<InAppPaymentWebview> createState() => _InAppPaymentWebviewState();
+}
+
+class _InAppPaymentWebviewState extends State<InAppPaymentWebview> {
+  late final WebViewController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController();
+    if (!kIsWeb) {
+      _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+    }
+    _controller.loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WebViewWidget(controller: _controller);
   }
 }
