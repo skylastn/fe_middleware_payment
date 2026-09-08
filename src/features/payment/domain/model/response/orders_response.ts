@@ -19,6 +19,7 @@ export interface OrdersResponse {
   callback?: string | Record<string, any>;
   value?: string;
   url?: string;
+  return_url?: string;
   created_at?: string;
   updated_at?: string;
 
@@ -35,6 +36,7 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
   email: string;
   phone: string;
   address: string;
+  returnUrl: string;
   parsedRequest: Record<string, any>;
   parsedResponse: Record<string, any>;
 } {
@@ -46,6 +48,7 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
       email: "-",
       phone: "-",
       address: "-",
+      returnUrl: "",
       parsedRequest: {},
       parsedResponse: {},
     };
@@ -97,6 +100,14 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
   const email = order.email || reqObj.email || "-";
   const phone = order.phone || reqObj.phone || reqObj.phoneNumber || "-";
   const address = order.address || reqObj.address || "-";
+  const returnUrl =
+    order.return_url ||
+    reqObj.returnUrl ||
+    reqObj.return_url ||
+    reqObj.success_redirect_url ||
+    reqObj.redirect_url ||
+    order.project?.callback ||
+    "";
 
   return {
     amount,
@@ -105,6 +116,7 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
     email,
     phone,
     address,
+    returnUrl,
     parsedRequest: reqObj,
     parsedResponse: resObj,
   };

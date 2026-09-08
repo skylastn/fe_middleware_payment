@@ -14,7 +14,7 @@ export interface PaymentMethodResponse {
   type?: string;
   payment_gateway_id?: string | null;
   payment_gateway_key?: string | null;
-  gateway?: GatewayInfo | null;
+  payment_gateway?: GatewayInfo | null;
   bankCode?: string;
   image?: string | null;
   image_url?: string | null;

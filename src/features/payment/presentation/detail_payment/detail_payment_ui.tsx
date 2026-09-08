@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 import { useDetailPaymentLogic } from "./detail_payment_logic";
+import { PaymentInstructions } from "./payment_instructions";
 import { CheckoutLayout } from "@/shared/component/layouts/CheckoutLayout";
 import { StateType } from "@/shared/domain/model/state_model";
 import { Format } from "@/shared/utils/format";
@@ -13,13 +14,12 @@ import {
   Clock,
   Copy,
   Download,
-  ExternalLink,
-  ChevronDown,
   RefreshCw,
   AlertCircle,
   Building2,
   QrCode,
   ShieldCheck,
+  Zap,
 } from "lucide-react";
 
 export function DetailPaymentUI() {
@@ -29,17 +29,15 @@ export function DetailPaymentUI() {
     stateStatus,
     qrString,
     vaNumber,
-    checkoutUrl,
     checkingStatus,
     remainingSeconds,
+    isSocketConnected,
     reference,
     parsed,
     handleCheckStatus,
     handleCopy,
     refetch,
   } = useDetailPaymentLogic();
-
-  const [activeAccordion, setActiveAccordion] = useState<string | null>("atm");
 
   if (stateStatus === StateType.loading || stateStatus === StateType.initial) {
     return (
@@ -65,7 +63,7 @@ export function DetailPaymentUI() {
           </div>
           <button
             onClick={refetch}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition shadow-sm cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" /> Coba Lagi
           </button>
@@ -104,81 +102,81 @@ export function DetailPaymentUI() {
   };
 
   const footerAction = isPending ? (
-    <div className="flex gap-2.5">
-      <button
-        type="button"
-        disabled={checkingStatus}
-        onClick={() => handleCheckStatus(true)}
-        className="flex-1 py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer"
-      >
-        <RefreshCw className={`w-3.5 h-3.5 ${checkingStatus ? "animate-spin" : ""}`} />
-        <span>{checkingStatus ? "Mengecek..." : "Cek Status"}</span>
-      </button>
-
-      {order?.project?.callback && (
-        <a
-          href={order.project.callback}
-          className="flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition text-center"
-        >
-          <span>Kembali</span>
-        </a>
-      )}
-    </div>
-  ) : (
-    <a
-      href={order?.project?.callback || "/"}
-      className={`w-full py-3.5 px-4 rounded-xl text-white text-xs font-bold flex items-center justify-center gap-2 transition text-center ${
-        isSuccess ? "bg-emerald-600 hover:bg-emerald-700" : "bg-slate-900 hover:bg-slate-800"
-      }`}
+    <button
+      type="button"
+      disabled={checkingStatus}
+      onClick={() => handleCheckStatus(true)}
+      className="w-full py-3.5 px-4 rounded-2xl bg-sky-600 hover:bg-sky-700 active:scale-[0.99] text-white text-xs font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-sky-600/25 transition-all cursor-pointer"
     >
-      <span>Selesai & Kembali ke Merchant</span>
-    </a>
-  );
+      <RefreshCw className={`w-4 h-4 ${checkingStatus ? "animate-spin" : ""}`} />
+      <span>{checkingStatus ? "Sedang Mengecek Pembayaran..." : "Cek Status Pembayaran"}</span>
+    </button>
+  ) : isSuccess ? (
+    <div className="py-2 text-center text-xs font-semibold text-emerald-700 flex items-center justify-center gap-1.5">
+      <CheckCircle2 className="w-4 h-4" />
+      <span>Transaksi Telah Terverifikasi Sukses</span>
+    </div>
+  ) : null;
 
   return (
     <CheckoutLayout
-      title="Status Pembayaran"
+      title="Selesaikan Pembayaran"
       subtitle={order?.project?.name || "Payment Verification"}
+      headerRight={
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200/80 text-[11px] font-semibold">
+          <span
+            className={`w-2 h-2 rounded-full ${
+              isSocketConnected
+                ? "bg-emerald-500 animate-pulse shadow-xs shadow-emerald-500"
+                : "bg-amber-500"
+            }`}
+          />
+          <span className="text-slate-700 flex items-center gap-1">
+            <Zap className="w-3 h-3 text-sky-500" />
+            {isSocketConnected ? "Live Sync" : "Auto Polling"}
+          </span>
+        </div>
+      }
       footer={footerAction}
     >
       {/* Selected Channel Bar */}
-      <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
+      <div className="p-3.5 rounded-2xl border border-slate-200/90 bg-slate-50/80 backdrop-blur-xs flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center p-1 shrink-0 overflow-hidden">
+          <div className="w-12 h-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-xs">
             {logo ? (
               <Image
                 src={logo}
                 alt={channelName}
-                width={36}
-                height={24}
+                width={40}
+                height={28}
                 className="max-h-full max-w-full object-contain"
                 unoptimized
               />
             ) : (
-              <Building2 className="w-4 h-4 text-slate-400" />
+              <Building2 className="w-5 h-5 text-slate-400" />
             )}
           </div>
           <div>
-            <p className="text-xs font-bold text-slate-800 leading-tight">{channelName}</p>
-            <p className="text-[11px] font-mono text-slate-400">{reference}</p>
+            <p className="text-xs font-extrabold text-slate-900 leading-tight">{channelName}</p>
+            <p className="text-[10px] font-mono font-medium text-slate-400 mt-0.5">{reference}</p>
           </div>
         </div>
 
         <div>
           {isSuccess && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-800 shadow-xs">
               <CheckCircle2 className="w-3.5 h-3.5" />
               Lunas
             </span>
           )}
           {isPending && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-900 shadow-xs">
               <Clock className="w-3.5 h-3.5" />
               Menunggu
             </span>
           )}
           {(isFailed || isExpired) && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold bg-rose-100 text-rose-800 shadow-xs">
               <XCircle className="w-3.5 h-3.5" />
               {isExpired ? "Kadaluarsa" : "Gagal"}
             </span>
@@ -188,28 +186,33 @@ export function DetailPaymentUI() {
 
       {/* Success View */}
       {isSuccess && (
-        <div className="p-6 rounded-2xl bg-emerald-50/60 border border-emerald-100 text-center space-y-4">
-          <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
-            <CheckCircle2 className="w-8 h-8" />
+        <div className="p-6 rounded-3xl bg-gradient-to-b from-emerald-50/80 to-emerald-50/30 border border-emerald-200/80 text-center space-y-4 shadow-xs">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/30">
+            <CheckCircle2 className="w-9 h-9 stroke-[2.5]" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-base font-extrabold text-emerald-950">Pembayaran Berhasil!</h3>
-            <p className="text-xs text-emerald-700">
-              Transaksi telah diverifikasi secara otomatis oleh sistem.
+            <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">Pembayaran Sukses!</h3>
+            <p className="text-xs text-slate-600">
+              Transaksi Anda telah berhasil diverifikasi secara otomatis.
             </p>
           </div>
-          <div className="p-3.5 rounded-xl bg-white border border-emerald-100 text-xs space-y-2 text-left">
-            <div className="flex justify-between text-slate-500">
+
+          <div className="p-4 rounded-2xl bg-white border border-emerald-100/90 text-xs space-y-2.5 text-left shadow-xs">
+            <div className="flex justify-between items-center text-slate-500">
               <span>Nomor Referensi</span>
-              <span className="font-mono font-bold text-slate-800">{reference}</span>
+              <span className="font-mono font-bold text-slate-900">{reference}</span>
             </div>
-            <div className="flex justify-between text-slate-500">
+            <div className="flex justify-between items-center text-slate-500 pt-2 border-t border-slate-50">
+              <span>Metode Pembayaran</span>
+              <span className="font-bold text-slate-900">{channelName}</span>
+            </div>
+            <div className="flex justify-between items-center text-slate-500 pt-2 border-t border-slate-50">
               <span>Total Terbayar</span>
-              <span className="font-extrabold text-slate-900">{Format.rupiah(parsed.amount)}</span>
+              <span className="font-extrabold text-base text-emerald-600">{Format.rupiah(parsed.amount)}</span>
             </div>
-            <div className="flex justify-between text-slate-500">
+            <div className="flex justify-between items-center text-slate-500 pt-2 border-t border-slate-50">
               <span>Waktu Selesai</span>
-              <span className="font-medium text-slate-800">{Format.dateTime(order?.updated_at || new Date())}</span>
+              <span className="font-medium text-slate-700">{Format.dateTime(order?.updated_at || new Date())}</span>
             </div>
           </div>
         </div>
@@ -217,16 +220,16 @@ export function DetailPaymentUI() {
 
       {/* Failed / Expired View */}
       {(isFailed || isExpired) && (
-        <div className="p-6 rounded-2xl bg-rose-50/60 border border-rose-100 text-center space-y-3">
-          <div className="w-14 h-14 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
-            <XCircle className="w-8 h-8" />
+        <div className="p-6 rounded-3xl bg-gradient-to-b from-rose-50/80 to-rose-50/30 border border-rose-200/80 text-center space-y-3.5 shadow-xs">
+          <div className="w-16 h-16 rounded-2xl bg-rose-500 text-white flex items-center justify-center mx-auto shadow-lg shadow-rose-500/30">
+            <XCircle className="w-9 h-9 stroke-[2.5]" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-base font-extrabold text-rose-950">
-              {isExpired ? "Pembayaran Kadaluarsa" : "Pembayaran Gagal"}
+            <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">
+              {isExpired ? "Waktu Pembayaran Habis" : "Pembayaran Dibatalkan"}
             </h3>
-            <p className="text-xs text-rose-700">
-              Waktu batas pembayaran telah habis atau transaksi dibatalkan.
+            <p className="text-xs text-slate-600">
+              Batas waktu pembayaran untuk pesanan ini telah berakhir.
             </p>
           </div>
         </div>
@@ -235,72 +238,68 @@ export function DetailPaymentUI() {
       {/* Pending Active Payment Content */}
       {isPending && (
         <div className="space-y-4">
-          {/* Countdown Card */}
-          <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200/60 flex items-center justify-between text-xs text-amber-900">
-            <div className="flex items-center gap-2">
+          {/* Countdown Pill Card */}
+          <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/70 flex items-center justify-between text-xs text-amber-950 shadow-xs">
+            <div className="flex items-center gap-2 font-medium">
               <Clock className="w-4 h-4 text-amber-600" />
               <span>Selesaikan dalam</span>
             </div>
-            <span className="font-mono font-bold text-sm text-amber-700">
+            <span className="font-mono font-extrabold text-sm text-amber-700 tracking-wider">
               {Format.countdown(remainingSeconds)}
             </span>
           </div>
 
-          {/* QRIS Display */}
+          {/* QRIS Display Card */}
           {qrString && (
-            <div className="p-5 rounded-2xl border border-slate-200 bg-white text-center space-y-3.5 shadow-xs">
-              <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700">
+            <div className="p-6 rounded-3xl border border-slate-200/90 bg-white text-center space-y-4 shadow-sm">
+              <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-slate-800">
                 <QrCode className="w-4 h-4 text-sky-600" />
-                <span>Scan QRIS untuk Membayar</span>
+                <span>Scan Kode QRIS di Bawah Ini</span>
               </div>
 
-              <div className="p-3 bg-white rounded-xl inline-block border border-slate-100 shadow-sm">
+              <div className="p-3.5 bg-white rounded-2xl inline-block border-2 border-slate-100 shadow-md">
                 <QRCodeSVG
                   id="qris-qr-code"
                   value={qrString}
-                  size={200}
+                  size={210}
                   level="M"
                   includeMargin
                   className="mx-auto"
                 />
               </div>
 
-              <div className="flex gap-2 justify-center pt-1">
+              <p className="text-[11px] text-slate-400 max-w-[260px] mx-auto leading-relaxed">
+                Buka aplikasi e-Wallet atau m-Banking pilihan Anda yang mendukung scan QRIS (GoPay, OVO, DANA, BCA, dll).
+              </p>
+
+              <div className="flex justify-center pt-1">
                 <button
                   type="button"
                   onClick={handleDownloadQR}
-                  className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 flex items-center gap-1.5 transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Unduh QR</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(qrString, "Kode QR")}
-                  className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 flex items-center gap-1.5 transition cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>Salin Teks</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* Virtual Account Number Display */}
+          {/* Virtual Account Number Card */}
           {vaNumber && (
-            <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-3 shadow-xs">
+            <div className="p-5 rounded-3xl border border-slate-200/90 bg-white space-y-4 shadow-sm">
               <div>
-                <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   Nomor Virtual Account
                 </p>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-xl font-mono font-extrabold text-slate-900 tracking-wider">
+                <div className="flex items-center justify-between mt-1.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                  <span className="text-xl sm:text-2xl font-mono font-black text-slate-900 tracking-wider select-all">
                     {vaNumber}
                   </span>
                   <button
                     type="button"
                     onClick={() => handleCopy(vaNumber, "Nomor VA")}
-                    className="px-3 py-1.5 rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-95 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs shadow-sky-600/20"
                   >
                     <Copy className="w-3.5 h-3.5" />
                     <span>Salin</span>
@@ -310,131 +309,38 @@ export function DetailPaymentUI() {
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                 <div>
-                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
                     Total Tagihan
                   </p>
-                  <p className="text-base font-bold text-slate-900">{Format.rupiah(parsed.amount)}</p>
+                  <p className="text-lg font-black text-slate-900 mt-0.5">{Format.rupiah(parsed.amount)}</p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleCopy(String(parsed.amount), "Nominal")}
-                  className="px-2.5 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-[11px] font-medium flex items-center gap-1 transition cursor-pointer"
+                  onClick={() => handleCopy(String(parsed.amount), "Nominal Tagihan")}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
                 >
                   <Copy className="w-3 h-3" />
-                  <span>Salin</span>
+                  <span>Salin Jumlah</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* Checkout URL / Hosted Link */}
-          {checkoutUrl && (
-            <div className="p-4 rounded-xl border border-sky-100 bg-sky-50/50 space-y-3">
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-sky-950">Lanjutkan Pembayaran Eksternal</p>
-                <p className="text-[11px] text-sky-700">
-                  Saluran ini memerlukan interaksi pada halaman resmi penyedia pembayaran.
-                </p>
-              </div>
-              <a
-                href={checkoutUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition"
-              >
-                <span>Buka Halaman Pembayaran</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          )}
-
-          {/* Payment Instructions Accordion */}
-          <div className="space-y-2 pt-1">
-            <p className="text-xs font-bold text-slate-900 uppercase tracking-wide px-1">
-              Petunjuk Pembayaran
-            </p>
-
-            <div className="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100 bg-white text-xs">
-              {/* ATM */}
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setActiveAccordion(activeAccordion === "atm" ? null : "atm")}
-                  className="w-full px-4 py-3 flex items-center justify-between text-left font-semibold text-slate-800 hover:bg-slate-50 transition cursor-pointer"
-                >
-                  <span>Transfer melalui ATM</span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-slate-400 transition-transform ${
-                      activeAccordion === "atm" ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {activeAccordion === "atm" && (
-                  <div className="px-4 pb-3 pt-1 text-slate-600 space-y-1 text-[11px] leading-relaxed">
-                    <p>1. Masukkan kartu ATM dan 6 digit PIN Anda.</p>
-                    <p>2. Pilih menu <strong>Transaksi Lainnya</strong> &gt; <strong>Transfer</strong> &gt; <strong>Ke Rekening Virtual Account</strong>.</p>
-                    <p>3. Masukkan nomor Virtual Account: <strong className="font-mono">{vaNumber || "sesuai tagihan"}</strong>.</p>
-                    <p>4. Masukkan jumlah bayar persis: <strong>{Format.rupiah(parsed.amount)}</strong>.</p>
-                    <p>5. Konfirmasi rincian transaksi lalu simpan struk pembayaran.</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Mobile Banking */}
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setActiveAccordion(activeAccordion === "m-banking" ? null : "m-banking")}
-                  className="w-full px-4 py-3 flex items-center justify-between text-left font-semibold text-slate-800 hover:bg-slate-50 transition cursor-pointer"
-                >
-                  <span>Transfer melalui Mobile Banking</span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-slate-400 transition-transform ${
-                      activeAccordion === "m-banking" ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {activeAccordion === "m-banking" && (
-                  <div className="px-4 pb-3 pt-1 text-slate-600 space-y-1 text-[11px] leading-relaxed">
-                    <p>1. Buka aplikasi m-Banking di smartphone Anda.</p>
-                    <p>2. Pilih menu <strong>Transfer</strong> atau <strong>Bayar / Tagihan</strong>.</p>
-                    <p>3. Pilih saluran <strong>Virtual Account</strong>.</p>
-                    <p>4. Masukkan nomor Virtual Account: <strong className="font-mono">{vaNumber || "sesuai tagihan"}</strong>.</p>
-                    <p>5. Pastikan nama dan nominal sesuai, lalu masukkan PIN m-Banking Anda.</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Internet Banking */}
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setActiveAccordion(activeAccordion === "i-banking" ? null : "i-banking")}
-                  className="w-full px-4 py-3 flex items-center justify-between text-left font-semibold text-slate-800 hover:bg-slate-50 transition cursor-pointer"
-                >
-                  <span>Transfer melalui Internet Banking</span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-slate-400 transition-transform ${
-                      activeAccordion === "i-banking" ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {activeAccordion === "i-banking" && (
-                  <div className="px-4 pb-3 pt-1 text-slate-600 space-y-1 text-[11px] leading-relaxed">
-                    <p>1. Login ke akun Internet Banking Anda.</p>
-                    <p>2. Pilih menu pembayaran tagihan / Virtual Account.</p>
-                    <p>3. Masukkan kode Virtual Account lalu klik Lanjutkan.</p>
-                    <p>4. Masukkan respon token autentikasi (KeyBCA/Token).</p>
-                    <p>5. Transaksi selesai dan status otomatis terverifikasi.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          {/* Payment Instructions (berdasarkan payment category) */}
+          <PaymentInstructions
+            categoryKey={
+              order?.payment_methods?.category?.key ||
+              order?.payment_methods?.type ||
+              null
+            }
+            vaNumber={vaNumber}
+            amount={parsed.amount}
+            reference={reference}
+          />
 
           <div className="pt-2 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 font-medium">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Verifikasi pembayaran otomatis berjalan secara realtime</span>
+            <span>Sistem memantau verifikasi otomatis secara realtime</span>
           </div>
         </div>
       )}

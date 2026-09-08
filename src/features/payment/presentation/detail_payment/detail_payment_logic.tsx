@@ -5,6 +5,7 @@ import { useOrderService } from "@/shared/dependency_injection/global_container"
 import { OrdersResponse, parseOrderDetails } from "../../domain/model/response/orders_response";
 import { OrderStatus } from "../../domain/model/enum/order_status";
 import { StateType } from "@/shared/domain/model/state_model";
+import { SocketService, SocketNotificationPayload } from "@/shared/network/socket_service";
 
 export function useDetailPaymentLogic() {
   const router = useRouter();
@@ -14,74 +15,152 @@ export function useDetailPaymentLogic() {
   const [order, setOrder] = useState<OrdersResponse | null>(null);
   const [qrString, setQrString] = useState<string | null>(null);
   const [vaNumber, setVaNumber] = useState<string | null>(null);
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(3600);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   const reference = (router.query.reference as string) || "";
   const token = (router.query.token as string) || "";
-  const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const socketServiceRef = useRef<SocketService | null>(null);
+  const hasRedirectedRef = useRef(false);
+
+  const orderRef = useRef<OrdersResponse | null>(null);
+  useEffect(() => {
+    orderRef.current = order;
+  });
+
+  const handleSuccessRedirect = useCallback(
+    (orderData?: OrdersResponse | null) => {
+      if (hasRedirectedRef.current) return;
+
+      const currentOrder = orderData ?? orderRef.current;
+      if (!currentOrder) return;
+
+      let reqObj: Record<string, any> = {};
+      if (typeof currentOrder.request === "string") {
+        try {
+          reqObj = JSON.parse(currentOrder.request);
+        } catch {
+          reqObj = {};
+        }
+      } else if (currentOrder.request && typeof currentOrder.request === "object") {
+        reqObj = currentOrder.request;
+      }
+
+      const targetUrl =
+        currentOrder.return_url ||
+        reqObj.returnUrl ||
+        reqObj.return_url ||
+        reqObj.success_redirect_url ||
+        reqObj.redirect_url ||
+        currentOrder.project?.callback ||
+        "";
+
+      if (targetUrl && targetUrl.startsWith("http")) {
+        hasRedirectedRef.current = true;
+        toast.success("Pembayaran Berhasil! Mengalihkan ke merchant...", {
+          id: "redirect-success",
+          duration: 2500,
+        });
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 1200);
+      }
+    },
+    []
+  );
 
   const extractPaymentPayload = useCallback((orderData: OrdersResponse) => {
-    const isQris = (orderData.payment_method || "").toLowerCase().includes("qris");
     const val = (orderData.value || "").trim();
-
-    let qr: string | null = null;
-    let va: string | null = null;
-    let url: string | null = null;
-
-    if (val) {
-      if (isQris || val.startsWith("000201") || val.length > 60) {
-        qr = val;
-      } else {
-        va = val;
-      }
+    if (!val) {
+      setQrString(null);
+      setVaNumber(null);
+      return;
     }
 
-    // Try parsing from response object/json
-    let resObj: Record<string, any> = {};
-    if (typeof orderData.response === "string") {
-      try {
-        resObj = JSON.parse(orderData.response);
-      } catch {
-        resObj = {};
-      }
-    } else if (orderData.response && typeof orderData.response === "object") {
-      resObj = orderData.response;
+    const categoryKey = (
+      orderData.payment_methods?.category?.key ||
+      orderData.payment_methods?.type ||
+      ""
+    ).toLowerCase();
+
+    // Directly determine QRIS from category.key
+    const isQris =
+      categoryKey === "qris" ||
+      (!categoryKey && (val.startsWith("000201") || val.length > 60));
+
+    if (isQris) {
+      setQrString(val);
+      setVaNumber(null);
+    } else {
+      setVaNumber(val);
+      setQrString(null);
     }
-
-    if (!qr) {
-      qr = resObj.qrContent || resObj.qrString || resObj.qr_string || resObj.qr_url || null;
-    }
-
-    if (!va) {
-      va =
-        resObj.virtualAccountData?.virtualAccountNo ||
-        resObj.virtualAccount?.vaNumber ||
-        resObj.vaNumber ||
-        resObj.va_numbers?.[0]?.va_number ||
-        resObj.bca_va_number ||
-        resObj.permata_va_number ||
-        resObj.bri_va_number ||
-        resObj.bni_va_number ||
-        null;
-    }
-
-    const rawUrl =
-      orderData.url ||
-      resObj.checkout_url ||
-      resObj.paymentUrl ||
-      resObj.invoice_url ||
-      resObj.link;
-
-    if (rawUrl && typeof rawUrl === "string" && rawUrl.startsWith("http")) {
-      url = rawUrl;
-    }
-
-    setQrString(qr);
-    setVaNumber(va);
-    setCheckoutUrl(url);
   }, []);
+
+  const handleCheckStatus = useCallback(
+    async (showToast = true) => {
+      if (!reference || checkingStatus) return;
+
+      setCheckingStatus(true);
+      if (showToast) {
+        toast.loading("Mengecek status pembayaran...", { id: "check-status" });
+      }
+
+      const checkRes = await orderService.checkOrderStatus(reference, token);
+
+      checkRes.fold(
+        (err) => {
+          setCheckingStatus(false);
+          if (showToast) {
+            toast.error(err.message || "Gagal mengecek status pembayaran.", {
+              id: "check-status",
+            });
+          }
+        },
+        (resData) => {
+          setCheckingStatus(false);
+          const newStatus = (
+            resData?.status ||
+            resData?.order_status ||
+            ""
+          ).toUpperCase();
+
+          if (newStatus) {
+            setOrder((prev) => (prev ? { ...prev, status: newStatus } : null));
+
+            if (newStatus === OrderStatus.SUCCESS || newStatus === "PAID") {
+              handleSuccessRedirect();
+            }
+          }
+
+          if (showToast) {
+            if (newStatus === OrderStatus.SUCCESS || newStatus === "PAID") {
+              toast.success("Pembayaran berhasil diterima!", {
+                id: "check-status",
+              });
+            } else {
+              toast.success(`Status transaksi: ${newStatus || "PENDING"}`, {
+                id: "check-status",
+              });
+            }
+          }
+        }
+      );
+    },
+    [reference, token, checkingStatus, orderService, handleSuccessRedirect]
+  );
+
+  // Keep a stable ref for callbacks inside socket events
+  const handleCheckStatusRef = useRef(handleCheckStatus);
+  useEffect(() => {
+    handleCheckStatusRef.current = handleCheckStatus;
+  });
+
+  const handleSuccessRedirectRef = useRef(handleSuccessRedirect);
+  useEffect(() => {
+    handleSuccessRedirectRef.current = handleSuccessRedirect;
+  });
 
   const fetchOrder = useCallback(async () => {
     if (!router.isReady || !reference) return;
@@ -98,66 +177,63 @@ export function useDetailPaymentLogic() {
         setOrder(data);
         extractPaymentPayload(data);
         setStateStatus(StateType.success);
-      }
-    );
-  }, [router.isReady, reference, token, orderService, extractPaymentPayload]);
 
-  const handleCheckStatus = async (showToast = true) => {
-    if (!reference || checkingStatus) return;
-
-    setCheckingStatus(true);
-    if (showToast) {
-      toast.loading("Mengecek status pembayaran...", { id: "check-status" });
-    }
-
-    const checkRes = await orderService.checkOrderStatus(reference, token);
-
-    checkRes.fold(
-      (err) => {
-        setCheckingStatus(false);
-        if (showToast) {
-          toast.error(err.message || "Gagal mengecek status pembayaran.", { id: "check-status" });
-        }
-      },
-      (resData) => {
-        setCheckingStatus(false);
-        const newStatus = resData?.status || resData?.order_status;
-        if (newStatus && order) {
-          setOrder({ ...order, status: newStatus });
-        }
-
-        if (showToast) {
-          if (newStatus === OrderStatus.SUCCESS) {
-            toast.success("Pembayaran berhasil diterima!", { id: "check-status" });
-          } else {
-            toast.success(`Status transaksi: ${newStatus || "PENDING"}`, { id: "check-status" });
-          }
+        const st = (data.status || "").toUpperCase();
+        if (st === OrderStatus.SUCCESS || st === "PAID") {
+          handleSuccessRedirect(data);
         }
       }
     );
-  };
+  }, [router.isReady, reference, token, orderService, extractPaymentPayload, handleSuccessRedirect]);
 
   useEffect(() => {
     fetchOrder();
   }, [fetchOrder]);
 
-  // Polling checkOrderStatus every 7 seconds if pending
+  // Priority Socket Listening (mounted ONCE per reference)
   useEffect(() => {
-    const isPending = !order?.status || order.status.toUpperCase() === OrderStatus.PENDING;
+    if (!reference) return;
 
-    if (isPending && reference) {
-      pollTimerRef.current = setInterval(() => {
-        void handleCheckStatus(false);
-      }, 7000);
-    }
+    const socketService = new SocketService();
+    socketServiceRef.current = socketService;
+
+    socketService.connect({
+      onConnectionChange: (connected) => {
+        setIsSocketConnected(connected);
+      },
+      onReconnect: () => {
+        // When socket reconnects, refresh data/check status once
+        void handleCheckStatusRef.current(false);
+      },
+      onNotification: (payload: SocketNotificationPayload) => {
+        const notifData = payload.data || payload;
+        const notifRef =
+          notifData.reference || notifData.order_id || notifData.trxId;
+
+        if (notifRef && notifRef === reference) {
+          const rawStatus = (
+            notifData.status ||
+            notifData.order_status ||
+            "SUCCESS"
+          ).toUpperCase();
+          setOrder((prev) => (prev ? { ...prev, status: rawStatus } : null));
+
+          if (rawStatus === OrderStatus.SUCCESS || rawStatus === "PAID") {
+            toast.success("Pembayaran berhasil diverifikasi secara realtime!", {
+              id: "realtime-success",
+              icon: "🎉",
+            });
+            handleSuccessRedirectRef.current();
+          }
+        }
+      },
+    });
 
     return () => {
-      if (pollTimerRef.current) {
-        clearInterval(pollTimerRef.current);
-      }
+      socketService.disconnect();
+      socketServiceRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order?.status, reference]);
+  }, [reference]);
 
   // Expiration Countdown
   useEffect(() => {
@@ -185,9 +261,9 @@ export function useDetailPaymentLogic() {
     stateStatus,
     qrString,
     vaNumber,
-    checkoutUrl,
     checkingStatus,
     remainingSeconds,
+    isSocketConnected,
     reference,
     parsed,
     handleCheckStatus,
