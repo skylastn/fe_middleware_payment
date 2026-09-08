@@ -14,11 +14,13 @@ class PaymentService {
   }
 
   Future<Either<ResponseModel, List<PaymentResponse>>> getPaymentMethod({
-    String? from,
+    String? paymentGatewayKey,
+    String? paymentGatewayId,
     String? categoriesKey,
   }) {
     return repository.getPaymentMethod(
-      from: from,
+      paymentGatewayKey: paymentGatewayKey,
+      paymentGatewayId: paymentGatewayId,
       categoriesKey: categoriesKey,
     );
   }

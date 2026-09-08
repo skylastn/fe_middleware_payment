@@ -13,7 +13,9 @@ class PaymentResponse {
   String? value;
   String? type;
   String? name;
-  String? from;
+  String? paymentGatewayId;
+  String? paymentGatewayKey;
+  bool? isActive;
   String? image;
   String? imageUrl;
   DateTime? createdAt;
@@ -36,7 +38,9 @@ class PaymentResponse {
     this.value,
     this.type,
     this.name,
-    this.from,
+    this.paymentGatewayId,
+    this.paymentGatewayKey,
+    this.isActive = true,
     this.image,
     this.imageUrl,
     this.createdAt,
@@ -51,7 +55,9 @@ class PaymentResponse {
     String? value,
     String? type,
     String? name,
-    String? from,
+    String? paymentGatewayId,
+    String? paymentGatewayKey,
+    bool? isActive,
     String? image,
     String? imageUrl,
     DateTime? createdAt,
@@ -65,7 +71,9 @@ class PaymentResponse {
         value: value ?? this.value,
         type: type ?? this.type,
         name: name ?? this.name,
-        from: from ?? this.from,
+        paymentGatewayId: paymentGatewayId ?? this.paymentGatewayId,
+        paymentGatewayKey: paymentGatewayKey ?? this.paymentGatewayKey,
+        isActive: isActive ?? this.isActive,
         image: image ?? this.image,
         imageUrl: imageUrl ?? this.imageUrl,
         createdAt: createdAt ?? this.createdAt,
@@ -87,7 +95,10 @@ class PaymentResponse {
       value: json['value']?.toString(),
       type: json['type']?.toString(),
       name: json['name']?.toString(),
-      from: json['from']?.toString(),
+      paymentGatewayId: json['payment_gateway_id']?.toString(),
+      paymentGatewayKey: json['payment_gateway_key']?.toString() ??
+          (json['gateway'] is Map ? json['gateway']['key']?.toString() : null),
+      isActive: json['is_active'] == null ? true : (json['is_active'] == true || json['is_active'] == 1 || json['is_active'] == '1'),
       image: json['image']?.toString(),
       imageUrl: json['image_url'],
       createdAt: json['created_at'] == null
@@ -109,7 +120,9 @@ class PaymentResponse {
         'value': value,
         'type': type,
         'name': name,
-        'from': from,
+        'payment_gateway_id': paymentGatewayId,
+        'payment_gateway_key': paymentGatewayKey,
+        'is_active': isActive,
         'image': image,
         'image_url': imageUrl,
         'created_at': createdAt?.toIso8601String(),

@@ -161,6 +161,10 @@ class DetailPaymentLogic extends GetxController {
             state.vaNumber = res['virtualAccount']['vaNumber'].toString();
           }
 
+          if (res['virtualAccountData'] is Map && res['virtualAccountData']['virtualAccountNo'] != null) {
+            state.vaNumber = res['virtualAccountData']['virtualAccountNo'].toString();
+          }
+
           if (res['va_numbers'] is List && (res['va_numbers'] as List).isNotEmpty) {
             final firstVa = (res['va_numbers'] as List)[0];
             if (firstVa is Map && firstVa['va_number'] != null) {

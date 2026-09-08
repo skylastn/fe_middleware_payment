@@ -31,11 +31,13 @@ class PaymentRepositoryImpl implements PaymentRepository {
 
   @override
   Future<Either<ResponseModel, List<PaymentResponse>>> getPaymentMethod({
-    String? from,
+    String? paymentGatewayKey,
+    String? paymentGatewayId,
     String? categoriesKey,
   }) async {
     final response = await remoteDataSource.getPaymentMethod(
-      from: from,
+      paymentGatewayKey: paymentGatewayKey,
+      paymentGatewayId: paymentGatewayId,
       categoriesKey: categoriesKey,
     );
     if (!response.isError) {

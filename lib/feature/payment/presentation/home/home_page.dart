@@ -191,7 +191,7 @@ class HomePage extends GetView<HomeLogic> {
                     params['token'] = token;
                   }
                   if ((state.order?.project?.slug ?? '').isNotEmpty) {
-                    params['from'] = state.order!.project!.slug.toLowerCase();
+                    params['paymentGatewayKey'] = state.order!.project!.slug.toLowerCase();
                   }
                   Get.toNamed(
                     Routes.PAYMENT,

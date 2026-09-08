@@ -28,18 +28,26 @@ class PaymentMethodLogic extends GetxController {
     state.status = StateStatus.loading;
     update();
 
-    String? fromFilter = Get.parameters['from'];
-    if ((fromFilter == null || fromFilter.isEmpty) && state.orderId.isNotEmpty) {
+    String? gatewayKey = Get.parameters['paymentGatewayKey'] ?? Get.parameters['payment_gateway_key'];
+    String? gatewayId = Get.parameters['paymentGatewayId'] ?? Get.parameters['payment_gateway_id'];
+
+    if ((gatewayKey == null || gatewayKey.isEmpty) && (gatewayId == null || gatewayId.isEmpty) && state.orderId.isNotEmpty) {
       final orderResult = await _orderService.getDetailOrder(reference: state.orderId);
       orderResult.fold((_) {}, (order) {
         if (order.project?.slug != null && order.project!.slug.isNotEmpty) {
-          fromFilter = order.project!.slug.toLowerCase();
+          gatewayKey = order.project!.slug.toLowerCase();
         }
       });
     }
 
-    final categoriesResult = await _paymentService.getPaymentCategory();
-    final methodsResult = await _paymentService.getPaymentMethod(from: fromFilter);
+    final categoriesFuture = _paymentService.getPaymentCategory();
+    final methodsFuture = _paymentService.getPaymentMethod(
+      paymentGatewayKey: gatewayKey,
+      paymentGatewayId: gatewayId,
+    );
+
+    final categoriesResult = await categoriesFuture;
+    final methodsResult = await methodsFuture;
 
     categoriesResult.fold(
       (errCat) {
@@ -55,10 +63,11 @@ class PaymentMethodLogic extends GetxController {
             update();
           },
           (methods) {
+            final activeMethods = methods.where((m) => m.isActive ?? true).toList();
             final List<PaymentCategory> resultCategories = [];
 
             for (var cat in categories) {
-              final catMethods = methods.where((m) {
+              final catMethods = activeMethods.where((m) {
                 if (m.category?.key != null && m.category!.key == cat.key) {
                   return true;
                 }
@@ -83,7 +92,7 @@ class PaymentMethodLogic extends GetxController {
               }
             }
 
-            final uncategorizedMethods = methods.where((m) {
+            final uncategorizedMethods = activeMethods.where((m) {
               final catKey = m.category?.key ?? m.type;
               return !categories.any((c) => c.key == catKey);
             }).toList();
