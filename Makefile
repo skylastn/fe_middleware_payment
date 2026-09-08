@@ -24,3 +24,5 @@ docker-up:
 
 docker-down:
 	docker compose down
+	
+deploy: docker-build docker-up
