@@ -12,7 +12,8 @@ services:
     image: ${APP_NAME:-fe-middleware-payment}:${APP_ENV:-prod}
     container_name: ${APP_NAME:-fe-middleware-payment}-${APP_ENV:-prod}
     restart: unless-stopped
-    ports:
-      - "${PORT:-3000}:3000"
+    # ports:
+    #   - "${PORT:-3000}:3000"
     env_file:
       - .env
+    network_mode: "host"
