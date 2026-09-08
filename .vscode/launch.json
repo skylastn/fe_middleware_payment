@@ -2,65 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "DEV All",
+      "name": "Dev (Development .env)",
+      "type": "node-terminal",
       "request": "launch",
-      "type": "dart",
-      "program": "${workspaceFolder}/lib/main.dart",
-      "flutterMode": "debug",
-      "preLaunchTask": "replace-env-development",
-      "args": [
-        "--dart-define-from-file=.env"
-      ]
+      "command": "bun run dev",
+      "cwd": "${workspaceFolder}"
     },
     {
-      "name": "Prod All",
+      "name": "Dev (Production .env)",
+      "type": "node-terminal",
       "request": "launch",
-      "type": "dart",
-      "program": "${workspaceFolder}/lib/main.dart",
-      "flutterMode": "debug",
-      "preLaunchTask": "replace-env-production",
-      "args": [
-        "--dart-define-from-file=.env"
-      ]
-    },
-    {
-      "name": "DEV (Chrome)",
-      "request": "launch",
-      "type": "dart",
-      "program": "${workspaceFolder}/lib/main.dart",
-      "flutterMode": "debug",
-      "deviceId": "chrome",
-      "preLaunchTask": "replace-env-development",
-      "args": [
-        "--web-port=10000",
-        "--dart-define-from-file=.env"
-      ]
-    },
-    {
-      "name": "PROD (Chrome)",
-      "request": "launch",
-      "type": "dart",
-      "program": "${workspaceFolder}/lib/main.dart",
-      "flutterMode": "debug",
-      "deviceId": "chrome",
-      "preLaunchTask": "replace-env-production",
-      "args": [
-        "--web-port=10001",
-        "--dart-define-from-file=.env"
-      ]
-    },
-    {
-      "name": "Web (WASM)",
-      "request": "launch",
-      "type": "dart",
-      "program": "${workspaceFolder}/lib/main.dart",
-      "flutterMode": "debug",
-      "deviceId": "chrome",
-      "preLaunchTask": "replace-env-development-wasm",
-      "args": [
-        "--wasm",
-        "--dart-define-from-file=.env"
-      ]
+      "command": "bun run dev:prod",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

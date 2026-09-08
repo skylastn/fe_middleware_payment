@@ -1,39 +1,26 @@
-ifeq ($(OS),Windows_NT)
-	COPY_CMD = copy
-else
-	COPY_CMD = cp
-endif
+include .env
+export $(shell sed 's/=.*//' .env)
 
-SED_COMMAND = sed 's/=.*//'
-ENV_COMMAND = $(SED_COMMAND) .env
+install:
+	bun install
 
-ifneq (,$(wildcard .env))
-    include .env
-    export $(shell $(ENV_COMMAND))
-endif
+dev:
+	bun run dev
 
-WEB_ENV_FILE ?= .env.production
-WEB_DOCKER_IMAGE ?= fe-middleware-payment:latest
-VERSION ?= 1.0.0
-BUILDNUMBER ?= 1
+build:
+	bun run build
 
-copyEnvDev:
-	$(COPY_CMD) .env.development .env
+lint:
+	bun run lint
 
-copyEnvProd:
-	$(COPY_CMD) .env.production .env
+clean:
+	rm -rf .next node_modules
 
-releaseWeb:
-	docker build --platform linux/amd64 -f Dockerfile \
-		--build-arg BUILD_ENV_FILE=$(WEB_ENV_FILE) \
-		--build-arg APP_VERSION=$(VERSION) \
-		--build-arg APP_BUILDNUMBER=$(BUILDNUMBER) \
-		-t $(WEB_DOCKER_IMAGE) .
-	mkdir -p ./deploy
-	CONTAINER_ID=$$(docker create $(WEB_DOCKER_IMAGE)); \
-	docker cp $$CONTAINER_ID:/output/deploy/. ./deploy; \
-	docker rm $$CONTAINER_ID
+docker-build:
+	docker compose build
 
-deployWeb:
-	make copyEnvProd
-	make releaseWeb
+docker-up:
+	docker compose up -d
+
+docker-down:
+	docker compose down
