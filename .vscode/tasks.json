@@ -2,20 +2,32 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "replace-env-development",
-      "command": "./scripts/replace_env.sh",
-      "args": [
-        "development"
-      ],
-      "type": "shell"
+      "label": "dev:development",
+      "type": "shell",
+      "command": "bun run dev",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     },
     {
-      "label": "replace-env-production",
-      "command": "./scripts/replace_env.sh",
-      "args": [
-        "production"
-      ],
-      "type": "shell"
+      "label": "dev:production",
+      "type": "shell",
+      "command": "bun run dev:prod",
+      "problemMatcher": []
+    },
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "bun run build",
+      "problemMatcher": []
+    },
+    {
+      "label": "lint",
+      "type": "shell",
+      "command": "bun run lint",
+      "problemMatcher": []
     }
   ]
 }

@@ -2,7 +2,13 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
@@ -11,12 +17,6 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[dart]": {
-    "editor.defaultFormatter": "Dart-Code.dart-code"
-  },
   "editor.formatOnSave": true,
-  "java.configuration.updateBuildConfiguration": "interactive",
-  "cmake.ignoreCMakeListsMissing": true,
-  "makefile.configureOnOpen": false,
-  "postman.settings.dotenv-detection-notification-visibility": false
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

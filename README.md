@@ -1,16 +1,60 @@
-# fe_middleware_payment
+# 🛒 Front Office Payment Checkout (Next.js + Clean Architecture)
 
-A new Flutter project.
+Modern, secure, and responsive payment checkout portal for Payment Middleware built with **Next.js (Pages Router)**, **TypeScript**, **Tailwind CSS v4**, and **Clean Architecture**.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🏗️ Architecture & Folder Structure
 
-A few resources to get you started if this is your first Flutter project:
+Following Feature-First Clean Architecture:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```text
+src/
+├── pages/                          # Next.js Pages Router
+│   ├── _app.tsx                    # App providers (DI, Loading, Toast)
+│   ├── _document.tsx               # HTML layout
+│   ├── index.tsx                   # Transaction lookup entrypoint
+│   ├── home/index.tsx              # Order summary & customer details
+│   ├── payment/index.tsx           # Payment channel selection
+│   └── detailpayment/index.tsx     # Payment execution & instructions
+├── shared/                         # Shared Cross-Cutting Utilities
+│   ├── component/                  # Reusable UI & CheckoutLayout
+│   ├── constant/                   # Env, URLs, Colors
+│   ├── dependency_injection/       # Global DI Container (Services)
+│   ├── domain/model/               # Generic Response & State models
+│   ├── network/                    # Axios ApiClient with token interceptor
+│   ├── styles/                     # Tailwind CSS v4 globals
+│   └── utils/                      # Functional Either & formatting helpers
+└── features/
+    └── payment/                    # Payment Domain Feature
+        ├── domain/                 # Domain entities, requests, responses
+        ├── application/            # OrderService & PaymentService
+        ├── infrastructure/         # Remote Data Sources & Repositories
+        └── presentation/           # UI Components & Logic Hooks
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## ⚡ Quick Start
+
+```bash
+# 1. Install dependencies with Bun
+bun install
+
+# 2. Configure Environment
+cp .env.example .env
+
+# 3. Run Development Server
+bun run dev
+
+# 4. Build Production Bundle
+bun run build
+```
+
+---
+
+## 🐳 Docker Deployment
+
+```bash
+docker compose up -d --build
+```
