@@ -170,10 +170,13 @@ export function DetailPaymentUI() {
             </span>
           )}
           {isPending && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-900 shadow-xs">
-              <Clock className="w-3.5 h-3.5" />
-              Menunggu
-            </span>
+            <div className="text-right flex flex-col items-end gap-0.5">
+              <span className="text-xs font-black text-slate-900">{Format.rupiah(parsed.amount)}</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-900 shadow-xs">
+                <Clock className="w-3 h-3" />
+                Menunggu
+              </span>
+            </div>
           )}
           {(isFailed || isExpired) && (
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold bg-rose-100 text-rose-800 shadow-xs">
@@ -280,6 +283,23 @@ export function DetailPaymentUI() {
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Unduh QR</span>
+                </button>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-left">
+                <div>
+                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                    Total Tagihan
+                  </p>
+                  <p className="text-base font-black text-slate-900 mt-0.5">{Format.rupiah(parsed.amount)}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(String(parsed.amount), "Nominal Tagihan")}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>Salin Jumlah</span>
                 </button>
               </div>
             </div>

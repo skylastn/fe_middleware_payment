@@ -13,6 +13,7 @@ export interface OrdersResponse {
   notes?: string;
   payment_method?: string;
   payment_methods?: PaymentMethodResponse;
+  amount?: number;
   project?: ProjectResponse;
   request?: string | Record<string, any>;
   response?: string | Record<string, any>;
@@ -77,10 +78,12 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
   }
 
   const amount =
-    Number(reqObj.paymentAmount) ||
-    Number(reqObj.amount) ||
-    Number(order.totalAmount) ||
-    0;
+    (order.amount !== undefined && order.amount !== null && Number(order.amount) > 0
+      ? Number(order.amount)
+      : null) ??
+    (Number(reqObj.paymentAmount) ||
+      Number(order.totalAmount) ||
+      0);
 
   const productName =
     reqObj.productDetails ||
