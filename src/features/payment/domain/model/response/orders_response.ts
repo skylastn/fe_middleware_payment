@@ -5,6 +5,7 @@ export interface OrdersResponse {
   id?: number | string;
   type?: string;
   reference?: string;
+  name?: string;
   status?: string;
   mode?: string;
   email?: string;
@@ -93,6 +94,7 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
     "Pembayaran Layanan";
 
   const customerName =
+    order.name ||
     [reqObj.firstName, reqObj.lastName].filter(Boolean).join(" ") ||
     reqObj.customerVaName ||
     reqObj.name ||
