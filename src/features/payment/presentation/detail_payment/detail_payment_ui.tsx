@@ -244,10 +244,17 @@ export function DetailPaymentUI() {
           {/* Countdown Pill Card */}
           <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/70 flex items-center justify-between text-xs text-amber-950 shadow-xs">
             <div className="flex items-center gap-2 font-medium">
-              <Clock className="w-4 h-4 text-amber-600" />
-              <span>Selesaikan dalam</span>
+              <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+              <div>
+                <span>Selesaikan dalam</span>
+                {parsed.expiredAt && (
+                  <p className="text-[10px] text-amber-800/80 font-normal">
+                    Jatuh tempo: {Format.dateTime(parsed.expiredAt)}
+                  </p>
+                )}
+              </div>
             </div>
-            <span className="font-mono font-extrabold text-sm text-amber-700 tracking-wider">
+            <span className="font-mono font-extrabold text-sm text-amber-700 tracking-wider shrink-0">
               {Format.countdown(remainingSeconds)}
             </span>
           </div>

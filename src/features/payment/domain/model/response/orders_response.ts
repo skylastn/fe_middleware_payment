@@ -22,6 +22,7 @@ export interface OrdersResponse {
   value?: string;
   url?: string;
   return_url?: string;
+  expired_at?: string | null;
   created_at?: string;
   updated_at?: string;
 
@@ -39,6 +40,7 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
   phone: string;
   address: string;
   returnUrl: string;
+  expiredAt: string | null;
   parsedRequest: Record<string, any>;
   parsedResponse: Record<string, any>;
 } {
@@ -51,6 +53,7 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
       phone: "-",
       address: "-",
       returnUrl: "",
+      expiredAt: null,
       parsedRequest: {},
       parsedResponse: {},
     };
@@ -114,6 +117,8 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
     order.project?.callback ||
     "";
 
+  const expiredAt = order.expired_at || reqObj.expired_at || reqObj.expiredAt || null;
+
   return {
     amount,
     productName,
@@ -122,6 +127,7 @@ export function parseOrderDetails(order?: OrdersResponse | null): {
     phone,
     address,
     returnUrl,
+    expiredAt,
     parsedRequest: reqObj,
     parsedResponse: resObj,
   };

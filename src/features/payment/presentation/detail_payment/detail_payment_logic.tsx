@@ -7,6 +7,37 @@ import { OrderStatus } from "../../domain/model/enum/order_status";
 import { StateType } from "@/shared/domain/model/state_model";
 import { SocketService, SocketNotificationPayload } from "@/shared/network/socket_service";
 
+function computeRemainingSeconds(order?: OrdersResponse | null): number {
+  if (!order) return 3600;
+
+  let expiredAtStr = order.expired_at;
+  if (!expiredAtStr && order.request) {
+    try {
+      const reqObj = typeof order.request === "string" ? JSON.parse(order.request) : order.request;
+      expiredAtStr = reqObj.expired_at || reqObj.expiredAt;
+    } catch {
+      // ignore JSON parse error
+    }
+  }
+
+  if (expiredAtStr) {
+    const target = new Date(expiredAtStr).getTime();
+    if (!isNaN(target)) {
+      return Math.max(0, Math.floor((target - Date.now()) / 1000));
+    }
+  }
+
+  if (order.created_at) {
+    const created = new Date(order.created_at).getTime();
+    if (!isNaN(created)) {
+      const target = created + 3600 * 1000;
+      return Math.max(0, Math.floor((target - Date.now()) / 1000));
+    }
+  }
+
+  return 3600;
+}
+
 export function useDetailPaymentLogic() {
   const router = useRouter();
   const orderService = useOrderService();
@@ -122,6 +153,7 @@ export function useDetailPaymentLogic() {
           setCheckingStatus(false);
           setOrder(orderData);
           extractPaymentPayload(orderData);
+          setRemainingSeconds(computeRemainingSeconds(orderData));
 
           const newStatus = (
             orderData?.status ||
@@ -178,6 +210,7 @@ export function useDetailPaymentLogic() {
       (data) => {
         setOrder(data);
         extractPaymentPayload(data);
+        setRemainingSeconds(computeRemainingSeconds(data));
         setStateStatus(StateType.success);
 
         const st = (data.status || "").toUpperCase();
@@ -255,7 +288,9 @@ export function useDetailPaymentLogic() {
   };
 
   const parsed = parseOrderDetails(order);
-  const status = (order?.status || OrderStatus.PENDING).toUpperCase();
+  const rawStatus = (order?.status || OrderStatus.PENDING).toUpperCase();
+  const isTimeExpired = remainingSeconds <= 0 && rawStatus !== OrderStatus.SUCCESS && rawStatus !== "PAID";
+  const status = isTimeExpired && rawStatus === OrderStatus.PENDING ? OrderStatus.EXPIRED : rawStatus;
 
   return {
     order,
