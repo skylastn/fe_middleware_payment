@@ -8,8 +8,12 @@ import { CreatePaymentRequest } from "../domain/model/request/create_payment_req
 export class OrderService {
   constructor(private repository: OrderRepository = new OrderRepositoryImpl()) {}
 
-  async getDetailOrder(reference: string, token?: string): Promise<Either<ResponseModel, OrdersResponse>> {
-    return this.repository.getDetailOrder(reference, token);
+  async getDetailOrder(
+    reference: string,
+    token?: string,
+    forceRefresh = false,
+  ): Promise<Either<ResponseModel, OrdersResponse>> {
+    return this.repository.getDetailOrder(reference, token, forceRefresh);
   }
 
   async checkOrderStatus(reference: string, token?: string): Promise<Either<ResponseModel, any>> {

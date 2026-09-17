@@ -1,3 +1,5 @@
+import http from "http";
+import https from "https";
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios, { AxiosError } from "axios";
 
@@ -9,6 +11,27 @@ export const config = {
     responseLimit: false,
   },
 };
+
+const httpAgent = new http.Agent({
+  keepAlive: true,
+  maxSockets: 100,
+  maxFreeSockets: 20,
+  timeout: 60000,
+});
+
+const httpsAgent = new https.Agent({
+  keepAlive: true,
+  maxSockets: 100,
+  maxFreeSockets: 20,
+  timeout: 60000,
+});
+
+const proxyClient = axios.create({
+  httpAgent,
+  httpsAgent,
+  timeout: 35000,
+  validateStatus: () => true,
+});
 
 export default async function handler(
   req: NextApiRequest,
@@ -51,15 +74,13 @@ export default async function handler(
       headers["Authorization"] = String(req.headers["authorization"]);
     }
 
-    const response = await axios({
+    const response = await proxyClient.request({
       method: req.method,
       url: targetUrl,
       params: Object.keys(queryParams).length > 0 ? queryParams : undefined,
       data:
         req.method !== "GET" && req.method !== "HEAD" ? req.body : undefined,
       headers,
-      validateStatus: () => true,
-      timeout: 35000,
     });
 
     res.status(response.status).json(response.data);

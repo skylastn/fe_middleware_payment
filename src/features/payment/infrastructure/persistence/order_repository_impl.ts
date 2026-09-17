@@ -12,8 +12,12 @@ export class OrderRepositoryImpl implements OrderRepository {
     this.dataSource = dataSource ?? new OrderRemoteDataSource();
   }
 
-  async getDetailOrder(reference: string, token?: string): Promise<Either<ResponseModel, OrdersResponse>> {
-    const res = await this.dataSource.getDetailOrder(reference, token);
+  async getDetailOrder(
+    reference: string,
+    token?: string,
+    forceRefresh = false,
+  ): Promise<Either<ResponseModel, OrdersResponse>> {
+    const res = await this.dataSource.getDetailOrder(reference, token, forceRefresh);
     if (res.status && res.data) {
       return right(res.data);
     }

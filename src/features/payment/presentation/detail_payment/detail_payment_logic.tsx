@@ -107,7 +107,7 @@ export function useDetailPaymentLogic() {
         toast.loading("Mengecek status pembayaran...", { id: "check-status" });
       }
 
-      const checkRes = await orderService.getDetailOrder(reference, token);
+      const checkRes = await orderService.getDetailOrder(reference, token, true);
 
       checkRes.fold(
         (err) => {
