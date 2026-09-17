@@ -107,7 +107,7 @@ export function useDetailPaymentLogic() {
         toast.loading("Mengecek status pembayaran...", { id: "check-status" });
       }
 
-      const checkRes = await orderService.checkOrderStatus(reference, token);
+      const checkRes = await orderService.getDetailOrder(reference, token);
 
       checkRes.fold(
         (err) => {
@@ -118,25 +118,27 @@ export function useDetailPaymentLogic() {
             });
           }
         },
-        (resData) => {
+        (orderData) => {
           setCheckingStatus(false);
+          setOrder(orderData);
+          extractPaymentPayload(orderData);
+
           const newStatus = (
-            resData?.status ||
-            resData?.order_status ||
+            orderData?.status ||
             ""
           ).toUpperCase();
 
-          if (newStatus) {
-            setOrder((prev) => (prev ? { ...prev, status: newStatus } : null));
-
-            if (newStatus === OrderStatus.SUCCESS || newStatus === "PAID") {
-              handleSuccessRedirect();
-            }
+          if (newStatus === OrderStatus.SUCCESS || newStatus === "PAID") {
+            handleSuccessRedirect(orderData);
           }
 
           if (showToast) {
             if (newStatus === OrderStatus.SUCCESS || newStatus === "PAID") {
               toast.success("Pembayaran berhasil diterima!", {
+                id: "check-status",
+              });
+            } else if (newStatus === OrderStatus.FAILED) {
+              toast.error("Pembayaran gagal atau dibatalkan.", {
                 id: "check-status",
               });
             } else {
@@ -148,7 +150,7 @@ export function useDetailPaymentLogic() {
         }
       );
     },
-    [reference, token, checkingStatus, orderService, handleSuccessRedirect]
+    [reference, token, checkingStatus, orderService, extractPaymentPayload, handleSuccessRedirect]
   );
 
   // Keep a stable ref for callbacks inside socket events
