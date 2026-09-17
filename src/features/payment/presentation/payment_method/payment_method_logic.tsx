@@ -33,23 +33,28 @@ export function usePaymentMethodLogic() {
 
     setStateStatus(StateType.loading);
 
-    let effectiveGatewayKey = paymentGatewayKey;
-    if (!effectiveGatewayKey) {
-      const orderRes = await orderService.getDetailOrder(reference, token);
-      orderRes.fold(
-        () => {},
-        (order) => {
-          if (order.project?.slug) {
-            effectiveGatewayKey = order.project.slug.toLowerCase();
+    const catPromise = paymentService.getPaymentCategory(token);
+
+    let methodPromise: ReturnType<typeof paymentService.getPaymentMethod>;
+    if (paymentGatewayKey) {
+      methodPromise = paymentService.getPaymentMethod({ paymentGatewayKey }, token);
+    } else {
+      methodPromise = (async () => {
+        let effectiveKey = "";
+        const orderRes = await orderService.getDetailOrder(reference, token);
+        orderRes.fold(
+          () => {},
+          (order) => {
+            if (order.project?.slug) {
+              effectiveKey = order.project.slug.toLowerCase();
+            }
           }
-        }
-      );
+        );
+        return paymentService.getPaymentMethod({ paymentGatewayKey: effectiveKey }, token);
+      })();
     }
 
-    const [catRes, methodRes] = await Promise.all([
-      paymentService.getPaymentCategory(token),
-      paymentService.getPaymentMethod({ paymentGatewayKey: effectiveGatewayKey }, token),
-    ]);
+    const [catRes, methodRes] = await Promise.all([catPromise, methodPromise]);
 
     catRes.fold(
       (err) => {
